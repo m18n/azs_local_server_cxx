@@ -11,7 +11,7 @@ RUN apt-get install -y build-essential cmake gcc gdb git
 RUN apt-get install -y libboost-all-dev
 
 # Копіюємо виконуваний файл у контейнер
-COPY . /app/
+COPY ./bin /app/
 
 # Перевіряємо робочу директорію
 WORKDIR /app

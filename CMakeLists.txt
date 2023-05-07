@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.1)
 project(azs_local_server)
-
+file(COPY ${CMAKE_SOURCE_DIR}/site DESTINATION ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 add_subdirectory(Crow)
 link_directories(Crow/include)
 add_executable(${PROJECT_NAME} main.cpp)
