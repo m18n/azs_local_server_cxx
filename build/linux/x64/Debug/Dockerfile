@@ -11,10 +11,10 @@ RUN apt-get install -y build-essential cmake gcc gdb git
 RUN apt-get install -y libboost-all-dev
 
 # Копіюємо виконуваний файл у контейнер
-COPY my_app /app/
+COPY . /app/
 
 # Перевіряємо робочу директорію
 WORKDIR /app
 
 # Виконуємо виконуваний файл
-CMD ["./my_app"]
+CMD ["./azs_local_server"]
