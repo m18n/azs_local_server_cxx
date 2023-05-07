@@ -13,17 +13,17 @@
             <div class="auth">
                 Авторизація
             </div>
-            <div class="authinput">
-                <form action="/auth" method="POST">
-                    <input type="text" placeholder="name" id="name">
-                    <input type="text" placeholder="password" id="password">
+            <div class="authinput" id="auth">
+                
+                    <input type="text" name="login" placeholder="name" id="name">
+                    <input type="text" name="password" placeholder="password" id="password">
                     <span class="stat">STATUS:</span>
-                    <button onclick="Login();" type="submit">Вхід</button>
-                </form>
+                    <button onclick="auth();">Вхід</button>
+               
             </div>
         </div>
     </div>
     <script src="public/js/jquery-3.6.0.min.js"></script>
-    <script src="public/js/function.js"></script>
+    <script src="public/js/post.js"></script>
 </body>
 </html>
