@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/service.css">
+    <link rel="stylesheet" href="css/serviceadmin.css">
+</head>
+<body>
+    <div class="heads">
+        <img onclick="LoadSite('/serv/service/configure','');" style="cursor: pointer;" src="img/arr.png" class="back" alt="">
+        <h1 class="h t_f">Налаштування AZS</h1>
+    </div>
+    <div class="settings_azs" id="sett_azs">
+        <div>
+            <span>host: </span><input type="text" placeholder="host" id="host">
+        </div>
+        <div>
+            <span>user: </span><input type="text" placeholder="user" id="user">
+        </div>
+
+        <div>
+            <span>password: </span><input type="text" placeholder="password" id="pass">
+        </div>
+        <div>
+            <span>database: </span><input type="text" placeholder="database" id="database">
+        </div>
+        <span id="stat_con">STATUS CONNECT:</span>
+        <button onclick="SaveAzs();">Зберегти</button>
+    </div>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script src="js/admin.js"></script>
+    <script src="js/status.js"></script>
+    <script src="js/loadfunction.js"></script>
+    <script src="js/savefunction.js"></script>
+</body>
+</html>

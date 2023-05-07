@@ -1,0 +1,142 @@
+{
+    // See https://go.microsoft.com/fwlink/?Link...
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        //LINUX
+        {
+            "label": "cmake_debug_linux",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "-DCMAKE_BUILD_TYPE=Debug",
+                "${workspaceFolder}"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/build/linux/x64/Debug"
+            }
+        },
+        {
+            "label": "build_debug_linux",
+            "type": "shell",
+            "command": "make",
+            "options": {
+                "cwd": "${workspaceFolder}/build/linux/x64/Debug"
+            }
+        },
+        {
+            "label": "coll_debug_linux",
+            "dependsOn": [
+                "cmake_debug_linux",
+                "build_debug_linux"
+            ],
+            
+        },
+        {
+            "label": "cmake_release_linux",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "-DCMAKE_BUILD_TYPE=Release",
+                "${workspaceFolder}"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/build/linux/x64/Release"
+            }
+        },
+        {
+            "label": "build_release_linux",
+            "type": "shell",
+            "command": "make",
+            "options": {
+                "cwd": "${workspaceFolder}/build/linux/x64/Release"
+            }
+        },
+        {
+            "label": "coll_release_linux",
+            "dependsOn": [
+                "cmake_release_linux",
+                "build_release_linux"
+            ],
+            
+        },
+        
+        //WINDOWS
+
+        {
+            "label": "cmake_debug_windows",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "-DCMAKE_BUILD_TYPE=Debug",
+                "-G Visual Studio 17 2022",
+                "-A x64",
+                "${workspaceFolder}",
+                
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/build/windows"
+            }
+        },
+        {
+            "label": "build_debug_windows",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "${workspaceFolder}/build/windows",
+                "--config Debug",
+              
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/build/windows"
+                
+            }
+        },
+        {
+            "label": "coll_debug_windows",
+            "dependsOn": [
+                "cmake_debug_windows",
+                "build_debug_windows"
+            ],
+            
+        },
+        {
+            "label": "cmake_release_windows",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "-DCMAKE_BUILD_TYPE=Release",
+                "-G Visual Studio 17 2022",
+                "-A x64",
+                "${workspaceFolder}",
+                
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/build/windows"
+            }
+        },
+        {
+            "label": "build_release_windows",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "${workspaceFolder}/build/windows",
+                "--config Release",
+                
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/build/windows"
+            }
+        },
+        {
+            "label": "coll_release_windows",
+            "dependsOn": [
+                "cmake_release_windows",
+                "build_release_windows"
+            ],
+            
+        },
+    ]
+}
