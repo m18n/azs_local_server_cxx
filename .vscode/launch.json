@@ -85,34 +85,34 @@
         //         }
         //     ]
         // },
-        // //windows
-        // {
-        //     "name": "WINDOWS DEBUG CMAKE",
-        //     "type": "cppvsdbg",
-        //     "request": "launch",
-        //     "program": "${workspaceFolder}/build/windows/Debug/AZS.exe",
-        //     "args": [],
-        //     "stopAtEntry": false,
-        //     "cwd": "${workspaceFolder}",
-        //     "environment": [],
-        //     "externalConsole": true,
-        //     "preLaunchTask": "coll_debug_windows",
+        //windows
+        {
+            "name": "WINDOWS DEBUG CMAKE",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/windows/bin/Debug/azs_local_server.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": true,
+            "preLaunchTask": "coll_debug_windows",
             
           
-        // },
-        // {
-        //     "name": "WINDOWS RELEASE CMAKE",
-        //     "type":"cppvsdbg",
-        //     "request": "launch",
-        //     "program": "${workspaceFolder}/build/windows/Release/AZS.exe",
-        //     "args": [],
-        //     "stopAtEntry": false,
-        //     "cwd": "${workspaceFolder}",
-        //     "environment": [],
-        //     "externalConsole": true,
-        //     "preLaunchTask": "coll_release_windows",
+        },
+        {
+            "name": "WINDOWS RELEASE CMAKE",
+            "type":"cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/windows/bin/Release/azs_local_server.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": true,
+            "preLaunchTask": "coll_release_windows",
             
-        // },
+        },
         // //windows RESTART PROGRAM
         // {
         //     "name": "WINDOWS RESTART DEBUG CMAKE",
