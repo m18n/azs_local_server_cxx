@@ -1,3 +1,1 @@
-build/linux/x64/Debug/*
-!build/linux/x64/Debug/Dockerfile
-build/windows/*
+build/*
