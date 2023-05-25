@@ -1,5 +1,7 @@
 #include<iostream>
 #include"crow.h"
+#include "jwt-cpp/jwt.h"
+#include "jdbc/mysql_connection.h"
 int main(){
     std::cout<<"START PROGRAM\n";
     crow::SimpleApp app;
