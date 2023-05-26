@@ -48,6 +48,15 @@ body{
     margin-top: 1px;
     
 }
+.authinput select{
+    height: 35px;
+    outline: none;
+    border: 1px grey solid;
+    width: 100%;
+    border-radius: 5px;
+    margin-top: 1px;
+    
+}
 .authinput button{
     margin-top: 10px;
     background-color: rgb(29, 184, 184);
@@ -62,6 +71,6 @@ body{
 .authinput button:hover{
     background-color: rgb(18, 114, 114);
 }
-.stat{
+.status{
     margin-top: 2px;
 }

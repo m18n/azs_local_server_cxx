@@ -1,7 +1,6 @@
 
 function auth(){
     var formData =JSON.stringify($('#auth :input').serializeArray());
-   
     console.log(formData+"\n");
     $.ajax({
         type: "POST",
