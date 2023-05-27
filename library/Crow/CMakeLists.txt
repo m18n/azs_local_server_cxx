@@ -58,13 +58,13 @@ IF (WIN32)
 target_include_directories(Crow INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/asio_windows/include>)
 ELSE()
 	find_package(asio REQUIRED)
-
 	target_link_libraries(Crow
 		INTERFACE
 			asio::asio
 	)
 
 ENDIF()
+
 
 target_compile_definitions(Crow INTERFACE "")
 

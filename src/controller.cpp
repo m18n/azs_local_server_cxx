@@ -10,7 +10,12 @@ crow::mustache::rendered_template auth_main() {
     ctx["users"][i]={{"id",res[i].id},{"name",res[i].name}};
   }
   std::cout<<ctx.dump()<<"\n";
-  return crow::mustache::load("login.html").render(ctx);
+  auto start = std::chrono::high_resolution_clock::now();
+  crow::mustache::rendered_template t=crow::mustache::load("login.html").render(ctx);
+  auto end = std::chrono::high_resolution_clock::now();
+  auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+  std::cout << "Execution time RENDER: " << duration.count() << " microseconds" << std::endl;
+  return t;
 }
 crow::response auth(const crow::request &req) {
   auto x = crow::json::load(req.body);

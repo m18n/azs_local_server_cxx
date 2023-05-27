@@ -10,7 +10,6 @@ std::vector<user_name> azs_database::get_user_name()
         u.name = res->getString("user");
         users.push_back(u);
     }
-
     delete res;
     delete stmt;
     return users;
