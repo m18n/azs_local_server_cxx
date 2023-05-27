@@ -12,11 +12,15 @@
         <div class="login">
             <div class="auth">
                 Авторизація
+                
             </div>
             <div class="authinput" id="auth">
                     <select id="login" name="login">
-                        <option>Misha123</option>
-                        <option>Vasa123</option>
+                        {{#users}}
+                            <option value="{{id}}">{{name}}</option>
+                    
+                        {{/users}}
+                        
                     </select>
                     
                     <input type="password" name="password" placeholder="password" id="password">

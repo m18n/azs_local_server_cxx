@@ -18,9 +18,7 @@ public:
         mysql_info=ld.get_mysql_conn_info();
         mysql_info.show();
         azs_db.connect(mysql_info.ip,mysql_info.name,mysql_info.password);
-
         
-       
     }
     void start()
     {

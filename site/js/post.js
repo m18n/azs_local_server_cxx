@@ -7,7 +7,11 @@ function auth(){
         url: "/auth",
         data: formData,
         success: function(data){
-            console.log(data);
+            if(data["status"]=="yes"){
+                document.location.href = '/main';
+            }else{
+                $(".status").text("STATUS: wrong password");
+            }
         },
         dataType: "json",
         contentType : "application/json"
