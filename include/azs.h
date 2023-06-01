@@ -1,9 +1,10 @@
 #pragma once
 #include "local_data.h"
 #include "view.h"
+
 class azs {
 private:
-    crow::SimpleApp app;
+    crow::App<AuthVerefy> app;
     local_data ld;
     mysql_conn_info mysql_info;
     azs_database azs_db;
@@ -12,7 +13,7 @@ public:
     {
         //init crow
         init_view_login(app);
-        init_controller(&azs_db);
+        init_controller(&azs_db,&ld);
         crow::mustache::set_global_base("site");
         //init db
         mysql_info=ld.get_mysql_conn_info();

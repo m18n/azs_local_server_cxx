@@ -1,0 +1,57 @@
+[ 1] Crow/master server is running at http://0.0.0.0:3000 using 2 threads
+[ 1] Call `app.loglevel(crow::LogLevel::Warning)` to hide Info level logs.
+[ 1] Request: 127.0.0.1:59604 0000027BD31057B0 HTTP/1.1 GET /
+[ 1] Response: 0000027BD31057B0 / 200 0
+[ 1] Request: 127.0.0.1:59604 0000027BD31057B0 HTTP/1.1 GET /public/css/login.css
+[ 1] Response: 0000027BD31057B0 /public/css/login.css 200 0
+[ 1] Request: 127.0.0.1:59605 0000027BD49B6FC0 HTTP/1.1 GET /public/js/post.js
+[ 1] Response: 0000027BD49B6FC0 /public/js/post.js 200 0
+[ 1] Request: 127.0.0.1:59604 0000027BD31057B0 HTTP/1.1 GET /public/js/jquery-3.6.0.min.js
+[ 1] Response: 0000027BD31057B0 /public/js/jquery-3.6.0.min.js 200 0
+[ 1] Request: 127.0.0.1:59604 0000027BD31057B0 HTTP/1.1 GET /public/fonts/Raleway-Medium.ttf
+[ 1] Unable to interpret mime type for content type 'ttf'. Defaulting to text/plain.
+[ 1] Response: 0000027BD31057B0 /public/fonts/Raleway-Medium.ttf 200 0
+[ 1] Response: 0000027BD31057B0 /favicon.ico 404 0
+[ 1] Request: 127.0.0.1:59605 0000027BD49B6FC0 HTTP/1.1 POST /auth
+[ 1] Response: 0000027BD49B6FC0 /auth 200 0
+[ 1] Request: 127.0.0.1:59605 0000027BD49B6FC0 HTTP/1.1 POST /auth
+[ 1] Response: 0000027BD49B6FC0 /auth 200 0
+[ 1] Request: 127.0.0.1:59605 0000027BD49B6FC0 HTTP/1.1 GET /main
+[ 1] Response: 0000027BD49B6FC0 /main 200 0
+[ 1] Response: 0000027BD49B6FC0 /css/main.css 404 0
+[ 1] Response: 0000027BD49C0520 /css/admin.css 404 0
+[ 1] Response: 0000027BD31057B0 /css/style.css 404 0
+[ 1] Response: 0000027BD49B6FC0 /js/jquery-3.6.0.min.js 404 0
+[ 1] Response: 0000027BD49C5A50 /js/unit.js 404 0
+[ 1] Response: 0000027BD49C0520 /js/core.js 404 0
+[ 1] Response: 0000027BD49CB490 /js/menu.js 404 0
+[ 1] Response: 0000027BD49CC9E0 /css/style.css 404 0
+[ 1] Response: 0000027BD49CB490 /css/main.css 404 0
+[ 1] Response: 0000027BD49B6FC0 /css/admin.css 404 0
+[ 1] Request: 127.0.0.1:59685 0000027BD31057B0 HTTP/1.1 GET /main
+[ 1] Response: 0000027BD31057B0 /main 200 0
+[ 1] Response: 0000027BD31057B0 /css/style.css 404 0
+[ 1] Response: 0000027BD49B6FC0 /css/main.css 404 0
+[ 1] Response: 0000027BD31057B0 /css/admin.css 404 0
+[ 1] Response: 0000027BD49B6FC0 /js/jquery-3.6.0.min.js 404 0
+[ 1] Response: 0000027BD49C5A50 /js/unit.js 404 0
+[ 1] Response: 0000027BD49C0520 /js/core.js 404 0
+[ 1] Response: 0000027BD49CB490 /js/menu.js 404 0
+[ 1] Request: 127.0.0.1:59707 0000027BD49CC9E0 HTTP/1.1 GET /main
+[ 1] Response: 0000027BD49CC9E0 /main 200 0
+[ 1] Response: 0000027BD49CC9E0 /css/style.css 404 0
+[ 1] Response: 0000027BD49CB490 /css/main.css 404 0
+[ 1] Response: 0000027BD49B6FC0 /css/admin.css 404 0
+[ 1] Response: 0000027BD49C5A50 /js/jquery-3.6.0.min.js 404 0
+[ 1] Response: 0000027BD49B6FC0 /js/unit.js 404 0
+[ 1] Response: 0000027BD49C0520 /js/core.js 404 0
+[ 1] Response: 0000027BD49CB490 /js/menu.js 404 0
+[ 1] Request: 127.0.0.1:59728 0000027BD49CC9E0 HTTP/1.1 GET /main
+[ 1] Response: 0000027BD49CC9E0 /main 200 0
+[ 1] Response: 0000027BD49CC9E0 /css/style.css 404 0
+[ 1] Response: 0000027BD49CB490 /css/main.css 404 0
+[ 1] Response: 0000027BD49B6FC0 /css/admin.css 404 0
+[ 1] Response: 0000027BD49C5A50 /js/jquery-3.6.0.min.js 404 0
+[ 1] Response: 0000027BD49B6FC0 /js/unit.js 404 0
+[ 1] Response: 0000027BD49C0520 /js/core.js 404 0
+[ 1] Response: 0000027BD49CB490 /js/menu.js 404 0
