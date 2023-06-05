@@ -28,6 +28,7 @@ private:
     sql::ResultSet* res;
     bool isconn=false;
     std::string azs_id;
+    mysql_conn_info last_info;
 private:
 void get_azs_id();
 public:
@@ -40,10 +41,14 @@ public:
     bool isConnect(){
         return isconn;
     }
+    mysql_conn_info get_last_info(){
+        return last_info;
+    }
     bool connect(mysql_conn_info info)
     {
+        last_info=info;
         try {
-            con = driver->connect("tcp://" + info.ip + ":3306", info.name, info.password);
+            con = driver->connect("tcp://" + info.ip + ":"+info.port, info.name, info.password);
             con->setSchema(info.database);
             isconn=con->isValid();
             get_azs_id();
@@ -59,6 +64,7 @@ public:
     std::vector<user_name> get_user_name();
     std::vector<pump> get_pump();
     void save_pump_scale(int32_t id,float scale);
+    void save_pump_xy(int32_t id,int32_t x,int32_t y);
     ~azs_database()
     {
         if (con != NULL && con->isValid())

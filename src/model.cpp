@@ -26,9 +26,22 @@ void model::azs_database::save_pump_scale(int32_t idpump, float scale)
 {
     try {
         stmt = con->createStatement();
-        std::string sql = "UPDATE com_trk SET scale="+std::to_string(scale)+" WHERE id_trk=" + std::to_string(idpump) + ";";
+        std::string sql = "UPDATE com_trk SET scale=" + std::to_string(scale) + " WHERE id_trk=" + std::to_string(idpump) + ";";
         int t = stmt->executeUpdate(sql);
-        
+
+        delete stmt;
+    } catch (const sql::SQLException& error) {
+        std::cout << "ERROR MYSQL: " << error.what() << "\n";
+        isconn = false;
+    }
+}
+void model::azs_database::save_pump_xy(int32_t id, int32_t x, int32_t y)
+{
+    try {
+        stmt = con->createStatement();
+        std::string sql = "UPDATE com_trk SET x_pos=" + std::to_string(x) + ", y_pos="+std::to_string(y)+" WHERE id_trk=" + std::to_string(id) + ";";
+        int t = stmt->executeUpdate(sql);
+
         delete stmt;
     } catch (const sql::SQLException& error) {
         std::cout << "ERROR MYSQL: " << error.what() << "\n";
@@ -56,7 +69,7 @@ std::vector<model::pump> model::azs_database::get_pump()
         std::cout << "ERROR MYSQL: " << error.what() << "\n";
         isconn = false;
     }
-    pumps.resize(2);
+    
     return pumps;
 }
 void model::azs_database::get_azs_id()

@@ -8,15 +8,22 @@
     <title>ADMIN AZS</title>
     <link rel="stylesheet" href="public/css/style.css">
     <link rel="stylesheet" href="public/css/main.css">
+    {{#admin}}
     <link rel="stylesheet" href="public/css/admin.css">
+    {{/admin}}
 </head>
 
 <body>
     <div class="container">
         
         <div class="content">
-            <h1 class="cord">X: Y:</h1>
-            <h1 class="cord2">X: Y:</h1>
+            <!-- <h1 class="cord">X: Y:</h1>
+            <h1 class="cord2">X: Y:</h1> -->
+            {{#admin}}
+            <div class="save_admin">
+                <button>SAVE</button>
+            </div>
+            {{/admin}}
             {{#pump}}
             <div class="dispensing_unit " value="{{id}}" style="left:{{x_pos}}px;top:{{y_pos}}px; width: {{scale}}px; height: {{scale}}px;" id="unit_shab" >
                 
@@ -124,9 +131,11 @@
                         <h3 class="info_ges">ОСТАНОВ</h3>
                       
                         <div class="mini">
-                            <div class="space"ondblclick="RegimeResizeUnit(this);" onmouseleave="MouseLeave(event,this);"   >
+                            {{#admin}}
+                            <div class="space"ondblclick="RegimeResizeUnit(this);" onmouseleave="MouseLeave(event,this);" onmousemove="MouseMove(event,this);" onmousedown="MouseDown(event,this);" onmouseup="MouseUp(event,this);"  >
 
                             </div>
+                            {{/admin}}
                         </div>
                         
                     </div>

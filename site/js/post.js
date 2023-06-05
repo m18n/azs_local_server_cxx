@@ -34,6 +34,23 @@ function settings_db(){
     });
     
 }
+function save_xy_pump(id,x,y){
+    let savescale={id:id,x:x,y:y}
+    let json = JSON.stringify(savescale);
+    console.log("JSON: "+json);
+    $.ajax({
+        type: "POST",
+        url: "/api/pump/savexy",
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        data: json,
+        success: function(data){console.log(data)},
+        error: function(errMsg) {
+            console.log(data)
+        }
+        
+    });
+}
 function save_scale_pump(id,scale){
     let savescale={id:id,scale:scale}
     let json = JSON.stringify(savescale);

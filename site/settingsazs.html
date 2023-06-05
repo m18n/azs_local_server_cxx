@@ -16,17 +16,20 @@
     </div>
     <div class="settings_azs" id="sett_azs">
         <div>
-            <span>host: </span><input type="text" name="host" placeholder="host" id="host">
+            <span>host: </span><input type="text" name="host" value="{{host}}" placeholder="host" id="host">
         </div>
         <div>
-            <span>user: </span><input type="text" name="user" placeholder="user" id="user">
+            <span>user: </span><input type="text" name="user" value="{{user}}" placeholder="user" id="user">
         </div>
 
         <div>
-            <span>password: </span><input type="text" name="password" placeholder="password" id="pass">
+            <span>password: </span><input type="text" name="password" value="{{password}}" placeholder="password" id="pass">
         </div>
         <div>
-            <span>database: </span><input type="text" name="database" placeholder="database" id="database">
+            <span>database: </span><input type="text" name="database" value="{{database}}" placeholder="database" id="database">
+        </div>
+        <div>
+            <span>port: </span><input type="text" name="port" value="{{port}}" placeholder="port" id="port">
         </div>
         <span id="stat_con">STATUS CONNECT:</span>
         <button onclick="settings_db();">Зберегти</button>

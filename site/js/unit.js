@@ -9,6 +9,17 @@ function CreateUnit() {
     }
     return unit;
 }
+$(".save_admin").click(function(){
+    let array=$(".dispensing_unit");
+    for(let i=0;i<array.length;i++){
+        let x=$(array[i]).css("left");
+        let y=$(array[i]).css("top");
+        let scale = ($(array[i]).width() + 8) / 300 * 100;
+        save_scale_pump($(array[i]).attr('value'), scale);
+        save_xy_pump($(array[i]).attr('value'), x,y);
+    }
+    
+});
 function spacebig(space) {
     
     $(space).css({ "width": "500%", "height": "500%" });
@@ -45,7 +56,7 @@ function REG_RESIZE_START(event, obj) {
     return false;
 }
 function REG_RESIZE_MOVE(event, obj) {
-    if (obj.Regim == Regim.Resize && boolmouse == true) {
+    if (obj.Regim == Regim.Resize && obj.boolmouse == true) {
         let cord = obj.getBoundingClientRect();
         let x = event.clientX - cord.left;
         let y = event.clientY - cord.top;
@@ -70,8 +81,8 @@ function REG_RESIZE_ESCAPE(obj, space) {
     if (obj.Regim == Regim.ResizeState) {
         obj.style.borderColor = "grey";
         spacesmall(space);
-        let scale = ($(obj).width() + 8) / 300 * 100;
-        save_scale_pump($(obj).attr('value'), scale);
+        // let scale = ($(obj).width() + 8) / 300 * 100;
+        // save_scale_pump($(obj).attr('value'), scale);
         obj.Regim = Regim.State;
         return true;
     }
@@ -90,15 +101,15 @@ function REG_MOVE_STARTTIMER(event, obj) {
 }
 
 function REG_MOVE_START(event, obj) {
-    if (obj.Regim == Regim.State && boolmouse == true) {
+    if (obj.Regim == Regim.State && obj.boolmouse == true) {
         obj.style.borderColor = "red";
         let space=$(obj).find(".space")[0];
         spacebig(space);
         let rect = obj.getBoundingClientRect();
         obj.offsetx=event.offsetX;
         obj.offsety=event.offsetY;
-        obj.initialX=obj.offsetLeft-event.pageX;
-        obj.initialY=obj.offsetTop-event.pageY;
+        obj.initialX=event.pageX-rect.left;
+        obj.initialY=event.pageY-rect.top;
         console.log("OFSET X: "+event.offsetX+" OFSET Y: "+event.offsetY);
         $(".cord").text("START PAGEX:"+event.pageX+" PAGEY: "+event.pageY+" RECT T:"+rect.top+" RECT LEFT: "+rect.left);
         console.log("Start MOVE X: " + event.pageX + " MOVE Y: " + event.pageY + " ID: " + obj.id);
@@ -109,11 +120,11 @@ function REG_MOVE_START(event, obj) {
     return false;
 }
 function REG_MOVE_MOVEOBJ(event, obj) {
-    if (obj.Regim == Regim.Move && boolmouse == true) {
+    if (obj.Regim == Regim.Move && obj.boolmouse == true) {
         let rect = obj.getBoundingClientRect();
         $(".cord2").text("POSLE MOVE PAGEX:"+event.pageX+" PAGEY: "+event.pageY+" RECT T:"+rect.top+" RECT LEFT: "+rect.left);
-        currentX = event.pageX+obj.initialX;
-        currentY = event.pageY+obj.initialY;
+        currentX = event.pageX-obj.initialX;
+        currentY = event.pageY-obj.initialY;
         console.log("OFSET X: "+event.offsetX+" OFSET Y: "+event.offsetY);
         
         console.log("MOUSE: X: "+event.pageX+" Y: "+event.pageY);
@@ -154,33 +165,30 @@ function RegimeResizeUnit(obj) {
     else if (REG_RESIZE_ESCAPE(obj, space)) { }
 
 }
-$('.space').mousedown(function(event){
-    obj = $(this).parents(".dispensing_unit")[0];
-    boolmouse = true;
+
+function MouseDown(event,obj){
+    obj = $(obj).parents(".dispensing_unit")[0];
+    
+    obj.boolmouse = true;
     if (obj.Regim == undefined) {
+        
         obj.Regim = Regim.State;
         console.log("UNFIDER\n");
     }
     console.log("REGIM :" + obj.Regim);
     if (REG_RESIZE_START(event, obj)) { }
     else if (REG_MOVE_STARTTIMER(event, obj)) { }
-});
-$('.space').mouseup(function(e){
-    MouseUp(e,$(this));
-})
+}
 function MouseUp(event, obj) {
     obj = $(obj).parents(".dispensing_unit")[0];
-    boolmouse = false;
+    obj.boolmouse = false;
     obj.style.cursor = "default";
     console.log("REGIME START: " + obj.Regim);
     if (REG_RESIZE_STOP(obj)) { }
     else if (REG_MOVE_STOP(event, obj)) { }
     console.log("REGIME END: " + obj.Regim);
 }
-$(".space").mousemove(function(event){
-    MoveMouse(event,$(this));
-});
-function MoveMouse(event, obj) {
+function MouseMove(event, obj) {
     obj = $(obj).parents(".dispensing_unit")[0];
     if (REG_RESIZE_MOVE(event, obj)) { }
     else if (REG_MOVE_MOVEOBJ(event, obj)) { }

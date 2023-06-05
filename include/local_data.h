@@ -1,21 +1,26 @@
 #pragma once
 #include "sqlite3.h"
+#include "string"
 #include <fstream>
 #include <iostream>
+#include <random>
 struct mysql_conn_info {
     std::string ip;
     std::string name;
     std::string password;
     std::string database;
+    std::string port;
     void show()
     {
-        std::cout << "ip: " << ip << " name: " << name << " password: " << password << " Database: " << database << "\n";
+        std::cout << "ip: " << ip << " name: " << name << " password: " << password << " Database: " << database << " PORT: " << port << "\n";
     }
 };
+std::string generate_secret_key(int length);
 class local_data {
 private:
     sqlite3* db;
     sqlite3_stmt* stmt;
+    int id_last = -1;
     char* errMsg = NULL;
     bool open_localdatabase()
     {
@@ -35,6 +40,7 @@ private:
 public:
     local_data()
     {
+        std::cout << "GEN: " << generate_secret_key(15) << "\n";
         std::cout << "OPEN LOCAL DATABASE\n";
         while (!open_localdatabase()) {
         }
@@ -44,7 +50,8 @@ public:
                           "ip TEXT NOT NULL,"
                           "login TEXT NOT NULL,"
                           "password TEXT NOT NULL,"
-                          "database TEXT NOT NULL"
+                          "database TEXT NOT NULL,"
+                          "port TEXT NOT NULL"
                           ");";
         int rc = sqlite3_exec(db, sql.c_str(), nullptr, nullptr, &errMsg);
         if (rc != SQLITE_OK) {
@@ -64,12 +71,22 @@ public:
     }
     bool set_mysql_conn_info(mysql_conn_info mysql_info)
     {
-        std::string sql = "INSERT INTO mysql_db (ip,login,password,database) VALUES (\"" + mysql_info.ip + "\",\"" + mysql_info.name + "\",\"" + mysql_info.password + "\",\"" + mysql_info.database + "\");";
-        char* errmsg = 0;
-        int rc = sqlite3_exec(db, sql.c_str(), 0, 0, &errmsg);
-        if (rc != SQLITE_OK) {
-            std::cout << "ERROR: " << errmsg << "\n";
-            return false;
+        if (id_last == -1) {
+            std::string sql = "INSERT INTO mysql_db (ip,login,password,database,port) VALUES (\"" + mysql_info.ip + "\",\"" + mysql_info.name + "\",\"" + mysql_info.password + "\",\"" + mysql_info.database + "\",\"" + mysql_info.port + "\");";
+            char* errmsg = 0;
+            int rc = sqlite3_exec(db, sql.c_str(), 0, 0, &errmsg);
+            if (rc != SQLITE_OK) {
+                std::cout << "ERROR SET MYSQL DB: " << errmsg << "\n";
+                return false;
+            }
+        } else {
+            std::string sql = "UPDATE mysql_db SET ip=\"" + mysql_info.ip + "\", login=\"" + mysql_info.name + "\",password=\"" + mysql_info.password + "\",database=\"" + mysql_info.database + "\",port=\"" + mysql_info.port + "\" WHERE id=" + std::to_string(id_last);
+            char* errmsg = 0;
+            int rc = sqlite3_exec(db, sql.c_str(), 0, 0, &errmsg);
+            if (rc != SQLITE_OK) {
+                std::cout << "ERROR SET MYSQL DB:" << errmsg << "\n";
+                return false;
+            }
         }
         return true;
     }
@@ -83,16 +100,30 @@ public:
         }
         int ret = 0;
         if ((ret = sqlite3_step(stmt)) == SQLITE_ROW) {
+            id_last = sqlite3_column_int(stmt, 0);
             data.ip = (char*)sqlite3_column_text(stmt, 1);
             data.name = (char*)sqlite3_column_text(stmt, 2);
             data.password = (char*)sqlite3_column_text(stmt, 3);
             data.database = (char*)sqlite3_column_text(stmt, 4);
+            data.port = (char*)sqlite3_column_text(stmt, 5);
         } else {
-            std::cout << "ERROR LOCAL BASE DATA:" << ret << "\n";
+            std::cout << "NON DATA IN MYSQL_DB" << ret << "\n";
         }
         sqlite3_finalize(stmt);
         stmt = NULL;
         return data;
+    }
+    std::string generatejwt_secret()
+    {
+        std::string t=generate_secret_key(15);
+        std::string sql = "INSERT INTO jwt (jwt) VALUES (\""+t+"\");";
+        char* errmsg = 0;
+        int rc = sqlite3_exec(db, sql.c_str(), 0, 0, &errmsg);
+        if (rc != SQLITE_OK) {
+            std::cout << "ERROR JWT GENERATE: " << errmsg << "\n";
+            return "";
+        }
+        return t;
     }
     std::string get_secret_jwt()
     {
@@ -107,7 +138,8 @@ public:
             secret = (char*)sqlite3_column_text(stmt, 1);
 
         } else {
-            std::cout << "ERROR LOCAL BASE CONN DATA:" << ret << "\n";
+            sqlite3_finalize(stmt);
+            return generatejwt_secret();
         }
         sqlite3_finalize(stmt);
         stmt = NULL;
