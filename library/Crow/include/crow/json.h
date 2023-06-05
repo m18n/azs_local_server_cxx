@@ -1815,7 +1815,17 @@ namespace crow
                 escape(str, out);
                 out.push_back('"');
             }
-
+            inline void dump_string(const std::string& str, std::string& out,bool b) const
+            {
+                if(b){
+                    escape(str, out);
+                }else{
+                    out.push_back('"');
+                    escape(str, out);
+                    out.push_back('"');
+                }
+                
+            }
             inline void dump_internal(const wvalue& v, std::string& out) const
             {
                 switch (v.t_)
@@ -1942,13 +1952,145 @@ namespace crow
                         break;
                 }
             }
+            inline void dump_internal(const wvalue& v, std::string& out,bool b) const
+            {
+                switch (v.t_)
+                {
+                    case type::Null: out += "null"; break;
+                    case type::False: out += "false"; break;
+                    case type::True: out += "true"; break;
+                    case type::Number:
+                    {
+                        if (v.nt == num_type::Floating_point)
+                        {
+                            if (isnan(v.num.d) || isinf(v.num.d))
+                            {
+                                out += "null";
+                                CROW_LOG_WARNING << "Invalid JSON value detected (" << v.num.d << "), value set to null";
+                                break;
+                            }
+                            enum
+                            {
+                                start,
+                                decp, // Decimal point
+                                zero
+                            } f_state;
+                            char outbuf[128];
+#ifdef _MSC_VER
+			    sprintf_s(outbuf, sizeof(outbuf), "%f", v.num.d);
+#else
+			    snprintf(outbuf, sizeof(outbuf), "%f", v.num.d);
+#endif
+                            char *p = &outbuf[0], *o = nullptr; // o is the position of the first trailing 0
+                            f_state = start;
+                            while (*p != '\0')
+                            {
+                                //std::cout << *p << std::endl;
+                                char ch = *p;
+                                switch (f_state)
+                                {
+                                    case start: // Loop and lookahead until a decimal point is found
+                                        if (ch == '.')
+                                        {
+                                            char fch = *(p + 1);
+                                            // if the first character is 0, leave it be (this is so that "1.00000" becomes "1.0" and not "1.")
+                                            if (fch != '\0' && fch == '0') p++;
+                                            f_state = decp;
+                                        }
+                                        p++;
+                                        break;
+                                    case decp: // Loop until a 0 is found, if found, record its position
+                                        if (ch == '0')
+                                        {
+                                            f_state = zero;
+                                            o = p;
+                                        }
+                                        p++;
+                                        break;
+                                    case zero: // if a non 0 is found (e.g. 1.00004) remove the earlier recorded 0 position and look for more trailing 0s
+                                        if (ch != '0')
+                                        {
+                                            o = nullptr;
+                                            f_state = decp;
+                                        }
+                                        p++;
+                                        break;
+                                }
+                            }
+                            if (o != nullptr) // if any trailing 0s are found, terminate the string where they begin
+                                *o = '\0';
+                            out += outbuf;
+                        }
+                        else if (v.nt == num_type::Signed_integer)
+                        {
+                            out += std::to_string(v.num.si);
+                        }
+                        else
+                        {
+                            out += std::to_string(v.num.ui);
+                        }
+                    }
+                    break;
+                    case type::String: dump_string(v.s, out,b); break;
+                    case type::List:
+                    {
+                        out.push_back('[');
+                        if (v.l)
+                        {
+                            bool first = true;
+                            for (auto& x : *v.l)
+                            {
+                                if (!first)
+                                {
+                                    out.push_back(',');
+                                }
+                                first = false;
+                                dump_internal(x, out);
+                            }
+                        }
+                        out.push_back(']');
+                    }
+                    break;
+                    case type::Object:
+                    {
+                        out.push_back('{');
+                        if (v.o)
+                        {
+                            bool first = true;
+                            for (auto& kv : *v.o)
+                            {
+                                if (!first)
+                                {
+                                    out.push_back(',');
+                                }
+                                first = false;
+                                dump_string(kv.first, out);
+                                out.push_back(':');
+                                dump_internal(kv.second, out);
+                            }
+                        }
+                        out.push_back('}');
+                    }
+                    break;
 
+                    case type::Function:
+                        out += "custom function";
+                        break;
+                }
+            }
         public:
             std::string dump() const
             {
                 std::string ret;
                 ret.reserve(estimate_length());
                 dump_internal(*this, ret);
+                return ret;
+            }
+            std::string dump(bool b) const
+            {
+                std::string ret;
+                ret.reserve(estimate_length());
+                dump_internal(*this, ret,b);
                 return ret;
             }
         };

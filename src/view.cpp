@@ -1,14 +1,20 @@
 #include "view.h"
-void init_view_login(crow::App<AuthVerefy> &app) {
+void init_view_login(crow::App<AuthVerefy,DatabaseVerefy> &app) {
   CROW_ROUTE(app, "/public/<path>")
   ([](const crow::request &, crow::response &res, std::string path) {
     return static_files(res, path);
   });
-  CROW_ROUTE(app, "/")
+  CROW_ROUTE(app, "/").CROW_MIDDLEWARES(app, DatabaseVerefy)
   ([]() { return auth_main(); });
   CROW_ROUTE(app, "/auth").methods("POST"_method)([](const crow::request &req, crow::response &res) {
-    auth(req,res);
+    auth_post(req,res);
   });
-  CROW_ROUTE(app, "/main").CROW_MIDDLEWARES(app, AuthVerefy)
-  ([]() { return pump(); });
+  CROW_ROUTE(app, "/settings/db").methods("POST"_method)([](const crow::request &req, crow::response &res) {
+    settingsdb_post(req,res);
+  });
+  CROW_ROUTE(app, URL_MAIN).CROW_MIDDLEWARES(app,AuthVerefy)
+  ([](const crow::request &req, crow::response &res) {});
+  CROW_ROUTE(app,  API_PUMP_SAVESCALE).methods("POST"_method).CROW_MIDDLEWARES(app,AuthVerefy)
+  ([](const crow::request &req, crow::response &res) {});
+ 
 }

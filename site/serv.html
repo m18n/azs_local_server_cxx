@@ -15,7 +15,10 @@
     <div class="container">
         
         <div class="content">
-            <div class="dispensing_unit none" id="unit_shab" ondblclick="RegimeResizeUnit(this);"  onmousemove="MoveMouse(event,this);" onmouseup="ResizeStopUnit(event,this);" onmousedown="ResizeStartUnit(event,this);">
+            <h1 class="cord">X: Y:</h1>
+            <h1 class="cord2">X: Y:</h1>
+            {{#pump}}
+            <div class="dispensing_unit " value="{{id}}" style="left:{{x_pos}}px;top:{{y_pos}}px; width: {{scale}}px; height: {{scale}}px;" id="unit_shab" >
                 
               
                 <div class="unit_menu">
@@ -26,7 +29,7 @@
                         <button>95e</button>
                         <button>95e</button>
                     </div>
-                    <span id="inex_unit">1</span>
+                    <span id="inex_unit">{{id}}</span>
                 </div>
                 <div class="unit_content">
                     <div class="calculator">
@@ -120,11 +123,16 @@
                         <div class="mini"></div>
                         <h3 class="info_ges">ОСТАНОВ</h3>
                       
-                        <div class="mini"></div>
+                        <div class="mini">
+                            <div class="space"ondblclick="RegimeResizeUnit(this);" onmouseleave="MouseLeave(event,this);"   >
+
+                            </div>
+                        </div>
+                        
                     </div>
                 </div>
             </div>
-            
+            {{/pump}}
         <div class="menu" onmouseleave="HideMenu(this);">
             <div class="region" >
                 <div class="min_menu" id="min_menu"  onmouseenter="ShowMenu(this);">
@@ -162,6 +170,7 @@
         </div>
     </div>
     <script src="public/js/jquery-3.6.0.min.js"></script>
+    <script src="public/js/post.js"></script>
     <script src="public/js/unit.js"></script>
     <script src="public/js/core.js"></script>   
     <script src="public/js/menu.js"></script>
