@@ -14,11 +14,25 @@ struct user_name {
     int32_t id = 0;
     std::string name;
 };
+struct tovar{
+    int id_tovar=0;
+    float price=0.0;
+    std::string name;
+};
+struct tank{
+    int id_tank=0;
+    tovar tovar_;
+};
+struct pist{
+    int id_pist=0;
+    tank tank_;
+};
 struct pump{
-    std::string id_trk;
+    int id_trk;
     int x_pos=0;
     int y_pos=0;
     float scale=100;
+    std::vector<pist>pists;
 };
 class azs_database {
 private:

@@ -39,7 +39,11 @@ private:
         for (int i = 0; i < p.size(); i++) {
             float scale=(float)(300.0 / 100.0 * p[i].scale);
             std::string s=std::to_string(scale);
-            ctx["pump"][i] = { { "id", p[i].id_trk }, { "x_pos", p[i].x_pos }, { "y_pos", p[i].y_pos }, { "scale", s } };
+            
+            ctx["pump"][i] = { { "id", p[i].id_trk }, { "x_pos", p[i].x_pos }, { "y_pos", p[i].y_pos }, { "scale", s },{"pist",""} };
+            for(int j=0;j<p[i].pists.size();j++){
+                ctx["pump"][i]["pist"][j]={{"id_pist",p[i].pists[j].id_pist},{"name",p[i].pists[j].tank_.tovar_.name},{"price",p[i].pists[j].tank_.tovar_.price}};
+            }
         }
         std::cout << "P: " << ctx.dump() << "\n";
         auto render = page.render(ctx);
@@ -92,7 +96,10 @@ private:
         for (int i = 0; i < p.size(); i++) {
             float scale=(float)(300.0 / 100.0 * p[i].scale);
             std::string s=std::to_string(scale);
-            ctx["pump"][i] = { { "id", p[i].id_trk }, { "x_pos", p[i].x_pos }, { "y_pos", p[i].y_pos }, { "scale", s } };
+            ctx["pump"][i] = { { "id", p[i].id_trk }, { "x_pos", p[i].x_pos }, { "y_pos", p[i].y_pos }, { "scale", s },{"pist",""} };
+            for(int j=0;j<p[i].pists.size();j++){
+                ctx["pump"][i]["pist"][j]={{"id_pist",p[i].pists[j].id_pist},{"name",p[i].pists[j].tank_.tovar_.name},{"price",p[i].pists[j].tank_.tovar_.price}};
+            }
         }
         std::cout << "P: " << ctx.dump() << "\n";
         auto render = page.render(ctx);

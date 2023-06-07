@@ -9,19 +9,45 @@ function CreateUnit() {
     }
     return unit;
 }
-$(".save_admin").click(function(){
-    let array=$(".dispensing_unit");
-    for(let i=0;i<array.length;i++){
-        let x=$(array[i]).css("left");
-        let y=$(array[i]).css("top");
+$(".save_admin").click(function () {
+    let array = $(".dispensing_unit");
+    for (let i = 0; i < array.length; i++) {
+        let x = $(array[i]).css("left");
+        let y = $(array[i]).css("top");
         let scale = ($(array[i]).width() + 8) / 300 * 100;
         save_scale_pump($(array[i]).attr('value'), scale);
-        save_xy_pump($(array[i]).attr('value'), x,y);
+        save_xy_pump($(array[i]).attr('value'), x, y);
     }
-    
+
 });
+$(document).ready(function () {
+    //$(".dispensing_unit").find("#pistolet").first().css({"background-color":"red"});
+    let arr = $(".dispensing_unit");
+    for (let i = 0; i < arr.length; i++) {
+        let pist = $(arr[i]).find("#pistolet").first();
+        selectpistol($(pist)[0]);
+       
+    }
+
+});
+function selectpistol(obj) {
+    let ch = $(obj).parent().children();
+    for (let i = 0; i < ch.length; i++) {
+        $(ch[i]).removeClass("select");
+    }
+    $(obj).addClass("select");
+    let unit=$(obj).parents(".dispensing_unit").first();
+    let price=$(unit).find("#price").first();
+    $(price).val($(obj).attr("value"));
+    if ($(unit).find(".clava").not(".none").attr('id') == 'cl_red') {
+        CalGasolineMany($(unit).find(".many")[0]);        
+    }else{
+        CalGasolineLiter($(unit).find(".liter")[0]);
+    }
+}
+
 function spacebig(space) {
-    
+
     $(space).css({ "width": "500%", "height": "500%" });
     $(space).css("transform", "translate(-50%, -50%)");
 }
@@ -62,7 +88,7 @@ function REG_RESIZE_MOVE(event, obj) {
         let y = event.clientY - cord.top;
         let xy = (x - obj.xstart + y - obj.ystart) / 2;
         $(obj).width(obj.firstwidth + xy + "px");
-        $(obj).height( obj.firstheight + xy + "px");
+        $(obj).height(obj.firstheight + xy + "px");
         // obj.style.width = obj.firstwidth + xy + "px";
         // obj.style.height = obj.firstheight + xy + "px";
         return true;
@@ -103,17 +129,17 @@ function REG_MOVE_STARTTIMER(event, obj) {
 function REG_MOVE_START(event, obj) {
     if (obj.Regim == Regim.State && obj.boolmouse == true) {
         obj.style.borderColor = "red";
-        let space=$(obj).find(".space")[0];
+        let space = $(obj).find(".space")[0];
         spacebig(space);
         let rect = obj.getBoundingClientRect();
-        obj.offsetx=event.offsetX;
-        obj.offsety=event.offsetY;
-        obj.initialX=event.pageX-rect.left;
-        obj.initialY=event.pageY-rect.top;
-        console.log("OFSET X: "+event.offsetX+" OFSET Y: "+event.offsetY);
-        $(".cord").text("START PAGEX:"+event.pageX+" PAGEY: "+event.pageY+" RECT T:"+rect.top+" RECT LEFT: "+rect.left);
+        obj.offsetx = event.offsetX;
+        obj.offsety = event.offsetY;
+        obj.initialX = event.pageX - rect.left;
+        obj.initialY = event.pageY - rect.top;
+        console.log("OFSET X: " + event.offsetX + " OFSET Y: " + event.offsetY);
+        $(".cord").text("START PAGEX:" + event.pageX + " PAGEY: " + event.pageY + " RECT T:" + rect.top + " RECT LEFT: " + rect.left);
         console.log("Start MOVE X: " + event.pageX + " MOVE Y: " + event.pageY + " ID: " + obj.id);
-        obj.style.cursor='move';
+        obj.style.cursor = 'move';
         obj.Regim = Regim.Move;
         return true;
     }
@@ -122,15 +148,15 @@ function REG_MOVE_START(event, obj) {
 function REG_MOVE_MOVEOBJ(event, obj) {
     if (obj.Regim == Regim.Move && obj.boolmouse == true) {
         let rect = obj.getBoundingClientRect();
-        $(".cord2").text("POSLE MOVE PAGEX:"+event.pageX+" PAGEY: "+event.pageY+" RECT T:"+rect.top+" RECT LEFT: "+rect.left);
-        currentX = event.pageX-obj.initialX;
-        currentY = event.pageY-obj.initialY;
-        console.log("OFSET X: "+event.offsetX+" OFSET Y: "+event.offsetY);
-        
-        console.log("MOUSE: X: "+event.pageX+" Y: "+event.pageY);
+        $(".cord2").text("POSLE MOVE PAGEX:" + event.pageX + " PAGEY: " + event.pageY + " RECT T:" + rect.top + " RECT LEFT: " + rect.left);
+        currentX = event.pageX - obj.initialX;
+        currentY = event.pageY - obj.initialY;
+        console.log("OFSET X: " + event.offsetX + " OFSET Y: " + event.offsetY);
+
+        console.log("MOUSE: X: " + event.pageX + " Y: " + event.pageY);
         obj.style.top = currentY + "px";
         obj.style.left = currentX + "px";
-      
+
         return true;
     }
     return false;
@@ -139,8 +165,8 @@ function REG_MOVE_MOVEOBJ(event, obj) {
 function REG_MOVE_STOP(event, obj) {
 
     if (obj.Regim == Regim.Move) {
-        $(".cord2").text("(STOP)"+$(".cord2").text());
-        $(".cord").text("(STOP)"+$(".cord").text());
+        $(".cord2").text("(STOP)" + $(".cord2").text());
+        $(".cord").text("(STOP)" + $(".cord").text());
         let x = event.clientX;
         let y = event.clientY;
         spacesmall($(obj).find(".space")[0]);
@@ -166,12 +192,12 @@ function RegimeResizeUnit(obj) {
 
 }
 
-function MouseDown(event,obj){
+function MouseDown(event, obj) {
     obj = $(obj).parents(".dispensing_unit")[0];
-    
+
     obj.boolmouse = true;
     if (obj.Regim == undefined) {
-        
+
         obj.Regim = Regim.State;
         console.log("UNFIDER\n");
     }
@@ -268,11 +294,11 @@ function OnNext(th) {
     CalGasolineLiter(liter);
 }
 function OnCal(th) {
-    let row1 = $(th).parent().parent().parent();
+    let row1 = $(th).parents(".row_1").first();
     let inputfocus = null;
     let b = false;
     let inputnotfocus = null;
-    let calculator = $(th).parent().parent();
+    let calculator = $(th).parents(".clava").first();
     if (calculator.attr('id') == 'cl_red') {
         inputfocus = $(row1).find(".many");
         inputnotfocus = $(row1).find(".liter");

@@ -30,11 +30,14 @@
               
                 <div class="unit_menu">
                     <div class="gasoline">
-                        <button>A92</button>
+                        {{#pist}}
+                       
+                        <button value="{{price}}" id="pistolet" onclick="selectpistol(this);">{{name}}</button>
+                        <!-- <button>95e</button>
                         <button>95e</button>
                         <button>95e</button>
-                        <button>95e</button>
-                        <button>95e</button>
+                        <button>95e</button> -->
+                        {{/pist}}
                     </div>
                     <span id="inex_unit">{{id}}</span>
                 </div>
