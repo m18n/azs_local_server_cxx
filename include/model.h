@@ -1,4 +1,5 @@
 #pragma once
+#include"core.h"
 #include "mysql_connection.h"
 #include <chrono>
 #include <cppconn/driver.h>
@@ -26,6 +27,9 @@ struct tank{
 struct pist{
     int id_pist=0;
     tank tank_;
+    void show(){
+        std::cout<<"PIST: "<<id_pist<<" TANK_ID: "<<tank_.id_tank<<" TOVAR_ID: "<<tank_.tovar_.id_tovar<<" TOVAR_PRICE: "<<tank_.tovar_.price<<" TOVAR_NAME: "<<tank_.tovar_.name<<"\n";
+    }
 };
 struct pump{
     int id_trk;
@@ -33,6 +37,12 @@ struct pump{
     int y_pos=0;
     float scale=100;
     std::vector<pist>pists;
+    void show(){
+        std::cout<<"TRK_ID: "<<id_trk<<" X_POS: "<<x_pos<<" Y_POS: "<<y_pos<<" SCALE: "<<scale<<"\n";
+        for(int i=0;i<pists.size();i++){
+            pists[i].show();
+        }
+    }
 };
 class azs_database {
 private:
@@ -79,6 +89,10 @@ public:
     std::vector<pump> get_pump();
     void save_pump_scale(int32_t id,float scale);
     void save_pump_xy(int32_t id,int32_t x,int32_t y);
+    bool smena_bool();
+    bool smena_bool(int32_t* last_id);
+    void smena_change_operator(int32_t id_operator,int32_t id_smena);
+    void smena_add_operator(int32_t id_operator, int32_t id_last_smena);
     ~azs_database()
     {
         if (con != NULL && con->isValid())

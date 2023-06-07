@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -7,30 +8,38 @@
     <title>Login</title>
     <link rel="stylesheet" href="public/css/login.css">
 </head>
+
 <body>
     <div class="conteiner">
         <div class="login">
-            <div class="auth">
-                Авторизація
-                
+            {{#smena}}
+            <div class="auth" >
+                Продовжити зміну
             </div>
+            {{/smena}}
+            {{^smena}}
+            <div class="auth" style="background-color: brown;">
+                Створити зміну
+            </div>
+            {{/smena}}
             <div class="authinput" id="auth">
-                    <select id="login" name="login">
-                        {{#users}}
-                            <option value="{{id}}">{{name}}</option>
-                    
-                        {{/users}}
-                        
-                    </select>
-                    
-                    <input type="password" name="password" placeholder="password" id="password">
-                    <span class="status">STATUS:</span>
-                    <button onclick="auth();">Вхід</button>
-               
+                <select id="login" name="login">
+                    {{#users}}
+                    <option value="{{id}}">{{name}}</option>
+
+                    {{/users}}
+
+                </select>
+
+                <input type="password" name="password" placeholder="password" id="password">
+                <span class="status">STATUS:</span>
+                <button onclick="auth();">Вхід</button>
+
             </div>
         </div>
     </div>
     <script src="public/js/jquery-3.6.0.min.js"></script>
     <script src="public/js/post.js"></script>
 </body>
+
 </html>
