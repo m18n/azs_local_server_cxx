@@ -23,16 +23,17 @@
 .gasoline{
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
     width: 100%;
     font-size: 120%;
     font-weight: bold;
 }
 .gasoline button{
-    padding: 0px;
+    padding: 3px;
     margin: 0px;
     background-color: rgb(189, 189, 189);
     cursor: pointer;
-    width: 19.5%;
+    
 }
 .gasoline button:hover{
     
@@ -44,7 +45,7 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    height: 27px;
+    min-height: 27px;
 }
 .unit_content{
     z-index: 1;
