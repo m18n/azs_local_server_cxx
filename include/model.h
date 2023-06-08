@@ -90,9 +90,11 @@ public:
     void save_pump_scale(int32_t id,float scale);
     void save_pump_xy(int32_t id,int32_t x,int32_t y);
     bool smena_bool();
-    bool smena_bool(int32_t* last_id);
+    bool smena_bool(int32_t* userid);
+    bool smena_bool(int32_t* last_id,int32_t* last_nn);
     void smena_change_operator(int32_t id_operator,int32_t id_smena);
-    void smena_add_operator(int32_t id_operator, int32_t id_last_smena);
+    void smena_add_operator(int32_t id_operator, int32_t nn);
+    void smena_close();
     ~azs_database()
     {
         if (con != NULL && con->isValid())

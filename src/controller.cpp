@@ -73,14 +73,25 @@ crow::mustache::rendered_template auth_main()
 {
     
     std::vector<model::user_name> res = azs_db->get_user_name();
-    bool smena=azs_db->smena_bool();
+    int32_t userid=0;
+    bool smena=azs_db->smena_bool(&userid);
     crow::mustache::context ctx = { { "users", "" } };
-    if(smena){
+    model::user_name temp;
+   if(smena){
         ctx["smena"]=smena;
+        for(int i=0;i<res.size();i++){
+            if(res[i].id==userid){
+                temp=res[0];
+                res[0]=res[i];
+                res[i]=temp;
+                break;
+            }
+        }
     }
     for (int i = 0; i < res.size(); i++) {
         ctx["users"][i] = { { "id", res[i].id }, { "name", res[i].name } };
     }
+     
     std::cout << ctx.dump() << "\n";
     crow::mustache::rendered_template t = crow::mustache::load("login.html").render(ctx);
     return t;
@@ -100,12 +111,13 @@ void auth_post(const crow::request& req, crow::response& res)
     std::cout << "User: " << userid << " PASSWORD: " << password << "\n";
     bool admin=false;
     if (azs_db->auth_check(userid, password,admin)) {
-        // int32_t id_smena=0;
-        // if(azs_db->smena_bool(&id_smena)){
-        //     azs_db->smena_change_operator(userid,id_smena);
-        // }else{
-        //     azs_db->smena_add_operator(userid,id_smena);
-        // }
+        int32_t id_smena=0;
+        int32_t lastnn=0;
+        if(azs_db->smena_bool(&id_smena,&lastnn)){
+            azs_db->smena_change_operator(userid,id_smena);
+        }else{
+            azs_db->smena_add_operator(userid,lastnn);
+        }
         res.add_header("Set-Cookie", "refresh_token=" + create_token({ { "user_id", std::to_string(userid) },{"admin",admin} }, jwt_secret)+";path=/;");
         ret["status"] = "yes";
     }

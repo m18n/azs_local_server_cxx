@@ -8,6 +8,7 @@
 #define SETTINGS_MAIN "/main/settings"
 #define SETTINGS_DATABASE "/main/settings/database"
 #define API_OUT "/api/out"
+#define API_OUTSHIFT "/api/outshift"
 class Client {
 private:
 protected:
@@ -17,6 +18,7 @@ protected:
     virtual void settings_main(crow::request& req, crow::response& res) = 0;
     virtual void settings_database(crow::request& req, crow::response& res) = 0;
     virtual void out(crow::request& req, crow::response& res) = 0;
+    virtual void outshift(crow::request& req, crow::response& res) = 0;
     void BaseController(std::string url, crow::request& req, crow::response& res)
     {
         if (url == URL_MAIN) {
@@ -31,6 +33,8 @@ protected:
             settings_database(req,res);
         }else if (url == API_OUT) {
             out(req,res);
+        }else if(url==API_OUTSHIFT){
+            outshift(req,res);
         }
     }
 
@@ -95,6 +99,12 @@ private:
         res.add_header("Set-Cookie", "refresh_token=;path=/;");
         res.end();
     }
+    void outshift(crow::request& req, crow::response& res){
+        azs_db->smena_close();
+        res.redirect("/");
+        res.add_header("Set-Cookie", "refresh_token=;path=/;");
+        res.end();
+    }
     void settings_database(crow::request& req, crow::response& res){
         res.set_header("Content-Type", "text/html");
         mysql_conn_info last=azs_db->get_last_info();
@@ -144,6 +154,12 @@ private:
         res.end();
     }
     void out(crow::request& req, crow::response& res){
+        res.redirect("/");
+        res.add_header("Set-Cookie", "refresh_token=;path=/;");
+        res.end();
+    }
+    void outshift(crow::request& req, crow::response& res){
+        azs_db->smena_close();
         res.redirect("/");
         res.add_header("Set-Cookie", "refresh_token=;path=/;");
         res.end();

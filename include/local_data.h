@@ -72,6 +72,7 @@ public:
     bool set_mysql_conn_info(mysql_conn_info mysql_info)
     {
         if (id_last == -1) {
+            std::cout<<"INSERT\n";
             std::string sql = "INSERT INTO mysql_db (ip,login,password,database,port) VALUES (\"" + mysql_info.ip + "\",\"" + mysql_info.name + "\",\"" + mysql_info.password + "\",\"" + mysql_info.database + "\",\"" + mysql_info.port + "\");";
             char* errmsg = 0;
             int rc = sqlite3_exec(db, sql.c_str(), 0, 0, &errmsg);
@@ -80,6 +81,7 @@ public:
                 return false;
             }
         } else {
+            std::cout<<"UPDATE\n";
             std::string sql = "UPDATE mysql_db SET ip=\"" + mysql_info.ip + "\", login=\"" + mysql_info.name + "\",password=\"" + mysql_info.password + "\",database=\"" + mysql_info.database + "\",port=\"" + mysql_info.port + "\" WHERE id=" + std::to_string(id_last);
             char* errmsg = 0;
             int rc = sqlite3_exec(db, sql.c_str(), 0, 0, &errmsg);

@@ -48,12 +48,12 @@ void model::azs_database::save_pump_xy(int32_t id, int32_t x, int32_t y)
         isconn = false;
     }
 }
-bool model::azs_database::smena_bool(int32_t* last_id)
+bool model::azs_database::smena_bool(int32_t* last_id, int32_t* last_nn)
 {
     bool status = false;
     try {
         stmt = con->createStatement();
-        std::string sql = "SELECT * FROM smena WHERE id_azs='"+azs_id+"' ORDER BY NSmen DESC LIMIT 1;";
+        std::string sql = "SELECT * FROM smena WHERE id_azs='" + azs_id + "' ORDER BY NSmen DESC LIMIT 1;";
         sql::ResultSet* res = stmt->executeQuery(sql);
         sql::ResultSetMetaData* meta = res->getMetaData();
         while (res->next()) {
@@ -64,6 +64,7 @@ bool model::azs_database::smena_bool(int32_t* last_id)
 
             std::cout << "\n";
             *last_id = res->getInt("NSmen");
+            *last_nn = res->getInt("NN");
             status = res->getInt("status");
         }
         delete res;
@@ -80,13 +81,37 @@ bool model::azs_database::smena_bool()
     bool status = false;
     try {
         stmt = con->createStatement();
-        std::string sql = "SELECT * FROM smena WHERE id_azs='"+azs_id+"' ORDER BY NSmen DESC LIMIT 1;";
+        std::string sql = "SELECT * FROM smena WHERE id_azs='" + azs_id + "' ORDER BY NSmen DESC LIMIT 1;";
         sql::ResultSet* res = stmt->executeQuery(sql);
         sql::ResultSetMetaData* meta = res->getMetaData();
-        
+
         while (res->next()) {
-            
+
             std::cout << "NN:" << res->getInt("NSmen");
+            status = res->getInt("status");
+        }
+        delete res;
+        delete stmt;
+    } catch (const sql::SQLException& error) {
+        std::cout << "ERROR MYSQL: " << error.what() << "\n";
+        isconn = false;
+        return false;
+    }
+    return status;
+}
+bool model::azs_database::smena_bool(int32_t* userid)
+{
+    bool status = false;
+    try {
+        stmt = con->createStatement();
+        std::string sql = "SELECT * FROM smena WHERE id_azs='" + azs_id + "' ORDER BY NSmen DESC LIMIT 1;";
+        sql::ResultSet* res = stmt->executeQuery(sql);
+        sql::ResultSetMetaData* meta = res->getMetaData();
+
+        while (res->next()) {
+
+            std::cout << "NN:" << res->getInt("NSmen");
+            *userid = res->getInt("id_operator");
             status = res->getInt("status");
         }
         delete res;
@@ -110,15 +135,31 @@ void model::azs_database::smena_change_operator(int32_t id_operator, int32_t id_
         isconn = false;
     }
 }
-void model::azs_database::smena_add_operator(int32_t id_operator, int32_t id_last_smena)
+void model::azs_database::smena_close(){
+    try {
+        int32_t last_id=-1;
+        int32_t nn=-1;
+        bool b=smena_bool(&last_id,&nn);
+        std::string time_now = timetostr(std::chrono::system_clock::now());
+        stmt = con->createStatement();
+        std::string sql = "UPDATE smena SET status=0, sm_end=\""+time_now+"\"  WHERE NSmen=" + std::to_string(last_id) + ";";
+        int t = stmt->executeUpdate(sql);
+        delete stmt;
+    } catch (const sql::SQLException& error) {
+        std::cout << "ERROR MYSQL: " << error.what() << "\n";
+        isconn = false;
+    }
+}
+void model::azs_database::smena_add_operator(int32_t id_operator, int32_t nn)
 {
     try {
         stmt = con->createStatement();
         std::string time_now = timetostr(std::chrono::system_clock::now());
-        std::string sql = "INSERT INTO smena (NN,id_azs,sm_start,sm_end,id_operator,status,id_ppo,znum) VALUES (0,"+azs_id+",'"+time_now+"','"+time_now+"',"+std::to_string(id_operator)+",1,10,10);";
-        std::cout<<"SQL: "<<sql<<"\n";
+        nn++;
+        std::string sql = "INSERT INTO smena (NN,id_azs,sm_start,sm_end,id_operator,status,id_ppo,znum) VALUES (" + std::to_string(nn) + "," + azs_id + ",'" + time_now + "','" + time_now + "'," + std::to_string(id_operator) + ",1,10,10);";
+        std::cout << "SQL: " << sql << "\n";
         int t = stmt->executeUpdate(sql);
-        std::cout<<"INSERT OK\n";
+        std::cout << "INSERT OK\n";
         delete stmt;
     } catch (const sql::SQLException& error) {
         std::cout << "ERROR MYSQL: " << error.what() << "\n";
