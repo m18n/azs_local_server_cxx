@@ -9,8 +9,14 @@ void init_view_login(crow::App<AuthVerefy,DatabaseVerefy> &app) {
   CROW_ROUTE(app, "/auth").methods("POST"_method)([](const crow::request &req, crow::response &res) {
     auth_post(req,res);
   });
-  CROW_ROUTE(app, "/settings/db").methods("POST"_method)([](const crow::request &req, crow::response &res) {
+  CROW_ROUTE(app, "/settings/db").methods("POST"_method).CROW_MIDDLEWARES(app,AuthVerefy)([](const crow::request &req, crow::response &res) {
     settingsdb_post(req,res);
+  });
+   CROW_ROUTE(app, "/settings/dberror")([](const crow::request &req, crow::response &res) {
+    settingsdb_error(req,res);
+  });
+  CROW_ROUTE(app, "/settings/dberror/send").methods("POST"_method)([](const crow::request &req, crow::response &res) {
+    settingsdb_error_send(req,res);
   });
   CROW_ROUTE(app, URL_MAIN).CROW_MIDDLEWARES(app,AuthVerefy)
   ([](const crow::request &req, crow::response &res) {});

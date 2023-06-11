@@ -17,3 +17,5 @@ crow::mustache::rendered_template auth_main();
 void auth_post(const crow::request& req, crow::response &res);
 void settingsdb_post(const crow::request& req, crow::response& res);
 void static_files(crow::response& res, std::string path);
+void settingsdb_error(const crow::request& req, crow::response& res);
+void settingsdb_error_send(const crow::request& req, crow::response& res);

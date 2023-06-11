@@ -34,6 +34,23 @@ function settings_db(){
     });
     
 }
+function settings_db_error(){
+    var formData =JSON.stringify($('#sett_azs').find(':input').serializeArray());
+    console.log(formData+"\n");
+    $.ajax({
+        type: "POST",
+        url: "/settings/dberror/send",
+        data: formData,
+        success: function(data){
+            if(data["status"]=="yes"){
+                document.location.href = '/';
+            }
+        },
+        dataType: "json",
+        contentType : "application/json"
+    });
+    
+}
 function save_xy_pump(id,x,y){
     let savescale={id:id,x:x,y:y}
     let json = JSON.stringify(savescale);
