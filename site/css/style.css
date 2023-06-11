@@ -29,7 +29,7 @@ body{
 user-select: none;
     margin:0px;
     padding: 0px;
-    background-color:#24ab56;
+    background-color:#17c758;
 }
 .container{
     
@@ -49,9 +49,12 @@ user-select: none;
 }   
 
 /* menu */
+.up_layer{
+    z-index: 11 !important;
+}
 .menu{
     font-family: rel_font;
-    
+    z-index: 0;
     position: fixed;
     bottom: 0px;
     left: 0px;
@@ -86,7 +89,7 @@ user-select: none;
     height: 35px;
     border-radius: 15px; 
     cursor: pointer;
-    z-index: 1; 
+    z-index: 10; 
 }
 
 .slider{
@@ -97,7 +100,7 @@ user-select: none;
     overflow-y: hidden; 
     width: 900px;
     height: 35px;
-    z-index: 0;
+    z-index: 9;
 }
 .menu{
    

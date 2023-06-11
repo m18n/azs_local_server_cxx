@@ -5,10 +5,10 @@ void AuthVerefy::before_handle(crow::request& req, crow::response& res,context& 
 {
     if(azs_db->isConnect()==false){
         res.set_header("Content-Type", "text/html");
-        mysql_conn_info last=azs_db->get_last_info();
-        crow::json::wvalue ctx={{"host",last.ip},{"user",last.name},{"password",last.password},{"database",last.database},{"port",last.port}};
-        auto page = crow::mustache::load("settingsazs.html");
-        auto render=page.render(ctx);
+        //mysql_conn_info last=azs_db->get_last_info();
+        //crow::json::wvalue ctx={{"host",last.ip},{"user",last.name},{"password",last.password},{"database",last.database},{"port",last.port}};
+        auto page = crow::mustache::load("erorrdb.html");
+        auto render=page.render();
         res.write(render.body_);
         res.end();
         return;
@@ -53,10 +53,10 @@ void DatabaseVerefy::before_handle(crow::request& req, crow::response& res,conte
 {
     if(azs_db->isConnect()==false){
        res.set_header("Content-Type", "text/html");
-        mysql_conn_info last=azs_db->get_last_info();
-        crow::json::wvalue ctx={{"host",last.ip},{"user",last.name},{"password",last.password},{"database",last.database},{"port",last.port}};
-        auto page = crow::mustache::load("settingsazs.html");
-        auto render=page.render(ctx);
+        //mysql_conn_info last=azs_db->get_last_info();
+        //crow::json::wvalue ctx={{"host",last.ip},{"user",last.name},{"password",last.password},{"database",last.database},{"port",last.port}};
+        auto page = crow::mustache::load("erorrdb.html");
+        auto render=page.render();
         res.write(render.body_);
         res.end();
         return;

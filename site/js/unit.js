@@ -25,6 +25,9 @@ $(document).ready(function () {
     let arr = $(".dispensing_unit");
     for (let i = 0; i < arr.length; i++) {
         let pist = $(arr[i]).find("#pistolet").first();
+        let control=$(arr[i]).find(".control_ges");
+        $(control).css("font-size",$(arr[i]).width()/15);
+        
         selectpistol($(pist)[0]);
        
     }
@@ -32,11 +35,17 @@ $(document).ready(function () {
 });
 function selectpistol(obj) {
     let ch = $(obj).parent().children();
+    let unit=$(obj).parents(".dispensing_unit").first();
+    let start_ges=$(unit).find(".start_ges").first();
+    $(start_ges).css("background-color",$(obj).attr("xvalue"));
     for (let i = 0; i < ch.length; i++) {
         $(ch[i]).removeClass("select");
     }
     $(obj).addClass("select");
-    let unit=$(obj).parents(".dispensing_unit").first();
+   
+   
+    let pusk=$(unit).find("#pusk").first();
+    $(pusk).text($(obj).text()+" ПУСК");
     let price=$(unit).find("#price").first();
     $(price).val($(obj).attr("value"));
     if ($(unit).find(".clava").not(".none").attr('id') == 'cl_red') {
@@ -119,7 +128,7 @@ function REG_RESIZE_ESCAPE(obj, space) {
 
 function REG_MOVE_STARTTIMER(event, obj) {
     if (obj.Regim == Regim.State) {
-        setTimeout(REG_MOVE_START, 3000, event, obj);
+        setTimeout(REG_MOVE_START, 300, event, obj);
         return true;
     }
     return false;
@@ -204,6 +213,36 @@ function MouseDown(event, obj) {
     console.log("REGIM :" + obj.Regim);
     if (REG_RESIZE_START(event, obj)) { }
     else if (REG_MOVE_STARTTIMER(event, obj)) { }
+}
+function OffUnit(obj){
+    let arrfocus=$(obj).find(".input");
+    for(let i=0;i<arrfocus.length;i++){
+        $(arrfocus[i]).removeClass("focus");
+        $(arrfocus[i]).val("0,00");
+    }
+    let arrclava=$(obj).find(".clava");
+    for(let i=0;i<arrclava.length;i++){
+        $(arrclava[i]).addClass("none");
+    }
+    let out_des=$(obj).find(".out_des");
+    for(let i=0;i<out_des.length;i++){
+        $(out_des[i]).removeClass("none");
+        
+    }
+}
+function MouseClick(obj){  
+    let parent=$(obj).parent();
+    let arr_unit=$(parent).find(".dispensing_unit");
+    for(let i=0;i<arr_unit.length;i++){
+        if(arr_unit[i]!=obj){
+            $(arr_unit[i]).removeClass("select_unit");
+            $(arr_unit[i]).find(".bl").addClass("black");
+            OffUnit(arr_unit[i]);
+        }
+    }
+    $(obj).addClass("select_unit");
+    let black=$(obj).find(".bl");
+    $(black).removeClass("black");
 }
 function MouseUp(event, obj) {
     obj = $(obj).parents(".dispensing_unit")[0];

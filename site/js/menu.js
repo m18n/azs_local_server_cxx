@@ -16,7 +16,7 @@ $( ".item" ).click(function() {
       }
   }
   function ShowMenu(obj){
-      
+      $(obj).parents(".menu").addClass("up_layer");
       console.log("SHOW MENU");
       obj.style.animationName='border_rev';
       obj.style.animationDuration='1s';
@@ -28,9 +28,10 @@ $( ".item" ).click(function() {
       items.style.animationName='menuslider';
       items.style.animationDuration='1s';
       items.style.animationDirection='normal';
+      
       setTimeout(ItemVisible, 1000,items,items.parentNode);
       
-  
+    
   }
   // function ShowMiniMenu(obj){
   //     console.log("SHOW MINI MENU");
@@ -38,6 +39,7 @@ $( ".item" ).click(function() {
       
   // }
   function HideMenu(obj){
+    $(obj).removeClass("up_layer")
       let listmark=$(obj).find(".mark");
       for(let i=0;i<listmark.length;i++){
           $(listmark[i]).addClass("disable");

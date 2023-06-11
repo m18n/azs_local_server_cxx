@@ -11,6 +11,9 @@
     {{#admin}}
     <link rel="stylesheet" href="public/css/admin.css">
     {{/admin}}
+    {{^admin}}
+    <link rel="stylesheet" href="public/css/user.css">
+    {{/admin}}
 </head>
 
 <body>
@@ -25,15 +28,15 @@
             </div>
             {{/admin}}
             {{#pump}}
-            <div class="dispensing_unit " value="{{id}}" style="left:{{x_pos}}px;top:{{y_pos}}px; width: {{scale}}px; height: {{scale}}px;" id="unit_shab" >
+            <div class="dispensing_unit " onclick="MouseClick(this);" value="{{id}}" style="left:{{x_pos}}px;top:{{y_pos}}px; width: {{scale}}px; height: {{scale}}px;" id="unit_shab" >
                 
-              
+                <div class="bl black" id="#black"></div>
                 <div class="unit_menu">
                     <div class="gasoline">
                 
                         {{#pist}}
                        
-                        <button value="{{price}}" id="pistolet" onclick="selectpistol(this);">{{name}}</button>
+                        <button value="{{price}}" id="pistolet" xvalue="rgb({{r}},{{g}},{{b}})" style="background-color: rgb({{r}}, {{g}}, {{b}});"   onclick="selectpistol(this);">{{name}}</button>
                         <!-- <button>95e</button>
                         <button>95e</button>
                         <button>95e</button>
@@ -124,13 +127,13 @@
                     </div>
                     <div class="control_ges">
                         <div class="start_ges" onclick="StartDes(this);">
-                            <h2>ПУСК</h2>
+                            <h2 id="pusk">ПУСК</h2>
                         </div>
                         <div class="stop_ges" onclick="StopDes(this);">
                             <h2>СТОП</h2>
                         </div>
                     </div>
-                    <div class="control">
+                    <div class="control" style="background-color: ;">
                         <div class="mini"></div>
                         <h3 class="info_ges">ОСТАНОВ</h3>
                       

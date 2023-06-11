@@ -1,6 +1,18 @@
 /* unit */
+.black{
+    position: absolute;
+    width: 99.5%;
+    height: 99.5%;
+    z-index: 100;
+    background-color: rgba(0, 0, 1, 0.9) !important;
+}
+#black{
+    z-index: 0;
+    background-color: rgba(0, 0, 0, 0.0);
+}
 .dispensing_unit{
     z-index: 2;
+    /* opacity: 0.8; */
     display: flex;
     flex-direction: column;
     border:solid 2px grey;
@@ -9,7 +21,7 @@
     width: 15vw;
     font-size: 1em;
     position:absolute;
-    background-color: #171717;
+    background-color: rgb(56, 56, 56) !important;
     padding: 2px;
     height: 15vw;
     box-shadow: 2px 3px 5px rgb(0,0,0.3);
@@ -35,6 +47,7 @@ a{
 .gasoline button{
     padding: 3px;
     margin: 0px;
+    border: solid 1px grey;
     background-color: rgb(189, 189, 189);
     cursor: pointer;
     
@@ -102,29 +115,35 @@ h1{
     padding: 0px;
     top:-0.5%;
 }
+
 .input_des{
-    width: 49.5%;
+    width: 50%;
     margin:0px;
     padding: 0px;
     font-size: 130%;
 }
 .input_des input{
+    border: solid 1px grey;
     margin: 0px;
     padding: 0px;
-    
+    outline: none;
 }
 .out_des{
-    width: 49.5%;
+    width: 50%;
 }
 .out_des input{
+    border: solid 1px grey;
     font-family: number_font;
     font-size: 180%;
+    outline: none;
 }
 .clava{
     z-index: 1;
     display: flex;
     flex-direction: column;
-    height: 125%;
+
+    /* min-height: 125%; */
+    height: 175%;
     width: 49.5%;
     font-size: 150%;
     text-align: justify;
@@ -207,25 +226,33 @@ input{
     flex-direction: row;
     
     height: 24%;
-    top:0.5%;
+    top:0.05%;
     justify-content: space-between;
+}
+.control_ges h2{
+    margin: 0px;
+    padding: 0px;
+    text-shadow: 2px 2px rgb(0,0,0.3);
+    
 }
 .start_ges{
     
-    
+    opacity: 1;
     width: 68%;
     background-color:rgb(6, 164, 255);
    
     display: flex;
     justify-content: center;
     align-items: center;
+    text-align: justify;
 }
+
 .start_ges:hover{
-    background-color:rgb(0, 125, 197);
+    opacity: 0.7;
     cursor: pointer;
 }
 .stop_ges{
-    
+    opacity: 1;
     width: calc(32% - 1px);
     background-color:rgb(255, 49, 49);
  
@@ -234,7 +261,7 @@ input{
     align-items: center;
 }
 .stop_ges:hover{
-    background-color:rgb(221, 0, 0);
+    opacity: 0.7;
     cursor: pointer;
 }
 .des_val{

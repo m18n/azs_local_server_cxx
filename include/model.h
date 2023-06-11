@@ -8,6 +8,8 @@
 #include <cppconn/statement.h>
 #include <vector>
 #include"local_data.h"
+#include <cmath>
+#include <windows.h>
 namespace model{
 
 
@@ -16,16 +18,24 @@ struct user_name {
     std::string name;
 };
 struct tovar{
-    int id_tovar=0;
+    int32_t id_tovar=0;
     float price=0.0;
     std::string name;
 };
+struct color
+{
+    int32_t r=0;
+    int32_t g=0;
+    int32_t b=0;
+};
+
 struct tank{
-    int id_tank=0;
+    int32_t id_tank=0;
+    color rgb;
     tovar tovar_;
 };
 struct pist{
-    int id_pist=0;
+    int32_t id_pist=0;
     tank tank_;
     void show(){
         std::cout<<"PIST: "<<id_pist<<" TANK_ID: "<<tank_.id_tank<<" TOVAR_ID: "<<tank_.tovar_.id_tovar<<" TOVAR_PRICE: "<<tank_.tovar_.price<<" TOVAR_NAME: "<<tank_.tovar_.name<<"\n";

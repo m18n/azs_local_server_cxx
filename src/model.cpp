@@ -171,7 +171,7 @@ std::vector<model::pump> model::azs_database::get_pump()
     std::vector<model::pump> pumps;
     try {
         stmt = con->createStatement();
-        std::string sql = "SELECT com_trk.id_trk, com_trk.x_pos, com_trk.y_pos, com_trk.scale, trk.id_trk, trk.id_pist, trk.id_tank, tank.id_tovar, tovar.name, tovar.price FROM com_trk INNER JOIN trk ON com_trk.id_trk = trk.id_trk INNER JOIN tank ON trk.id_tank = tank.id_tank INNER JOIN tovar ON tank.id_tovar = tovar.id_tovar WHERE com_trk.id_azs='" + azs_id + "' ORDER BY com_trk.id_trk;";
+        std::string sql = "SELECT com_trk.id_trk, com_trk.x_pos, com_trk.y_pos, com_trk.scale, trk.id_trk, trk.id_pist, trk.id_tank, tank.id_tovar,tank.color, tovar.name, tovar.price FROM com_trk INNER JOIN trk ON com_trk.id_trk = trk.id_trk INNER JOIN tank ON trk.id_tank = tank.id_tank INNER JOIN tovar ON tank.id_tovar = tovar.id_tovar WHERE com_trk.id_azs='" + azs_id + "' ORDER BY com_trk.id_trk;";
         sql::ResultSet* res = stmt->executeQuery(sql);
         sql::ResultSetMetaData* meta = res->getMetaData();
 
@@ -189,7 +189,11 @@ std::vector<model::pump> model::azs_database::get_pump()
             pist_stat.tank_.id_tank = res->getInt("id_tank");
             pist_stat.tank_.tovar_.id_tovar = res->getInt("id_tovar");
             pist_stat.tank_.tovar_.name = res->getString("name");
-            pist_stat.tank_.tovar_.price = res->getDouble("price");
+            pist_stat.tank_.tovar_.price =res->getDouble("price");
+            int32_t color=res->getInt("color");
+            pist_stat.tank_.rgb.r=GetRValue(color);
+            pist_stat.tank_.rgb.g=GetGValue(color);
+            pist_stat.tank_.rgb.b=GetBValue(color);
             if (res->getInt("id_trk") == last_idtkr) {
                 pumps[pumps.size() - 1].pists.push_back(pist_stat);
                 continue;
@@ -205,7 +209,7 @@ std::vector<model::pump> model::azs_database::get_pump()
             p_stat.pists.resize(0);
         }
         delete res;
-        delete stmt;
+        delete stmt; 
         sql = "SELECT * FROM trk WHERE id_azs='" + azs_id + "';";
 
     } catch (const sql::SQLException& error) {
