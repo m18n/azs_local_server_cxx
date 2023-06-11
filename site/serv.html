@@ -29,8 +29,9 @@
             {{/admin}}
             {{#pump}}
             <div class="dispensing_unit " onclick="MouseClick(this);" value="{{id}}" style="left:{{x_pos}}px;top:{{y_pos}}px; width: {{scale}}px; height: {{scale}}px;" id="unit_shab" >
-                
+                {{^admin}}
                 <div class="bl black" id="#black"></div>
+                {{/admin}}
                 <div class="unit_menu">
                     <div class="gasoline">
                 
