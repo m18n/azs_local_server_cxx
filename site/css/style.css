@@ -108,18 +108,18 @@ user-select: none;
 }
 
 .slider{
+    display: none;
     position:absolute;
     transform: translateY(-100%);
     left:200px;
     overflow-x: hidden;
     overflow-y: hidden; 
-    width: 0px;
-    height: 0px;
+    width: 900px;
+    height: 35px;
     z-index: 9;
 }
 .resize{
-    width: 900px !important;
-    height: 35px !important;
+    display: block;
    
 }
 .region{

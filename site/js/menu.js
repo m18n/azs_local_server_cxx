@@ -73,7 +73,7 @@ $( ".item" ).click(function() {
       items.style.animationDirection='normal';
       $(obj).parent().css("overflow-x","hidden");
       $(obj).parent().css("overflow-y","hidden");
-      setTimeout(hideslider,800, object);
+      setTimeout(hideslider,700, object);
       obj.parentNode.status=StatusMenu.CLOSING;
   }
  
