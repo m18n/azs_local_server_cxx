@@ -8,16 +8,17 @@ $( ".item" ).click(function() {
   });
   const StatusMenu={OPENING:1,CLOSING:2,STOP:3};
 
-  function ItemVisible(items,obj){
-      if(obj.status==StatusMenu.OPENING){
+  function ItemVisible(items,menu){
+    console.log("VISIBLE: "+menu.status);
+      if(menu.status==StatusMenu.OPENING){
           items.parentNode.style.overflowX='visible';
           items.parentNode.style.overflowY='visible';
-          obj.status=StatusMenu.STOP;
+          menu.status=StatusMenu.STOP;
       }
   }
   function ShowMenu(obj){
       let menu=$(obj).parents(".menu");
-      menu.status=StatusMenu.OPENING;
+      menu[0].status=StatusMenu.OPENING;
       $(menu).addClass("up_layer");
       $(menu).find(".slider").first().addClass("resize");
       console.log("SHOW MENU");
@@ -26,13 +27,12 @@ $( ".item" ).click(function() {
       obj.style.animationDirection='normal';
       obj.style.borderRadius='0px';
       let items=obj.parentNode.querySelector(".items");
-      items.parentNode.status=StatusMenu.OPENING;
       items.style.left='0px';
       items.style.animationName='menuslider';
       items.style.animationDuration='1s';
       items.style.animationDirection='normal';
       
-      setTimeout(ItemVisible, 1000,items,items.parentNode);
+      setTimeout(ItemVisible, 1000,items,menu[0]);
       
     
   }
@@ -42,6 +42,7 @@ $( ".item" ).click(function() {
       
   // }
   function hideslider(obj){
+    console.log("HIDE SLIDER: "+obj.status);
     if(obj.status==StatusMenu.CLOSING){
         $(obj).find(".slider").first().removeClass("resize");
     }
@@ -62,6 +63,8 @@ $( ".item" ).click(function() {
       //obj.style.overflowX='hidden';
       //obj.style.overflowY='hidden';
       obj=obj.querySelector(".items");
+      $(obj).parent().css("overflow-x","hidden");
+      $(obj).parent().css("overflow-y","hidden");
       obj.style.left='-100%';
       obj.style.animationName='menuslider_rev';
       obj.style.animationDuration='0.8s';
@@ -71,9 +74,7 @@ $( ".item" ).click(function() {
       items.style.animationName='border';
       items.style.animationDuration='0.8s';
       items.style.animationDirection='normal';
-      $(obj).parent().css("overflow-x","hidden");
-      $(obj).parent().css("overflow-y","hidden");
       setTimeout(hideslider,700, object);
-      obj.parentNode.status=StatusMenu.CLOSING;
+  
   }
  
