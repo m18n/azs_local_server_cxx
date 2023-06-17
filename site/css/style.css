@@ -61,15 +61,19 @@ user-select: none;
 
 /* menu */
 .up_layer{
-    z-index: 11 !important;
+    width: 1100px !important;
+    height: 180px !important;
 }
 .menu{
     font-family: rel_font;
-    z-index: 0;
+    z-index: 11 ;
     position: fixed;
     bottom: 0px;
     left: 0px;
+    width: auto;
+    height: auto;
 }
+
 .disable {
     display: none !important;
 }
@@ -109,14 +113,14 @@ user-select: none;
     left:200px;
     overflow-x: hidden;
     overflow-y: hidden; 
-    width: 900px;
-    height: 35px;
+    width: 0px;
+    height: 0px;
     z-index: 9;
 }
-.menu{
+.resize{
+    width: 900px !important;
+    height: 35px !important;
    
-    width: 1100px;
-    height: 180px;
 }
 .region{
     position: absolute;

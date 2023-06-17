@@ -16,7 +16,10 @@ $( ".item" ).click(function() {
       }
   }
   function ShowMenu(obj){
-      $(obj).parents(".menu").addClass("up_layer");
+      let menu=$(obj).parents(".menu");
+      menu.status=StatusMenu.OPENING;
+      $(menu).addClass("up_layer");
+      $(menu).find(".slider").first().addClass("resize");
       console.log("SHOW MENU");
       obj.style.animationName='border_rev';
       obj.style.animationDuration='1s';
@@ -38,8 +41,17 @@ $( ".item" ).click(function() {
   //     let items=obj.parentNode.querySelector(".min_menu");
       
   // }
+  function hideslider(obj){
+    if(obj.status==StatusMenu.CLOSING){
+        $(obj).find(".slider").first().removeClass("resize");
+    }
+   
+  }
   function HideMenu(obj){
+    let object=obj;
+    object.status=StatusMenu.CLOSING;
     $(obj).removeClass("up_layer")
+    //$(obj).find(".slider").first().removeClass("resize");
       let listmark=$(obj).find(".mark");
       for(let i=0;i<listmark.length;i++){
           $(listmark[i]).addClass("disable");
@@ -61,6 +73,7 @@ $( ".item" ).click(function() {
       items.style.animationDirection='normal';
       $(obj).parent().css("overflow-x","hidden");
       $(obj).parent().css("overflow-y","hidden");
+      setTimeout(hideslider,800, object);
       obj.parentNode.status=StatusMenu.CLOSING;
   }
  
