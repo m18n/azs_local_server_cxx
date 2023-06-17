@@ -28,16 +28,16 @@
             </div>
             {{/admin}}
             {{#pump}}
-            <div class="dispensing_unit " onclick="MouseClick(this);" value="{{id}}" style="left:{{x_pos}}px;top:{{y_pos}}px; width: {{scale}}px; height: {{scale}}px;" id="unit_shab" >
+            <div class="dispensing_unit " onmousedown="MouseClick(this);" value="{{id}}" style="left:{{x_pos}}px;top:{{y_pos}}px; width: {{scale}}px; height: {{scale}}px;" id="unit_shab" >
                 {{^admin}}
                 <div class="bl black" id="#black"></div>
                 {{/admin}}
                 <div class="unit_menu">
-                    <div class="gasoline">
+                    <div class="gasoline" >
                 
                         {{#pist}}
                        
-                        <button value="{{price}}" id="pistolet" xvalue="rgb({{r}},{{g}},{{b}})" style="background-color: rgb({{r}}, {{g}}, {{b}});"   onclick="selectpistol(this);">{{name}}</button>
+                        <button value="{{price}}" id="pistolet" class="pistol" xvalue="rgb({{r}},{{g}},{{b}})" style="background-color: rgb({{r}}, {{g}}, {{b}});"   onclick="selectpistol(this);">{{name}}</button>
                         <!-- <button>95e</button>
                         <button>95e</button>
                         <button>95e</button>
@@ -128,13 +128,13 @@
                     </div>
                     <div class="control_ges">
                         <div class="start_ges" onclick="StartDes(this);">
-                            <h2 id="pusk">ПУСК</h2>
+                            <h2 id="pusk"><span id="type_gas" style="color: black; margin-right: 6px;"></span> ПУСК</h2>
                         </div>
                         <div class="stop_ges" onclick="StopDes(this);">
                             <h2>СТОП</h2>
                         </div>
                     </div>
-                    <div class="control" style="background-color: ;">
+                    <div class="control" >
                         <div class="mini"></div>
                         <h3 class="info_ges">ОСТАНОВ</h3>
                       

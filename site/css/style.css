@@ -3,9 +3,20 @@
     src: url(../fonts/Raleway-Medium.ttf);
 }
 @font-face {
+    font-family: robo;
+    src: url(../fonts/RobotoCondensed-Regular.ttf);
+}
+@font-face {
     font-family: number_font;
     src: url(../fonts/brassie.ttf);
 }
+input::-webkit-inner-spin-button{
+    -webkit-appearance: none !important;
+    
+}
+input[type=number] {
+    -moz-appearance: textfield;
+  }
 *{
     box-sizing: border-box;
 }
@@ -22,7 +33,7 @@
     background-color: red;
 }
 body{
-    font-family: rel_font;
+    font-family: robo;
     -moz-user-select: none;
 -khtml-user-select: none;
 -webkit-user-select: none;

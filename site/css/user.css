@@ -1,5 +1,6 @@
 .select_unit{
     border:solid 2px yellow !important;
+    z-index: 3 !important;
     /* opacity: 1 !important; */
     /* background-color: #979797 !important; */
 }

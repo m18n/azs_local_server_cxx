@@ -25,14 +25,25 @@ $(document).ready(function () {
     let arr = $(".dispensing_unit");
     for (let i = 0; i < arr.length; i++) {
         let pist = $(arr[i]).find("#pistolet").first();
-        let control=$(arr[i]).find(".control_ges");
-        $(control).css("font-size",$(arr[i]).width()/15);
+        resizefont(arr[i]);
         
         selectpistol($(pist)[0]);
        
     }
 
 });
+function resizefont(obj){
+    $(obj).css("font-size",$(obj).width()/11);
+    let clava=$(obj).find(".clava");
+    $(clava).css("font-size",$(obj).width()/5);
+    let control=$(obj).find(".control_ges");
+    $(control).css("font-size",$(obj).width()/13.5);
+    $(obj).find("input").css("font-size",$(obj).width()/9);
+    $(obj).find(".info_ges").css("font-size",$(obj).width()/15);
+    
+    $(obj).find(".pistol").css("font-size",$(obj).width()/14+"px");
+     $(obj).find("#inex_unit").css("font-size",$(obj).width()/9+"px");
+}
 function selectpistol(obj) {
     let ch = $(obj).parent().children();
     let unit=$(obj).parents(".dispensing_unit").first();
@@ -44,8 +55,8 @@ function selectpistol(obj) {
     $(obj).addClass("select");
    
    
-    let pusk=$(unit).find("#pusk").first();
-    $(pusk).text($(obj).text()+" ПУСК");
+    let pusk=$(unit).find("#type_gas").first();
+    $(pusk).text($(obj).text());
     let price=$(unit).find("#price").first();
     $(price).val($(obj).attr("value"));
     if ($(unit).find(".clava").not(".none").attr('id') == 'cl_red') {
@@ -98,6 +109,7 @@ function REG_RESIZE_MOVE(event, obj) {
         let xy = (x - obj.xstart + y - obj.ystart) / 2;
         $(obj).width(obj.firstwidth + xy + "px");
         $(obj).height(obj.firstheight + xy + "px");
+        resizefont(obj);
         // obj.style.width = obj.firstwidth + xy + "px";
         // obj.style.height = obj.firstheight + xy + "px";
         return true;
@@ -128,7 +140,7 @@ function REG_RESIZE_ESCAPE(obj, space) {
 
 function REG_MOVE_STARTTIMER(event, obj) {
     if (obj.Regim == Regim.State) {
-        setTimeout(REG_MOVE_START, 300, event, obj);
+        setTimeout(REG_MOVE_START, 70, event, obj);
         return true;
     }
     return false;
@@ -231,6 +243,7 @@ function OffUnit(obj){
     }
 }
 function MouseClick(obj){  
+    console.log("")
     let parent=$(obj).parent();
     let arr_unit=$(parent).find(".dispensing_unit");
     for(let i=0;i<arr_unit.length;i++){
@@ -386,6 +399,7 @@ function checkBack(event) {
     console.log("EVENT: " + event);
 }
 function OpenClavaRed(el) {
+    let unit=$(el).parents(".dispensing_unit").first();
     let cal = $(el).parent().parent();
     let many = cal.children(".input_des").children("#many");
     let liter = cal.children(".input_des").children("#liter");
@@ -399,11 +413,13 @@ function OpenClavaRed(el) {
     let cl_red = cal.children("#cl_red");
     cl_red.removeClass("none");
     cl_red.get(0).oncal = false;
+    $(unit).find(".start_ges").addClass("left_ges");
     // $("#cl_blue").addClass("none");
     // $("#out_des").addClass("none");
     // $("#cl_red").removeClass("none");
 }
 function OpenClavaBlue(el) {
+    let unit=$(el).parents(".dispensing_unit").first();
     let cal = $(el).parent().parent();
     let many = cal.children(".input_des").children("#many");
     let liter = cal.children(".input_des").children("#liter");
@@ -417,14 +433,17 @@ function OpenClavaBlue(el) {
     let cl_blue = cal.children("#cl_blue");
     cl_blue.removeClass("none");
     cl_blue.get(0).oncal = false;
+    $(unit).find(".start_ges").addClass("left_ges");
 }
 function StartDes(th) {
+    let unit=$(th).parents(".dispensing_unit").first();
     let content = $(th).parent().parent();
     content.find(".clava").addClass("none");
     content.find(".out_des").removeClass("none");
     let info_ges = content.find(".info_ges");
     info_ges.text("РОБОТА");
     info_ges.css("background-color", "#dbdb18");
+    $(unit).find(".start_ges").removeClass("left_ges");
 }
 
 function StopDes(th) {

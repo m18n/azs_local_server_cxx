@@ -1,10 +1,12 @@
 /* unit */
 .black{
     position: absolute;
-    width: 99.5%;
-    height: 99.5%;
+    width: 101%;
+    top:-0.5%;
+    left: -0.5%;
+    height: 101%;
     z-index: 100;
-    background-color: rgba(0, 0, 1, 0.9) !important;
+    background-color: rgba(0, 0, 1, 0.35) !important;
 }
 #black{
     z-index: 0;
@@ -23,7 +25,7 @@
     position:absolute;
     background-color: #979797;
     
-    padding: 2px;
+    padding: 0.1px;
     height: 15vw;
     box-shadow: 2px 3px 5px rgb(0,0,0.3);
 }
@@ -42,11 +44,11 @@ a{
     flex-direction: row;
     flex-wrap: wrap;
     width: 100%;
-    font-size: 120%;
+    font-size: 200%;
     font-weight: bold;
 }
 .gasoline button{
-    padding: 3px;
+    padding: 1%;
     margin: 0px;
     border: solid 1px grey;
     background-color: rgb(189, 189, 189);
@@ -63,16 +65,24 @@ a{
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    min-height: 27px;
+    height: 15%;
+    align-items: center;
+}
+.unit_menu *{
+    height: 100%;
 }
 .unit_content{
     z-index: 1;
-    height: calc(100% - 28px);
+    height: 85%;
     position: relative;
 }
+
 #inex_unit{
     margin-right: 6px;
     font-size: 20px;
+    display: flex;
+    align-items: center;
+    text-shadow: 2px 2px rgb(0,0,0.3);
 }
 .calculator{
    
@@ -88,7 +98,7 @@ h1{
     margin:0px;
 }
 .calculator input{
-    height: 33%;
+    height: 33.3%;
     
 }
 .calculator *{
@@ -118,10 +128,13 @@ h1{
 }
 
 .input_des{
+    display: flex;
+    flex-direction: column;
     width: 50%;
     margin:0px;
     padding: 0px;
     font-size: 130%;
+    height: 100%;
 }
 .input_des input{
     border: solid 1px grey;
@@ -130,7 +143,10 @@ h1{
     outline: none;
 }
 .out_des{
+    display: flex;
+    flex-direction: column;
     width: 50%;
+    height: 100%;
 }
 .out_des input{
     border: solid 1px grey;
@@ -144,7 +160,7 @@ h1{
     flex-direction: column;
 
     /* min-height: 125%; */
-    height: 175%;
+    height: 173%;
     width: 49.5%;
     font-size: 150%;
     text-align: justify;
@@ -153,7 +169,7 @@ h1{
 .c_row{
     display: flex;
     flex-direction: row;
-    
+    height: 25%;
 }
 .c_col{
     display: flex;
@@ -203,11 +219,12 @@ input{
 }
 .option{
     z-index: 3;
-   
+   position: relative;
     color:black;    
     height: 100%;
 }
 .item_opt{
+
    cursor: pointer;
     display: flex;
     border:solid 1px grey;
@@ -219,7 +236,7 @@ input{
 
 }
 .item_o{
-
+    position: relative;
 }
 .control_ges{
     position: relative;
@@ -229,12 +246,22 @@ input{
     height: 24%;
     top:0.05%;
     justify-content: space-between;
+   
+
 }
 .control_ges h2{
+    display: flex;
+    align-items: center;
+    align-content: center;
+    justify-content: center;
+    justify-items: center;
     margin: 0px;
     padding: 0px;
     text-shadow: 2px 2px rgb(0,0,0.3);
     
+}
+#type_gas{
+    text-shadow: none !important;
 }
 .start_ges{
     
@@ -246,6 +273,11 @@ input{
     justify-content: center;
     align-items: center;
     text-align: justify;
+    padding: 0px;
+}
+.left_ges{
+    justify-content: flex-start !important;
+    padding: 0px 2% !important;
 }
 
 .start_ges:hover{
@@ -278,7 +310,7 @@ input{
     flex-direction: row;
     
     width: 100%;
-    height: 12.5%;
+    height: 12%;
     top:1%;
     
 }
@@ -293,7 +325,7 @@ input{
     align-content: center;
     align-items: center;
     width: 76%;
-    min-height: 20px;
+ 
     height:100%;
     border:solid 1px grey;
    
