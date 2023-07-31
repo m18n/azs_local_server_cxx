@@ -7,6 +7,7 @@
 #define API_PUMP_SAVEXY "/api/pump/savexy"
 #define SETTINGS_MAIN "/main/settings"
 #define SETTINGS_DATABASE "/main/settings/database"
+#define SETTINGS_DATABASE_POST "/main/settings/database/send"
 #define API_OUT "/api/out"
 #define API_OUTSHIFT "/api/outshift"
 class Client {
@@ -17,6 +18,7 @@ protected:
     virtual void pump_savexy(crow::request& req, crow::response& res) = 0;
     virtual void settings_main(crow::request& req, crow::response& res) = 0;
     virtual void settings_database(crow::request& req, crow::response& res) = 0;
+    virtual void settings_database_post(crow::request& req, crow::response& res) = 0;
     virtual void out(crow::request& req, crow::response& res) = 0;
     virtual void outshift(crow::request& req, crow::response& res) = 0;
     void BaseController(std::string url, crow::request& req, crow::response& res)
@@ -29,12 +31,14 @@ protected:
             pump_savexy(req, res);
         } else if (url == SETTINGS_MAIN) {
             settings_main(req, res);
-        }else if (url == SETTINGS_DATABASE) {
-            settings_database(req,res);
-        }else if (url == API_OUT) {
-            out(req,res);
-        }else if(url==API_OUTSHIFT){
-            outshift(req,res);
+        } else if (url == SETTINGS_DATABASE) {
+            settings_database(req, res);
+        } else if (url == SETTINGS_DATABASE_POST) {
+            settings_database_post(req, res);
+        } else if (url == API_OUT) {
+            out(req, res);
+        } else if (url == API_OUTSHIFT) {
+            outshift(req, res);
         }
     }
 
@@ -46,6 +50,13 @@ public:
 };
 class Admin : public Client {
 private:
+    
+
+public:
+    virtual void Controller(std::string url, crow::request& req, crow::response& res)
+    {
+        BaseController(url, req, res);
+    }
     void pump(crow::request& req, crow::response& res)
     {
         res.set_header("Content-Type", "text/html");
@@ -59,10 +70,10 @@ private:
             std::string s = std::to_string(scale);
             ctx["pump"][i] = { { "id", p[i].id_trk }, { "x_pos", p[i].x_pos }, { "y_pos", p[i].y_pos }, { "scale", s }, { "pist", "" } };
             for (int j = 0; j < p[i].pists.size(); j++) {
-                price=std::to_string(p[i].pists[j].tank_.tovar_.price);
-                int pos=price.find(".");
-                price.resize(pos+3);
-                ctx["pump"][i]["pist"][j] = { { "id_pist", p[i].pists[j].id_pist }, { "name", p[i].pists[j].tank_.tovar_.name }, { "price", price},{"r",p[i].pists[j].tank_.rgb.r},{"g",p[i].pists[j].tank_.rgb.g},{"b",p[i].pists[j].tank_.rgb.b} };
+                price = std::to_string(p[i].pists[j].tank_.tovar_.price);
+                int pos = price.find(".");
+                price.resize(pos + 3);
+                ctx["pump"][i]["pist"][j] = { { "id_pist", p[i].pists[j].id_pist }, { "name", p[i].pists[j].tank_.tovar_.name }, { "price", price }, { "r", p[i].pists[j].tank_.rgb.r }, { "g", p[i].pists[j].tank_.rgb.g }, { "b", p[i].pists[j].tank_.rgb.b } };
             }
         }
         std::cout << "P: " << ctx.dump() << "\n";
@@ -98,44 +109,74 @@ private:
         std::cout << res.body << "\n";
         res.end();
     }
-    void out(crow::request& req, crow::response& res){
+    void out(crow::request& req, crow::response& res)
+    {
         res.redirect("/");
         res.add_header("Set-Cookie", "refresh_token=;path=/;");
         res.end();
     }
-    void outshift(crow::request& req, crow::response& res){
+    void outshift(crow::request& req, crow::response& res)
+    {
         azs_db->smena_close();
         res.redirect("/");
         res.add_header("Set-Cookie", "refresh_token=;path=/;");
         res.end();
     }
-    void settings_database(crow::request& req, crow::response& res){
+    void settings_database(crow::request& req, crow::response& res)
+    {
         res.set_header("Content-Type", "text/html");
-        mysql_conn_info last=azs_db->get_last_info();
-        crow::json::wvalue ctx={{"host",last.ip},{"user",last.name},{"password",last.password},{"database",last.database},{"port",last.port}};
+        mysql_conn_info last = azs_db->get_last_info();
+        crow::json::wvalue ctx = { { "host", last.ip }, { "user", last.name }, { "password", last.password }, { "database", last.database }, { "port", last.port } };
         auto page = crow::mustache::load("settingsdb.html");
-        auto render=page.render(ctx);
+        auto render = page.render(ctx);
         res.write(render.body_);
+        res.end();
+    }
+    void settings_database_post(crow::request& req, crow::response& res)
+    {
+        crow::json::wvalue ret({ { "status", "not" } });
+        crow::json::wvalue x = crow::json::load(req.body);
+        std::string t = x.dump();
+        if (x.dump() == "null" || x.dump() == "[]" || x.dump() == "\"\"") {
+            res.body = ret.dump();
+            res.end();
+            return;
+        }
+        mysql_conn_info info;
+
+        info.ip = x[0]["value"].dump(true);
+        info.name = x[1]["value"].dump(true);
+        info.password = x[2]["value"].dump(true);
+        info.database = x[3]["value"].dump(true);
+        info.port = x[4]["value"].dump(true);
+        info.show();
+        ret["status"] = "no";
+        if (azs_db->connect(info) == true) {
+            ret["status"] = "yes";
+            ld->set_mysql_conn_info(info);
+        }
+        res.body = ret.dump();
         res.end();
     }
     void settings_main(crow::request& req, crow::response& res)
     {
-        crow::mustache::context ctx = { { "admin", true }};
+        crow::mustache::context ctx = { { "admin", true } };
         res.set_header("Content-Type", "text/html");
         auto page = crow::mustache::load("configurationazs.html");
         auto render = page.render(ctx);
         res.write(render.body_);
         res.end();
     }
+};
+class User : public Client {
+private:
+    
 
 public:
     virtual void Controller(std::string url, crow::request& req, crow::response& res)
     {
         BaseController(url, req, res);
     }
-};
-class User : public Client {
-private:
     void pump(crow::request& req, crow::response& res)
     {
         res.set_header("Content-Type", "text/html");
@@ -149,10 +190,10 @@ private:
             std::string s = std::to_string(scale);
             ctx["pump"][i] = { { "id", p[i].id_trk }, { "x_pos", p[i].x_pos }, { "y_pos", p[i].y_pos }, { "scale", s }, { "pist", "" } };
             for (int j = 0; j < p[i].pists.size(); j++) {
-                price=std::to_string(p[i].pists[j].tank_.tovar_.price);
-                int pos=price.find(".");
-                price.resize(pos+3);
-                ctx["pump"][i]["pist"][j] = { { "id_pist", p[i].pists[j].id_pist }, { "name", p[i].pists[j].tank_.tovar_.name }, { "price", price},{"r",p[i].pists[j].tank_.rgb.r},{"g",p[i].pists[j].tank_.rgb.g},{"b",p[i].pists[j].tank_.rgb.b} };
+                price = std::to_string(p[i].pists[j].tank_.tovar_.price);
+                int pos = price.find(".");
+                price.resize(pos + 3);
+                ctx["pump"][i]["pist"][j] = { { "id_pist", p[i].pists[j].id_pist }, { "name", p[i].pists[j].tank_.tovar_.name }, { "price", price }, { "r", p[i].pists[j].tank_.rgb.r }, { "g", p[i].pists[j].tank_.rgb.g }, { "b", p[i].pists[j].tank_.rgb.b } };
             }
         }
         std::cout << "P: " << ctx.dump() << "\n";
@@ -160,27 +201,33 @@ private:
         res.write(render.body_);
         res.end();
     }
-    void out(crow::request& req, crow::response& res){
+     void settings_database_post(crow::request& req, crow::response& res)
+    {
+    }
+    void out(crow::request& req, crow::response& res)
+    {
         res.redirect("/");
         res.add_header("Set-Cookie", "refresh_token=;path=/;");
         res.end();
     }
-    void outshift(crow::request& req, crow::response& res){
+    void outshift(crow::request& req, crow::response& res)
+    {
         azs_db->smena_close();
         res.redirect("/");
         res.add_header("Set-Cookie", "refresh_token=;path=/;");
         res.end();
     }
     void settings_main(crow::request& req, crow::response& res)
-    { 
-        
+    {
+
         res.set_header("Content-Type", "text/html");
         auto page = crow::mustache::load("configurationazs.html");
         auto render = page.render();
         res.write(render.body_);
         res.end();
     }
-    void settings_database(crow::request& req, crow::response& res){
+    void settings_database(crow::request& req, crow::response& res)
+    {
         res.redirect("/main");
         res.end();
     }
@@ -195,12 +242,6 @@ private:
         // id,scale
         res.redirect("/main");
         res.end();
-    }
-
-public:
-    virtual void Controller(std::string url, crow::request& req, crow::response& res)
-    {
-        BaseController(url, req, res);
     }
 };
 extern Admin admin;

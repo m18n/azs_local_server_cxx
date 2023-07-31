@@ -91,7 +91,6 @@ public:
     {
         connmutex.lock();
         last_info = info;
-        if (isconn == false) {
             try {
                 con = driver->connect("tcp://" + info.ip + ":" + info.port, info.name, info.password);
                 con->setSchema(info.database);
@@ -101,7 +100,6 @@ public:
                 std::cout << "ERROR MYSQL: " << error.what() << "\n";
                 isconn = false;
             }
-        }
          while_conn = false;
         connmutex.unlock();
         return isconn;

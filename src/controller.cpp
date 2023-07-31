@@ -94,7 +94,7 @@ crow::mustache::rendered_template auth_main()
     return t;
 }
 
-void auth_post(const crow::request& req, crow::response& res)
+void auth_post( crow::request& req, crow::response& res)
 {
     crow::json::wvalue ret({ { "status", "not" } });
     auto x = crow::json::load(req.body);
@@ -121,7 +121,7 @@ void auth_post(const crow::request& req, crow::response& res)
     res.body = ret.dump();
     res.end();
 }
-void settingsdb_error(const crow::request& req, crow::response& res)
+void settingsdb_error( crow::request& req, crow::response& res)
 {
     if(azs_db->isConnect()==false){
         res.set_header("Content-Type", "text/html");
@@ -137,42 +137,16 @@ void settingsdb_error(const crow::request& req, crow::response& res)
     }
     
 }
-void settingsdb_error_send(const crow::request& req, crow::response& res)
+void settingsdb_error_send(crow::request& req, crow::response& res)
 {
     if(azs_db->isConnect()==false){
-        settingsdb_post(req, res);
+        admin.settings_database_post(req,res);
     }else{
         res.redirect("/");
         res.end();
     }
 }
-void settingsdb_post(const crow::request& req, crow::response& res)
-{
 
-    crow::json::wvalue ret({ { "status", "not" } });
-    crow::json::wvalue x = crow::json::load(req.body);
-    std::string t = x.dump();
-    if (x.dump() == "null" || x.dump() == "[]" || x.dump() == "\"\"") {
-        res.body = ret.dump();
-        res.end();
-        return;
-    }
-    mysql_conn_info info;
-
-    info.ip = x[0]["value"].dump(true);
-    info.name = x[1]["value"].dump(true);
-    info.password = x[2]["value"].dump(true);
-    info.database = x[3]["value"].dump(true);
-    info.port = x[4]["value"].dump(true);
-    info.show();
-    ret["status"]="no";
-    if (azs_db->connect(info)==true) {
-        ret["status"] = "yes";
-        ld->set_mysql_conn_info(info);
-    }
-    res.body = ret.dump();
-    res.end();
-}
 void static_files(crow::response& res, std::string path)
 {
     res.set_static_file_info("site/" + path);

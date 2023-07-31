@@ -22,11 +22,14 @@ function settings_db(){
     console.log(formData+"\n");
     $.ajax({
         type: "POST",
-        url: "/settings/db",
+        url: "/main/settings/database/send",
         data: formData,
         success: function(data){
+            
             if(data["status"]=="yes"){
                 document.location.href = '/';
+            }else{
+                document.location.href = '/settings/dberror';
             }
         },
         dataType: "json",
