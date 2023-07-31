@@ -123,17 +123,28 @@ void auth_post(const crow::request& req, crow::response& res)
 }
 void settingsdb_error(const crow::request& req, crow::response& res)
 {
-    res.set_header("Content-Type", "text/html");
-    mysql_conn_info last = azs_db->get_last_info();
-    crow::json::wvalue ctx = { { "host", last.ip }, { "user", last.name }, { "password", last.password }, { "database", last.database }, { "port", last.port } };
-    auto page = crow::mustache::load("settingsdberror.html");
-    auto render = page.render(ctx);
-    res.write(render.body_);
-    res.end();
+    if(azs_db->isConnect()==false){
+        res.set_header("Content-Type", "text/html");
+        mysql_conn_info last = azs_db->get_last_info();
+        crow::json::wvalue ctx = { { "host", last.ip }, { "user", last.name }, { "password", last.password }, { "database", last.database }, { "port", last.port }};
+        auto page = crow::mustache::load("settingsdberror.html");
+        auto render = page.render(ctx);
+        res.write(render.body_);
+        res.end();
+    }else{
+        res.redirect("/");
+        res.end();
+    }
+    
 }
 void settingsdb_error_send(const crow::request& req, crow::response& res)
 {
-    settingsdb_post(req, res);
+    if(azs_db->isConnect()==false){
+        settingsdb_post(req, res);
+    }else{
+        res.redirect("/");
+        res.end();
+    }
 }
 void settingsdb_post(const crow::request& req, crow::response& res)
 {
@@ -154,8 +165,9 @@ void settingsdb_post(const crow::request& req, crow::response& res)
     info.database = x[3]["value"].dump(true);
     info.port = x[4]["value"].dump(true);
     info.show();
-    ret["status"] = "yes";
-    if (azs_db->connect(info)) {
+    ret["status"]="no";
+    if (azs_db->connect(info)==true) {
+        ret["status"] = "yes";
         ld->set_mysql_conn_info(info);
     }
     res.body = ret.dump();

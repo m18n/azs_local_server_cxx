@@ -42,8 +42,11 @@ function settings_db_error(){
         url: "/settings/dberror/send",
         data: formData,
         success: function(data){
+            
             if(data["status"]=="yes"){
                 document.location.href = '/';
+            }else{
+                document.location.href = '/settings/dberror';
             }
         },
         dataType: "json",
