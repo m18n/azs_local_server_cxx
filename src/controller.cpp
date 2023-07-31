@@ -3,6 +3,7 @@
 void AuthVerefy::before_handle(crow::request& req, crow::response& res, context& ctx)
 {
     if (azs_db->isConnect() == false) {
+        azs_db->connect_async(azs_db->get_last_info());
         res.set_header("Content-Type", "text/html");
         // mysql_conn_info last=azs_db->get_last_info();
         // crow::json::wvalue ctx={{"host",last.ip},{"user",last.name},{"password",last.password},{"database",last.database},{"port",last.port}};
@@ -50,6 +51,7 @@ void AuthVerefy::after_handle(crow::request& req, crow::response& res, context& 
 void DatabaseVerefy::before_handle(crow::request& req, crow::response& res, context& ctx)
 {
     if (azs_db->isConnect() == false) {
+        azs_db->connect_async(azs_db->get_last_info());
         res.set_header("Content-Type", "text/html");
         // mysql_conn_info last=azs_db->get_last_info();
         // crow::json::wvalue ctx={{"host",last.ip},{"user",last.name},{"password",last.password},{"database",last.database},{"port",last.port}};
@@ -131,7 +133,7 @@ void settingsdb_error(const crow::request& req, crow::response& res)
 }
 void settingsdb_error_send(const crow::request& req, crow::response& res)
 {
-    settingsdb_post(req,res);
+    settingsdb_post(req, res);
 }
 void settingsdb_post(const crow::request& req, crow::response& res)
 {
