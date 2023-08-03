@@ -15,6 +15,9 @@ void init_view_login(crow::App<AuthVerefy,DatabaseVerefy> &app) {
   CROW_ROUTE(app, "/settings/dberror/send").methods("POST"_method)([]( crow::request &req, crow::response &res) {
     settingsdb_error_send(req,res);
   });
+  CROW_ROUTE(app, "/settings/dberror/check")([]( crow::request &req, crow::response &res) {
+    settingsdb_error_check(req,res);
+  });
   CROW_ROUTE(app, URL_MAIN).CROW_MIDDLEWARES(app,AuthVerefy)
   ([](const crow::request &req, crow::response &res) {});
   CROW_ROUTE(app,  API_PUMP_SAVESCALE).methods("POST"_method).CROW_MIDDLEWARES(app,AuthVerefy)
@@ -27,10 +30,6 @@ void init_view_login(crow::App<AuthVerefy,DatabaseVerefy> &app) {
   ([](const crow::request &req, crow::response &res) {});
  
   CROW_ROUTE(app,  SETTINGS_MAIN).CROW_MIDDLEWARES(app,AuthVerefy)
-  ([](const crow::request &req, crow::response &res) {});
-  CROW_ROUTE(app,  SETTINGS_DATABASE).CROW_MIDDLEWARES(app,AuthVerefy)
-  ([](const crow::request &req, crow::response &res) {});
-  CROW_ROUTE(app,  SETTINGS_DATABASE_POST).methods("POST"_method).CROW_MIDDLEWARES(app,AuthVerefy)
   ([](const crow::request &req, crow::response &res) {});
 
   

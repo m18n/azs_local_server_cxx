@@ -116,10 +116,13 @@ public:
         connmutex.unlock();
         return isconn;
     }
-
+    bool while_connect(){
+        return this->while_conn;
+    }
     void connect_async(mysql_conn_info info)
     {
-        if (isconn == false && while_conn == false) {
+        if (while_conn == false) {
+            last_input_info = info;
             std::thread th(&azs_database::connect, this, info);
             th.detach();
             while_conn = true;

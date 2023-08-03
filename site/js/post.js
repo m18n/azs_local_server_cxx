@@ -17,19 +17,27 @@ function auth(){
         contentType : "application/json"
     });
 }
-function settings_db(){
-    var formData =JSON.stringify($('#sett_azs').find(':input').serializeArray());
-    console.log(formData+"\n");
+
+function settings_db_check(){
+    
     $.ajax({
-        type: "POST",
-        url: "/main/settings/database/send",
-        data: formData,
+        type: "GET",
+        url: "/settings/dberror/check",
         success: function(data){
-            
-            if(data["status"]=="yes"){
-                document.location.href = '/';
-            }else{
-                document.location.href = '/settings/dberror';
+            console.log("STATUS:"+data["status"]);
+            if(data["status"]=="process"){
+                $("#stat_con").text("STATUS CONNECT: process");
+                $("#stat_con").attr("xdata","1")
+               
+               // document.location.href="/main/settings/database";
+            }else if(data["status"]=="connect"){
+                $("#stat_con").text("STATUS CONNECT: connect");
+                $("#stat_con").attr("xdata","0")
+                
+            }else if(data["status"]=="disconnect"){
+                $("#stat_con").text("STATUS CONNECT: disconnect");
+                $("#stat_con").attr("xdata","-1")
+                
             }
         },
         dataType: "json",
@@ -45,17 +53,17 @@ function settings_db_error(){
         url: "/settings/dberror/send",
         data: formData,
         success: function(data){
-            
-            if(data["status"]=="yes"){
-                document.location.href = '/';
+            if(data["status"]=="ok"){
+                
+                document.location.href="/settings/dberror";
             }else{
-                document.location.href = '/settings/dberror';
+                console.log("Error send");
             }
         },
         dataType: "json",
         contentType : "application/json"
     });
-    
+   
 }
 function save_xy_pump(id,x,y){
     let savescale={id:id,x:x,y:y}

@@ -11,6 +11,7 @@
 </head>
 <body>
     <div class="heads">
+        <a href="/main/settings"><img onclick="LoadSite('/serv/service/configure','');" style="cursor: pointer;" src="/public/img/arr.png" class="back" alt=""></a>
         <h1 class="h t_f">Налаштування AZS</h1>
     </div>
     <div class="settings_azs" id="sett_azs">
@@ -30,7 +31,7 @@
         <div>
             <span>port: </span><input type="text" name="port" value="{{port}}" placeholder="port" id="port">
         </div>
-        <span id="stat_con">STATUS CONNECT: disconnect</span>
+        <span id="stat_con" xdata="1">STATUS CONNECT:</span>
         <button onclick=" settings_db_error();">Зберегти</button>
     </div>
     <script src="/public/js/jquery-3.6.0.min.js"></script>
@@ -39,5 +40,6 @@
     <script src="/public/js/status.js"></script>
     <script src="/public/js/loadfunction.js"></script>
     <script src="/public/js/savefunction.js"></script>
+    <script src="/public/js/database.js"></script>
 </body>
 </html>

@@ -160,7 +160,7 @@ public:
         }
 
         this->secretjwt = secret;
-
+        std::cout<<"SECRET JWT: "<<this->secretjwt<<"\n";
         return secret;
     }
     void setjwt_secret()
