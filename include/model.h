@@ -94,6 +94,10 @@ public:
     {
         return last_input_info;
     }
+    mysql_conn_info get_last_connect_info()
+    {
+        return last_connect_info;
+    }
     bool connect(mysql_conn_info info)
     {
         
@@ -106,6 +110,7 @@ public:
                 if(last_connect_info!=info){
                     l_db->generatejwt_secret(true);
                 }
+                l_db->set_mysql_conn_info(info);
                 last_connect_info=info;
                 get_azs_id();
             } catch (const sql::SQLException& error) {

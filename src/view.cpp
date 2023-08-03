@@ -18,6 +18,9 @@ void init_view_login(crow::App<AuthVerefy,DatabaseVerefy> &app) {
   CROW_ROUTE(app, "/settings/dberror/check")([]( crow::request &req, crow::response &res) {
     settingsdb_error_check(req,res);
   });
+  CROW_ROUTE(app, "/api").CROW_MIDDLEWARES(app, DatabaseVerefy)([]( ) {
+   return"{}";
+  });
   CROW_ROUTE(app, URL_MAIN).CROW_MIDDLEWARES(app,AuthVerefy)
   ([](const crow::request &req, crow::response &res) {});
   CROW_ROUTE(app,  API_PUMP_SAVESCALE).methods("POST"_method).CROW_MIDDLEWARES(app,AuthVerefy)

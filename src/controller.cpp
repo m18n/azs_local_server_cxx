@@ -30,7 +30,7 @@ int check_coockie(crow::request& req, crow::response& res){
 void AuthVerefy::before_handle(crow::request& req, crow::response& res, context& ctx)
 {
     if (azs_db->isConnect() == false) {
-        azs_db->connect_async(azs_db->get_last_input_info());
+        azs_db->connect_async(azs_db->get_last_connect_info());
         res.set_header("Content-Type", "text/html");
         // mysql_conn_info last=azs_db->get_last_info();
         // crow::json::wvalue ctx={{"host",last.ip},{"user",last.name},{"password",last.password},{"database",last.database},{"port",last.port}};
@@ -59,7 +59,7 @@ void AuthVerefy::after_handle(crow::request& req, crow::response& res, context& 
 void DatabaseVerefy::before_handle(crow::request& req, crow::response& res, context& ctx)
 {
     if (azs_db->isConnect() == false) {
-        azs_db->connect_async(azs_db->get_last_input_info());
+        azs_db->connect_async(azs_db->get_last_connect_info());
         res.set_header("Content-Type", "text/html");
         // mysql_conn_info last=azs_db->get_last_info();
         // crow::json::wvalue ctx={{"host",last.ip},{"user",last.name},{"password",last.password},{"database",last.database},{"port",last.port}};
