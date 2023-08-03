@@ -9,6 +9,7 @@ private:
     mysql_conn_info mysql_info;
     model::azs_database azs_db;
 public:
+    
     azs()
     {
         //init crow
@@ -18,8 +19,10 @@ public:
         crow::mustache::set_base("site");
         
         //init db
+        azs_db.initlocaldata(&ld);
         mysql_info=ld.get_mysql_conn_info();
         mysql_info.show();
+        azs_db.setfirst_infomysql(mysql_info);
         bool conn=azs_db.connect(mysql_info);
         if(!conn){
             std::cout<<"DONT CONNECT\n";

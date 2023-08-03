@@ -64,10 +64,11 @@ private:
     sql::ResultSet* res;
     bool isconn = false;
     std::string azs_id;
-    mysql_conn_info last_info;
+    mysql_conn_info last_input_info;
+    mysql_conn_info last_connect_info;
     bool while_conn = false;
     std::mutex connmutex;
-
+    local_data* l_db;
 private:
     void get_azs_id();
     
@@ -79,22 +80,33 @@ public:
         // con = driver->connect("tcp://127.0.0.1:3306", "root", "root");
         // con->setSchema("test");
     }
+    void initlocaldata(local_data* local){
+        this->l_db=local;
+    }
     bool isConnect()
     {
         return isconn;
     }
-    mysql_conn_info get_last_info()
+    void setfirst_infomysql(mysql_conn_info info){
+        last_connect_info=info;
+    }
+    mysql_conn_info get_last_input_info()
     {
-        return last_info;
+        return last_input_info;
     }
     bool connect(mysql_conn_info info)
     {
+        
         connmutex.lock();
-        last_info = info;
+        last_input_info = info;
             try {
                 con = driver->connect("tcp://" + info.ip + ":" + info.port, info.name, info.password);
                 con->setSchema(info.database);
                 isconn = con->isValid();
+                if(last_connect_info!=info){
+                    l_db->generatejwt_secret(true);
+                }
+                last_connect_info=info;
                 get_azs_id();
             } catch (const sql::SQLException& error) {
                 std::cout << "ERROR MYSQL: " << error.what() << "\n";
@@ -108,7 +120,7 @@ public:
     void connect_async(mysql_conn_info info)
     {
         if (isconn == false && while_conn == false) {
-            std::thread th(&azs_database::connect, this, last_info);
+            std::thread th(&azs_database::connect, this, info);
             th.detach();
             while_conn = true;
         }
