@@ -19,11 +19,12 @@ function auth(){
 }
 
 function settings_db_check(){
-    
+    console.log("ajax");
     $.ajax({
         type: "GET",
         url: "/settings/dberror/check",
         success: function(data){
+            console.log("DATA: "+data);
             console.log("STATUS:"+data["status"]);
             if(data["status"]=="process"){
                 $("#stat_con").text("STATUS CONNECT: process");
@@ -39,6 +40,9 @@ function settings_db_check(){
                 $("#stat_con").attr("xdata","-1")
                 
             }
+        },
+        error: function(data){  
+            document.location.href="/settings/dberror";
         },
         dataType: "json",
         contentType : "application/json"
@@ -60,6 +64,7 @@ function settings_db_error(){
                 console.log("Error send");
             }
         },
+        
         dataType: "json",
         contentType : "application/json"
     });
