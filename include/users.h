@@ -3,8 +3,7 @@
 #include "string.h"
 #include "web_tehnology.h"
 #define URL_MAIN "/main"
-#define API_PUMP_SAVESCALE "/api/pump/savescale"
-#define API_PUMP_SAVEXY "/api/pump/savexy"
+#define API_PUMP_SAVE "/api/pump/save"
 #define SETTINGS_MAIN "/main/settings"
 #define API_OUT "/api/out"
 #define API_OUTSHIFT "/api/outshift"
@@ -13,8 +12,7 @@ class Client {
 private:
 protected:
     virtual void pump(crow::request& req, crow::response& res) = 0;
-    virtual void pump_savescale(crow::request& req, crow::response& res) = 0;
-    virtual void pump_savexy(crow::request& req, crow::response& res) = 0;
+    virtual void pump_save(crow::request& req, crow::response& res) = 0;
     virtual void settings_main(crow::request& req, crow::response& res) = 0;
     virtual void out(crow::request& req, crow::response& res) = 0;
     virtual void outshift(crow::request& req, crow::response& res) = 0;
@@ -22,10 +20,8 @@ protected:
     {
         if (url == URL_MAIN) {
             pump(req, res);
-        } else if (url == API_PUMP_SAVESCALE) {
-            pump_savescale(req, res);
-        } else if (url == API_PUMP_SAVEXY) {
-            pump_savexy(req, res);
+        }else if (url == API_PUMP_SAVE) {
+            pump_save(req, res);
         } else if (url == SETTINGS_MAIN) {
             settings_main(req, res);
         }else if (url == API_OUT) {
@@ -74,34 +70,32 @@ public:
         res.write(render.body_);
         res.end();
     }
-    void pump_savescale(crow::request& req, crow::response& res)
-    {
+    
+    void pump_save(crow::request& req, crow::response& res){
         res.set_header("Content-Type", "application/json");
         crow::json::wvalue ret({ { "status", "yes" } });
         crow::json::wvalue json = crow::json::load(req.body);
+        int screen_width=std::stoi(json["screen_scale"]["width"].dump(true));
+        int screen_heigth=std::stoi(json["screen_scale"]["height"].dump(true));
+        std::vector<model::pump> pumps;
+        pumps.resize(json["objects"].size());
         std::cout << "json: " << json.dump() << "\n";
-        int32_t idpump = std::stoi(json["id"].dump(true));
-        float scale = std::stof(json["scale"].dump(true));
-        std::cout << "idpump: " << idpump << " scale: " << scale << "\n";
-        azs_db->save_pump_scale(idpump, scale);
+        std::cout<<"OBJECT SIZE: "<<json["objects"].size();
+        for(int i=0;i<json["objects"].size();i++){
+            pumps[i].id_trk=std::stoi(json["objects"][i]["id"].dump(true));
+            pumps[i].x_pos=std::stoi(json["objects"][i]["x"].dump(true));
+            pumps[i].y_pos=std::stoi(json["objects"][i]["y"].dump(true));
+            pumps[i].scale=std::stof(json["objects"][i]["scale"].dump(true));
+            pumps[i].show();
+        }
+        azs_db->save_pump(std::move(pumps),screen_width,screen_heigth);
+        if(!azs_db->isConnect()){
+            ret["status"]="not";
+        }
         res.body = ret.dump();
-        std::cout << res.body << "\n";
         res.end();
     }
-    void pump_savexy(crow::request& req, crow::response& res)
-    {
-        res.set_header("Content-Type", "application/json");
-        crow::json::wvalue ret({ { "status", "yes" } });
-        crow::json::wvalue json = crow::json::load(req.body);
-        std::cout << "json: " << json.dump() << "\n";
-        int32_t idpump = std::stoi(json["id"].dump(true));
-        int32_t x = std::stoi(json["x"].dump(true));
-        int32_t y = std::stoi(json["y"].dump(true));
-        azs_db->save_pump_xy(idpump, x, y);
-        res.body = ret.dump();
-        std::cout << res.body << "\n";
-        res.end();
-    }
+    
     void out(crow::request& req, crow::response& res)
     {
         res.redirect("/");
@@ -183,19 +177,11 @@ public:
         res.end();
     }
     
-   
-    void pump_savescale(crow::request& req, crow::response& res)
-    {
-        // id,scale
+   void pump_save(crow::request& req, crow::response& res){
         res.redirect("/main");
         res.end();
     }
-    void pump_savexy(crow::request& req, crow::response& res)
-    {
-        // id,scale
-        res.redirect("/main");
-        res.end();
-    }
+    
 };
 extern Admin admin;
 extern User user;

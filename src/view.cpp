@@ -23,9 +23,7 @@ void init_view_login(crow::App<AuthVerefy,DatabaseVerefy> &app) {
   });
   CROW_ROUTE(app, URL_MAIN).CROW_MIDDLEWARES(app,AuthVerefy)
   ([](const crow::request &req, crow::response &res) {});
-  CROW_ROUTE(app,  API_PUMP_SAVESCALE).methods("POST"_method).CROW_MIDDLEWARES(app,AuthVerefy)
-  ([](const crow::request &req, crow::response &res) {});
-   CROW_ROUTE(app,  API_PUMP_SAVEXY).methods("POST"_method).CROW_MIDDLEWARES(app,AuthVerefy)
+  CROW_ROUTE(app,  API_PUMP_SAVE).methods("POST"_method).CROW_MIDDLEWARES(app,AuthVerefy)
   ([](const crow::request &req, crow::response &res) {});
     CROW_ROUTE(app,  API_OUT).CROW_MIDDLEWARES(app,AuthVerefy)
   ([](const crow::request &req, crow::response &res) {});

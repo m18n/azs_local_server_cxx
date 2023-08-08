@@ -11,14 +11,20 @@ function CreateUnit() {
 }
 $(".save_admin").click(function () {
     let array = $(".dispensing_unit");
+    let json_object={};
+    json_object["screen_scale"]={width:window.screen.width,height:window.screen.height};
+    json_object["objects"]=[];
+    let objects=json_object["objects"];
     for (let i = 0; i < array.length; i++) {
         let x = $(array[i]).css("left");
         let y = $(array[i]).css("top");
         let scale = ($(array[i]).width() + 8) / 300 * 100;
-        save_scale_pump($(array[i]).attr('value'), scale);
-        save_xy_pump($(array[i]).attr('value'), x, y);
+        objects[i]={id:$(array[i]).attr('value'),x:x,y:y,scale:scale};
+        
     }
-
+    let json = JSON.stringify(json_object);
+    save_pump(json);
+    console.log("JSON: "+json);
 });
 $(document).ready(function () {
     //$(".dispensing_unit").find("#pistolet").first().css({"background-color":"red"});

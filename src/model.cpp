@@ -22,30 +22,29 @@ std::vector<model::user_name> model::azs_database::get_user_name()
     }
     return users;
 }
-void model::azs_database::save_pump_scale(int32_t idpump, float scale)
-{
-    try {
-        stmt = con->createStatement();
-        std::string sql = "UPDATE com_trk SET scale=" + std::to_string(scale) + " WHERE id_trk=" + std::to_string(idpump) + ";";
-        int t = stmt->executeUpdate(sql);
 
-        delete stmt;
-    } catch (const sql::SQLException& error) {
-        std::cout << "ERROR MYSQL: " << error.what() << "\n";
-        isconn = false;
-    }
-}
-void model::azs_database::save_pump_xy(int32_t id, int32_t x, int32_t y)
-{
-    try {
-        stmt = con->createStatement();
-        std::string sql = "UPDATE com_trk SET x_pos=" + std::to_string(x) + ", y_pos=" + std::to_string(y) + " WHERE id_trk=" + std::to_string(id) + ";";
-        int t = stmt->executeUpdate(sql);
+void model::azs_database::save_pump(std::vector<pump> pumps,int screen_width,int screen_height){
+     try {
+            stmt = con->createStatement();
+            std::string sql = "UPDATE loc_const SET value=\""+std::to_string(screen_width)+","+std::to_string(screen_height)+"\" WHERE descr_var=\"cnst_ScreenSize\";";
+            int t = stmt->executeUpdate(sql);
 
-        delete stmt;
-    } catch (const sql::SQLException& error) {
-        std::cout << "ERROR MYSQL: " << error.what() << "\n";
-        isconn = false;
+            delete stmt;
+        } catch (const sql::SQLException& error) {
+            std::cout << "ERROR MYSQL: " << error.what() << "\n";
+            isconn = false;
+        }
+    for(int i=0;i<pumps.size();i++){
+        try {
+            stmt = con->createStatement();
+            std::string sql = "UPDATE com_trk SET scale="+ std::to_string(pumps[i].scale)+", x_pos=" + std::to_string(pumps[i].x_pos) + ", y_pos=" + std::to_string(pumps[i].y_pos) + " WHERE id_trk=" + std::to_string(pumps[i].id_trk) + ";";
+            int t = stmt->executeUpdate(sql);
+
+            delete stmt;
+        } catch (const sql::SQLException& error) {
+            std::cout << "ERROR MYSQL: " << error.what() << "\n";
+            isconn = false;
+        }
     }
 }
 bool model::azs_database::smena_bool(int32_t* last_id, int32_t* last_nn)
