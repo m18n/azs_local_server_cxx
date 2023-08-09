@@ -51,12 +51,14 @@ public:
         res.set_header("Content-Type", "text/html");
         auto page = crow::mustache::load("serv.html");
         crow::mustache::context ctx = { { "admin", true }, { "pump", "" } };
-        std::vector<model::pump> p = azs_db->get_pump();
+        model::screen_size s_size;
+        std::vector<model::pump> p = azs_db->get_pump(&s_size);
         std::string price;
         for (int i = 0; i < p.size(); i++) {
             // p[i].show();
-            float scale = (float)(300.0 / 100.0 * p[i].scale);
+            float scale = (float)(3 * p[i].scale);
             std::string s = std::to_string(scale);
+            ctx["screen_width"]=s_size.width;
             ctx["pump"][i] = { { "id", p[i].id_trk }, { "x_pos", p[i].x_pos }, { "y_pos", p[i].y_pos }, { "scale", s }, { "pist", "" } };
             for (int j = 0; j < p[i].pists.size(); j++) {
                 price = std::to_string(p[i].pists[j].tank_.tovar_.price);
@@ -134,13 +136,15 @@ public:
         res.set_header("Content-Type", "text/html");
         auto page = crow::mustache::load("serv.html");
         crow::mustache::context ctx = { { "pump", "" } };
-        std::vector<model::pump> p = azs_db->get_pump();
+         model::screen_size s_size;
+        std::vector<model::pump> p = azs_db->get_pump(&s_size);
         std::string price;
         for (int i = 0; i < p.size(); i++) {
             // p[i].show();
-            float scale = (float)(300.0 / 100.0 * p[i].scale);
+            float scale = (float)(3 * p[i].scale);
             std::string s = std::to_string(scale);
-            ctx["pump"][i] = { { "id", p[i].id_trk }, { "x_pos", p[i].x_pos }, { "y_pos", p[i].y_pos }, { "scale", s }, { "pist", "" } };
+            ctx["screen_width"]=s_size.width;
+            ctx["pump"][i] = { { "id", p[i].id_trk }, { "x_pos", p[i].x_pos }, { "y_pos", p[i].y_pos }, { "scale", s }, { "pist", "" }};
             for (int j = 0; j < p[i].pists.size(); j++) {
                 price = std::to_string(p[i].pists[j].tank_.tovar_.price);
                 int pos = price.find(".");

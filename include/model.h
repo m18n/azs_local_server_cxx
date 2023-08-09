@@ -56,6 +56,10 @@ struct pump {
         }
     }
 };
+struct screen_size{
+    int width=0;
+    int height=0;
+};
 class azs_database {
 private:
     sql::Driver* driver;
@@ -135,7 +139,7 @@ public:
     }
     bool auth_check(int32_t userid, std::string password, bool& admin);
     std::vector<user_name> get_user_name();
-    std::vector<pump> get_pump();
+    std::vector<pump> get_pump(screen_size* screen);
 
     void save_pump(std::vector<pump> pumps,int screen_width,int screen_height);
     bool smena_bool();

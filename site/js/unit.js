@@ -9,16 +9,21 @@ function CreateUnit() {
     }
     return unit;
 }
+// screen.width pump.width=scale
+//scale/screen.width=pump.width
 $(".save_admin").click(function () {
     let array = $(".dispensing_unit");
     let json_object={};
-    json_object["screen_scale"]={width:window.screen.width,height:window.screen.height};
+    json_object["screen_scale"]={width:window.innerWidth,height:window.innerHeight};
     json_object["objects"]=[];
     let objects=json_object["objects"];
     for (let i = 0; i < array.length; i++) {
         let x = $(array[i]).css("left");
         let y = $(array[i]).css("top");
-        let scale = ($(array[i]).width() + 8) / 300 * 100;
+        
+        
+        let scale = ($(array[i]).width() + 4.2) / 3;// / 300*100
+        console.log("WIDTH: "+scale);
         objects[i]={id:$(array[i]).attr('value'),x:x,y:y,scale:scale};
         
     }
@@ -28,16 +33,33 @@ $(".save_admin").click(function () {
 });
 $(document).ready(function () {
     //$(".dispensing_unit").find("#pistolet").first().css({"background-color":"red"});
+    
+    screen_width=100-(window.innerWidth/screen_width*100);
+    screen_width*=-1;
+    console.log(screen_width);
     let arr = $(".dispensing_unit");
     for (let i = 0; i < arr.length; i++) {
         let pist = $(arr[i]).find("#pistolet").first();
+        resize(arr[i]);
         resizefont(arr[i]);
-        
+       
         selectpistol($(pist)[0]);
        
     }
 
 });
+function resize(obj){
+    let pos=$(obj).position();
+    let obj_wid=$(obj).width()+4;
+    let wid=obj_wid*screen_width/100;
+    let l=pos.left*screen_width/100;
+    let t=pos.top*screen_width/100;
+    $(obj).css("width",obj_wid+wid);
+    $(obj).css("height",obj_wid+wid);
+    $(obj).css("left",pos.left+l);
+    $(obj).css("top",pos.top+t);
+//    screen_width
+}
 function resizefont(obj){
     $(obj).css("font-size",$(obj).width()/11);
     let clava=$(obj).find(".clava");

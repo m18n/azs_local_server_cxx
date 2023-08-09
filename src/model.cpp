@@ -165,9 +165,26 @@ void model::azs_database::smena_add_operator(int32_t id_operator, int32_t nn)
         isconn = false;
     }
 }
-std::vector<model::pump> model::azs_database::get_pump()
+std::vector<model::pump> model::azs_database::get_pump(screen_size* screen)
 {
     std::vector<model::pump> pumps;
+    try {
+        stmt = con->createStatement();
+        std::string sql ="SELECT * FROM loc_const WHERE descr_var=\"cnst_ScreenSize\";";
+        sql::ResultSet* res = stmt->executeQuery(sql);
+        while (res->next()) {
+            std::string size=res->getString("value");
+            char* sizes=strtok(&size[0],",");
+            screen->width=std::stoi(sizes);
+            sizes=strtok(NULL, " ");
+            screen->height=std::stoi(sizes);
+        }
+        delete res;
+        delete stmt; 
+    } catch (const sql::SQLException& error) {
+        std::cout << "ERROR MYSQL: " << error.what() << "\n";
+        isconn = false;
+    }
     try {
         stmt = con->createStatement();
         std::string sql = "SELECT com_trk.id_trk, com_trk.x_pos, com_trk.y_pos, com_trk.scale, trk.id_trk, trk.id_pist, trk.id_tank, tank.id_tovar,tank.color, tovar.name, tovar.price FROM com_trk INNER JOIN trk ON com_trk.id_trk = trk.id_trk INNER JOIN tank ON trk.id_tank = tank.id_tank INNER JOIN tovar ON tank.id_tovar = tovar.id_tovar WHERE com_trk.id_azs='" + azs_id + "' ORDER BY com_trk.id_trk;";
