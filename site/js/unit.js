@@ -18,16 +18,15 @@ $(".save_admin").click(function () {
     json_object["objects"]=[];
     let objects=json_object["objects"];
     for (let i = 0; i < array.length; i++) {
-        let x = $(array[i]).css("left");
-        let y = $(array[i]).css("top");
-        
-        
-        let scale = ($(array[i]).width() + 4.2) / 3;// / 300*100
+        let x = array[i].style.left.slice(0,-2);
+        let y = array[i].style.top.slice(0,-2);
+        console.log("XX: "+x+" YY: "+y);
+        let scale =array[i].style.width.slice(0,-2);// ($(array[i]).width() + 4.2) / 3
         console.log("WIDTH: "+scale);
-        objects[i]={id:$(array[i]).attr('value'),x:x,y:y,scale:scale};
+        objects[i]={id:$(array[i]).attr('value'),"x":x,"y":y,"scale":scale};
         
     }
-    let json = JSON.stringify(json_object);
+    let json = JSON.stringify(json_object); 
     save_pump(json);
     console.log("JSON: "+json);
 });
@@ -40,7 +39,7 @@ $(document).ready(function () {
     let arr = $(".dispensing_unit");
     for (let i = 0; i < arr.length; i++) {
         let pist = $(arr[i]).find("#pistolet").first();
-        resize(arr[i]);
+        //resize(arr[i]);
         resizefont(arr[i]);
        
         selectpistol($(pist)[0]);
@@ -48,6 +47,13 @@ $(document).ready(function () {
     }
 
 });
+$( window ).on( "resize", function() {
+    let arr = $(".dispensing_unit");
+    for (let i = 0; i < arr.length; i++) {
+        //resize(arr[i]);
+        resizefont(arr[i]);   
+    }
+  } );
 function resize(obj){
     let pos=$(obj).position();
     let obj_wid=$(obj).width()+4;
@@ -135,8 +141,12 @@ function REG_RESIZE_MOVE(event, obj) {
         let x = event.clientX - cord.left;
         let y = event.clientY - cord.top;
         let xy = (x - obj.xstart + y - obj.ystart) / 2;
-        $(obj).width(obj.firstwidth + xy + "px");
-        $(obj).height(obj.firstheight + xy + "px");
+        let width=obj.firstwidth + xy;
+        let scale=width/window.innerWidth*100;
+        obj.style.width=scale+"vw";
+        obj.style.height =scale+"vw";
+        // $(obj).width(scale+"vw");
+        // $(obj).height(scale+ "vw");
         resizefont(obj);
         // obj.style.width = obj.firstwidth + xy + "px";
         // obj.style.height = obj.firstheight + xy + "px";
@@ -203,8 +213,10 @@ function REG_MOVE_MOVEOBJ(event, obj) {
         console.log("OFSET X: " + event.offsetX + " OFSET Y: " + event.offsetY);
 
         console.log("MOUSE: X: " + event.pageX + " Y: " + event.pageY);
-        obj.style.top = currentY + "px";
-        obj.style.left = currentX + "px";
+        let top=currentY/window.innerWidth*100;
+        let left=currentX/window.innerWidth*100;
+        obj.style.top = top + "vw";
+        obj.style.left = left + "vw";
 
         return true;
     }

@@ -56,10 +56,10 @@ public:
         std::string price;
         for (int i = 0; i < p.size(); i++) {
             // p[i].show();
-            float scale = (float)(3 * p[i].scale);
+            float scale = p[i].scale;//(float)(3 * p[i].scale)
             std::string s = std::to_string(scale);
             ctx["screen_width"]=s_size.width;
-            ctx["pump"][i] = { { "id", p[i].id_trk }, { "x_pos", p[i].x_pos }, { "y_pos", p[i].y_pos }, { "scale", s }, { "pist", "" } };
+            ctx["pump"][i] = { { "id", p[i].id_trk }, { "x_pos", (float)p[i].x_pos/s_size.width*100.0 }, { "y_pos", (float)p[i].y_pos/s_size.width*100.0 }, { "scale", s }, { "pist", "" } };
             for (int j = 0; j < p[i].pists.size(); j++) {
                 price = std::to_string(p[i].pists[j].tank_.tovar_.price);
                 int pos = price.find(".");
@@ -85,8 +85,16 @@ public:
         std::cout<<"OBJECT SIZE: "<<json["objects"].size();
         for(int i=0;i<json["objects"].size();i++){
             pumps[i].id_trk=std::stoi(json["objects"][i]["id"].dump(true));
-            pumps[i].x_pos=std::stoi(json["objects"][i]["x"].dump(true));
-            pumps[i].y_pos=std::stoi(json["objects"][i]["y"].dump(true));
+            std::string xstr=json["objects"][i]["x"].dump(true);
+            std::string ystr=json["objects"][i]["y"].dump(true);
+            if(xstr=="")
+                xstr="0";
+            if(ystr=="")
+                ystr="0";
+            float x_f=std::stof(xstr);
+            float y_f=std::stof(ystr);
+            pumps[i].x_pos=int(screen_width/(100/x_f));
+            pumps[i].y_pos=int(screen_width/(100/y_f));
             pumps[i].scale=std::stof(json["objects"][i]["scale"].dump(true));
             pumps[i].show();
         }
@@ -136,15 +144,15 @@ public:
         res.set_header("Content-Type", "text/html");
         auto page = crow::mustache::load("serv.html");
         crow::mustache::context ctx = { { "pump", "" } };
-         model::screen_size s_size;
+        model::screen_size s_size;
         std::vector<model::pump> p = azs_db->get_pump(&s_size);
         std::string price;
         for (int i = 0; i < p.size(); i++) {
             // p[i].show();
-            float scale = (float)(3 * p[i].scale);
+            float scale = p[i].scale;//(float)(3 * p[i].scale)
             std::string s = std::to_string(scale);
             ctx["screen_width"]=s_size.width;
-            ctx["pump"][i] = { { "id", p[i].id_trk }, { "x_pos", p[i].x_pos }, { "y_pos", p[i].y_pos }, { "scale", s }, { "pist", "" }};
+            ctx["pump"][i] = { { "id", p[i].id_trk }, { "x_pos", (float)p[i].x_pos/s_size.width*100.0 }, { "y_pos", (float)p[i].y_pos/s_size.width*100.0 }, { "scale", s }, { "pist", "" } };
             for (int j = 0; j < p[i].pists.size(); j++) {
                 price = std::to_string(p[i].pists[j].tank_.tovar_.price);
                 int pos = price.find(".");
