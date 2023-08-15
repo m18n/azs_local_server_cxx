@@ -5,43 +5,57 @@
 #define URL_MAIN "/main"
 #define API_PUMP_SAVE "/api/pump/save"
 #define SETTINGS_MAIN "/main/settings"
+#define SETTINGS_CONFIG "/main/settings/configuration"
 #define API_OUT "/api/out"
 #define API_OUTSHIFT "/api/outshift"
-
 class Client {
-private:
 protected:
+    std::map<std::string, std::function<void(crow::request&, crow::response&)>> url_to_func;
+
+protected:
+   
+    virtual void init(){
+        url_to_func[URL_MAIN]=std::bind(&Client::pump, this, std::placeholders::_1, std::placeholders::_2);
+        url_to_func[API_PUMP_SAVE]=std::bind(&Client::pump_save, this, std::placeholders::_1, std::placeholders::_2);
+        url_to_func[SETTINGS_MAIN]=std::bind(&Client::settings_main, this, std::placeholders::_1, std::placeholders::_2);
+        url_to_func[SETTINGS_CONFIG]=std::bind(&Client::settings_config, this, std::placeholders::_1, std::placeholders::_2);
+        url_to_func[API_OUT]=std::bind(&Client::out, this, std::placeholders::_1, std::placeholders::_2);
+        url_to_func[API_OUTSHIFT]=std::bind(&Client::outshift, this, std::placeholders::_1, std::placeholders::_2);
+    }
     virtual void pump(crow::request& req, crow::response& res) = 0;
     virtual void pump_save(crow::request& req, crow::response& res) = 0;
     virtual void settings_main(crow::request& req, crow::response& res) = 0;
+    virtual void settings_config(crow::request& req, crow::response& res) = 0;
     virtual void out(crow::request& req, crow::response& res) = 0;
     virtual void outshift(crow::request& req, crow::response& res) = 0;
+
     void BaseController(std::string url, crow::request& req, crow::response& res)
     {
-        if (url == URL_MAIN) {
-            pump(req, res);
-        }else if (url == API_PUMP_SAVE) {
-            pump_save(req, res);
-        } else if (url == SETTINGS_MAIN) {
-            settings_main(req, res);
-        }else if (url == API_OUT) {
-            out(req, res);
-        } else if (url == API_OUTSHIFT) {
-            outshift(req, res);
-        }
+        
+        auto it = url_to_func.find(url);
+        if (it != url_to_func.end()) {
+            it->second(req, res);
+        } 
     }
 
 public:
+    Client(){
+        init();
+    }
     virtual void Controller(std::string url, crow::request& req, crow::response& res)
     {
         BaseController(url, req, res);
     }
 };
+
 class Admin : public Client {
 private:
     
 
 public:
+    Admin():Client(){
+
+    }
     virtual void Controller(std::string url, crow::request& req, crow::response& res)
     {
         BaseController(url, req, res);
@@ -119,12 +133,19 @@ public:
         res.add_header("Set-Cookie", "refresh_token=;path=/;");
         res.end();
     }
-    
+    void settings_config(crow::request& req, crow::response& res){
+        crow::mustache::context ctx = { { "admin", true } };
+        res.set_header("Content-Type", "text/html");
+        auto page = crow::mustache::load("configuration.html");
+        auto render = page.render(ctx);
+        res.write(render.body_);
+        res.end();
+    }
     void settings_main(crow::request& req, crow::response& res)
     {
         crow::mustache::context ctx = { { "admin", true } };
         res.set_header("Content-Type", "text/html");
-        auto page = crow::mustache::load("configurationazs.html");
+        auto page = crow::mustache::load("settingsazs.html");
         auto render = page.render(ctx);
         res.write(render.body_);
         res.end();
@@ -135,6 +156,9 @@ private:
     
 
 public:
+    User():Client(){
+
+    }
     virtual void Controller(std::string url, crow::request& req, crow::response& res)
     {
         BaseController(url, req, res);
@@ -179,11 +203,18 @@ public:
         res.add_header("Set-Cookie", "refresh_token=;path=/;");
         res.end();
     }
+    void settings_config(crow::request& req, crow::response& res)
+    {
+
+        res.redirect("/");
+        res.add_header("Set-Cookie", "refresh_token=;path=/;");
+        res.end();
+    }
     void settings_main(crow::request& req, crow::response& res)
     {
 
         res.set_header("Content-Type", "text/html");
-        auto page = crow::mustache::load("configurationazs.html");
+        auto page = crow::mustache::load("settingsazs.html");
         auto render = page.render();
         res.write(render.body_);
         res.end();

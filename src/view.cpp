@@ -29,9 +29,9 @@ void init_view_login(crow::App<AuthVerefy,DatabaseVerefy> &app) {
   ([](const crow::request &req, crow::response &res) {});
   CROW_ROUTE(app, API_OUTSHIFT).CROW_MIDDLEWARES(app,AuthVerefy)
   ([](const crow::request &req, crow::response &res) {});
- 
   CROW_ROUTE(app,  SETTINGS_MAIN).CROW_MIDDLEWARES(app,AuthVerefy)
   ([](const crow::request &req, crow::response &res) {});
-
+  CROW_ROUTE(app,  SETTINGS_CONFIG).CROW_MIDDLEWARES(app,AuthVerefy)
+  ([](const crow::request &req, crow::response &res) {});
   
 }
