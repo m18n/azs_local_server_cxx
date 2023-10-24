@@ -102,7 +102,7 @@ $(".lable_trk").click(function(){
         $(gui).removeClass("visible");
         $(viewport).css({"transform":"translateY(0px)"});
     }else{
-      
+        linesunvisible(item);
             $(viewport).children('.item_trk').each(function(index) {
                 $(this).find(".guitrk").removeClass("visible");
               });
