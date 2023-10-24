@@ -134,7 +134,31 @@ public:
         res.end();
     }
     void settings_config(crow::request& req, crow::response& res){
-        crow::mustache::context ctx = { { "admin", true } };
+        model::screen_size screen;
+        std::vector<model::tank> tanks;
+        auto pumps=azs_db->get_pump(&screen,tanks);
+        pumps[0].show();
+        crow::mustache::context ctx = {};
+        
+        
+        for(int i=0;i<pumps.size();i++){
+            ctx["pumps"][i]={{"id_trk",pumps[i].id_trk}};
+
+            for(int j=0;j<pumps[i].pists.size();j++){
+
+                
+                std::string color=std::to_string(pumps[i].pists[j].tank_.rgb.r)+","+std::to_string(pumps[i].pists[j].tank_.rgb.g)+","+std::to_string(pumps[i].pists[j].tank_.rgb.b);
+                ctx["pumps"][i]["pists"][j]={{"id_pist",pumps[i].pists[j].id_pist},{"id_tank",pumps[i].pists[j].tank_.id_tank},{"color",color},
+                {"id_tovar",pumps[i].pists[j].tank_.tovar_.id_tovar},{"name",pumps[i].pists[j].tank_.tovar_.name},
+                {"price",pumps[i].pists[j].tank_.tovar_.price}};
+            }
+           
+            
+        }
+        for(int i=0;i<tanks.size();i++){
+            std::string color=std::to_string(tanks[i].rgb.r)+","+std::to_string(tanks[i].rgb.g)+","+std::to_string(tanks[i].rgb.b);
+            ctx["tanks"][i]={{"id_tank",tanks[i].id_tank},{"color",color},{"id_tovar",tanks[i].tovar_.id_tovar},{"name",tanks[i].tovar_.name},{"price",tanks[i].tovar_.price}};
+        }
         res.set_header("Content-Type", "text/html");
         auto page = crow::mustache::load("configuration.html");
         auto render = page.render(ctx);

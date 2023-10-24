@@ -34,6 +34,8 @@ struct tank {
     color rgb;
     tovar tovar_;
 };
+bool compareByid(const tank &a, const tank &b);
+
 struct pist {
     int32_t id_pist = 0;
     tank tank_;
@@ -140,7 +142,7 @@ public:
     bool auth_check(int32_t userid, std::string password, bool& admin);
     std::vector<user_name> get_user_name();
     std::vector<pump> get_pump(screen_size* screen);
-
+    std::vector<pump> get_pump(screen_size* screen,std::vector<model::tank>& tanks);
     void save_pump(std::vector<pump> pumps,int screen_width,int screen_height);
     bool smena_bool();
     bool smena_bool(int32_t* userid);
