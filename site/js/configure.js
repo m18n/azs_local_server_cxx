@@ -89,6 +89,14 @@ function linesunvisible(item){
         setpositiontank(pumparray["tanks"][i]["id_tank"],i);
     }
 }
+$(".item_tank").click(function(){
+    $(".settings_tank").addClass("visible");
+    $(".black").addClass("visible");
+});
+$("#cross").click(function(){
+    $(".settings_tank").removeClass("visible");
+    $(".black").removeClass("visible");
+})
 $(".lable_trk").click(function(){
     let item=$(this).parents(".item_trk");
     let viewport=$(item).parents(".viewport");
