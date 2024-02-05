@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008, 2019, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008, 2023, Oracle and/or its affiliates. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2.0, as
@@ -67,6 +67,7 @@ private:
 class MySQL_DebugLogger;
 struct MySQL_ConnectionData; /* PIMPL */
 class MySQL_Statement;
+class MySQL_Prepared_Statement;
 
 namespace NativeAPI
 {
@@ -75,6 +76,9 @@ class NativeConnectionWrapper;
 
 class CPPCONN_PUBLIC_FUNC MySQL_Connection : public sql::Connection
 {
+  friend MySQL_Statement;
+  friend MySQL_Prepared_Statement;
+
   MySQL_Statement * createServiceStmt();
 
 public:
@@ -175,6 +179,8 @@ public:
 
   virtual sql::SQLString getLastStatementInfo();
 
+  sql::SQLString getCurrentUser();
+
 private:
   /* We do not really think this class has to be subclassed*/
   void checkClosed();
@@ -203,6 +209,9 @@ private:
 #ifdef _WIN32
 #pragma warning(pop)
 #endif
+
+  /* We need to store the user name for telemetry */
+  SQLString currentUser;
 
   /* Prevent use of these */
   MySQL_Connection(const MySQL_Connection &);

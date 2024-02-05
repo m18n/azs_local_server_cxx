@@ -207,9 +207,12 @@ std::vector<model::pump> model::azs_database::get_pump(screen_size* screen)
             pist_stat.tank_.tovar_.name = res->getString("name");
             pist_stat.tank_.tovar_.price =res->getDouble("price");
             int32_t color=res->getInt("color");
-            pist_stat.tank_.rgb.r=GetRValue(color);
-            pist_stat.tank_.rgb.g=GetGValue(color);
-            pist_stat.tank_.rgb.b=GetBValue(color);
+            unsigned int red = (color >> 16) & 0xFF;
+            unsigned int green = (color >> 8) & 0xFF;
+            unsigned int blue = color & 0xFF;
+            pist_stat.tank_.rgb.r=red;
+            pist_stat.tank_.rgb.g=green;
+            pist_stat.tank_.rgb.b=blue;
             if (res->getInt("id_trk") == last_idtkr) {
                 pumps[pumps.size() - 1].pists.push_back(pist_stat);
                 continue;

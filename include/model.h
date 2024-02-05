@@ -11,7 +11,9 @@
 #include <mutex>
 #include <thread>
 #include <vector>
-#include <windows.h>
+#include <string.h>
+
+// #include <windows.h>
 namespace model {
 
 struct user_name {
