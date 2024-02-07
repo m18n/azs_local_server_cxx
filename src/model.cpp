@@ -292,9 +292,12 @@ std::vector<model::pump> model::azs_database::get_pump(screen_size* screen,std::
             }
            
             int32_t color=res->getInt("color");
-            pist_stat.tank_.rgb.r=GetRValue(color);
-            pist_stat.tank_.rgb.g=GetGValue(color);
-            pist_stat.tank_.rgb.b=GetBValue(color);
+            unsigned int red = (color >> 16) & 0xFF;
+            unsigned int green = (color >> 8) & 0xFF;
+            unsigned int blue = color & 0xFF;
+            pist_stat.tank_.rgb.r=red;
+            pist_stat.tank_.rgb.g=green;
+            pist_stat.tank_.rgb.b=blue;
             if(find==false){
                 model::tank t=pist_stat.tank_;
                 tanks.push_back(t);
