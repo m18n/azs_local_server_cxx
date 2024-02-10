@@ -15,8 +15,8 @@ public:
         //init crow
         init_view_login(app);
         init_web(&azs_db,&ld);
-        crow::mustache::set_global_base("site");
-        crow::mustache::set_base("site");
+        crow::mustache::set_global_base("azs_site");
+        crow::mustache::set_base("azs_site");
         
         //init db
         azs_db.initlocaldata(&ld);

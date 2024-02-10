@@ -1,3 +1,6 @@
 [submodule "azs_site"]
 	path = azs_site
 	url = https://github.com/m18n/azs_site.git
+[submodule "azs_local_server_documentation"]
+	path = azs_local_server_documentation
+	url = https://github.com/m18n/azs_local_server_documentation.git

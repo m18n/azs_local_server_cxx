@@ -200,6 +200,6 @@ void settingsdb_error_check( crow::request& req, crow::response& res){
 }
 void static_files(crow::response& res, std::string path)
 {
-    res.set_static_file_info("site/" + path);
+    res.set_static_file_info("azs_site/" + path);
     res.end();
 }
