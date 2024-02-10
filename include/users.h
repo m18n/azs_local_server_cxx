@@ -169,7 +169,7 @@ public:
     {
         crow::mustache::context ctx = { { "admin", true } };
         res.set_header("Content-Type", "text/html");
-        auto page = crow::mustache::load("settingsazs.html");
+        auto page = crow::mustache::load("settings_azs.html");
         auto render = page.render(ctx);
         res.write(render.body_);
         res.end();
@@ -238,7 +238,7 @@ public:
     {
 
         res.set_header("Content-Type", "text/html");
-        auto page = crow::mustache::load("settingsazs.html");
+        auto page = crow::mustache::load("settings_azs.html");
         auto render = page.render();
         res.write(render.body_);
         res.end();
