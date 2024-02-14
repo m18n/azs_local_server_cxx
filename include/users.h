@@ -3,11 +3,11 @@
 #include "string.h"
 #include "web_tehnology.h"
 #define URL_MAIN "/main"
-#define API_PUMP_SAVE "/api/pump/save"
-#define SETTINGS_MAIN "/main/settings"
-#define SETTINGS_CONFIG "/main/settings/configuration"
-#define API_OUT "/api/out"
-#define API_OUTSHIFT "/api/outshift"
+#define URL_MAIN_SETTINGS "/main/settings"
+#define URL_MAIN_SETTINGS_CONFIG "/main/settings/configuration"
+#define URL_API_PUMP_SAVE "/api/pump/save"
+#define URL_API_OUT "/api/out"
+#define URL_API_OUTSHIFT "/api/outshift"
 class Client {
 protected:
     std::map<std::string, std::function<void(crow::request&, crow::response&)>> url_to_func;
@@ -15,19 +15,19 @@ protected:
 protected:
    
     virtual void init(){
-        url_to_func[URL_MAIN]=std::bind(&Client::pump, this, std::placeholders::_1, std::placeholders::_2);
-        url_to_func[API_PUMP_SAVE]=std::bind(&Client::pump_save, this, std::placeholders::_1, std::placeholders::_2);
-        url_to_func[SETTINGS_MAIN]=std::bind(&Client::settings_main, this, std::placeholders::_1, std::placeholders::_2);
-        url_to_func[SETTINGS_CONFIG]=std::bind(&Client::settings_config, this, std::placeholders::_1, std::placeholders::_2);
-        url_to_func[API_OUT]=std::bind(&Client::out, this, std::placeholders::_1, std::placeholders::_2);
-        url_to_func[API_OUTSHIFT]=std::bind(&Client::outshift, this, std::placeholders::_1, std::placeholders::_2);
+        url_to_func[URL_MAIN]=std::bind(&Client::main_pump, this, std::placeholders::_1, std::placeholders::_2);
+        url_to_func[URL_MAIN_SETTINGS]=std::bind(&Client::main_settings, this, std::placeholders::_1, std::placeholders::_2);
+        url_to_func[URL_MAIN_SETTINGS_CONFIG]=std::bind(&Client::main_settings_config, this, std::placeholders::_1, std::placeholders::_2);
+        url_to_func[URL_API_PUMP_SAVE]=std::bind(&Client::api_pump_save, this, std::placeholders::_1, std::placeholders::_2);
+        url_to_func[URL_API_OUT]=std::bind(&Client::api_out, this, std::placeholders::_1, std::placeholders::_2);
+        url_to_func[URL_API_OUTSHIFT]=std::bind(&Client::api_outshift, this, std::placeholders::_1, std::placeholders::_2);
     }
-    virtual void pump(crow::request& req, crow::response& res) = 0;
-    virtual void pump_save(crow::request& req, crow::response& res) = 0;
-    virtual void settings_main(crow::request& req, crow::response& res) = 0;
-    virtual void settings_config(crow::request& req, crow::response& res) = 0;
-    virtual void out(crow::request& req, crow::response& res) = 0;
-    virtual void outshift(crow::request& req, crow::response& res) = 0;
+    virtual void main_pump(crow::request& req, crow::response& res) = 0;
+    virtual void main_settings(crow::request& req, crow::response& res) = 0;
+    virtual void main_settings_config(crow::request& req, crow::response& res) = 0;
+    virtual void api_pump_save(crow::request& req, crow::response& res) = 0;
+    virtual void api_out(crow::request& req, crow::response& res) = 0;
+    virtual void api_outshift(crow::request& req, crow::response& res) = 0;
 
     void BaseController(std::string url, crow::request& req, crow::response& res)
     {
@@ -60,7 +60,7 @@ public:
     {
         BaseController(url, req, res);
     }
-    void pump(crow::request& req, crow::response& res)
+    void main_pump(crow::request& req, crow::response& res)
     {
         res.set_header("Content-Type", "text/html");
         auto page = crow::mustache::load("serv.html");
@@ -86,8 +86,7 @@ public:
         res.write(render.body_);
         res.end();
     }
-    
-    void pump_save(crow::request& req, crow::response& res){
+    void api_pump_save(crow::request& req, crow::response& res){
         res.set_header("Content-Type", "application/json");
         crow::json::wvalue ret({ { "status", "yes" } });
         crow::json::wvalue json = crow::json::load(req.body);
@@ -120,20 +119,20 @@ public:
         res.end();
     }
     
-    void out(crow::request& req, crow::response& res)
+    void api_out(crow::request& req, crow::response& res)
     {
         res.redirect("/");
         res.add_header("Set-Cookie", "refresh_token=;path=/;");
         res.end();
     }
-    void outshift(crow::request& req, crow::response& res)
+    void api_outshift(crow::request& req, crow::response& res)
     {
         azs_db->smena_close();
         res.redirect("/");
         res.add_header("Set-Cookie", "refresh_token=;path=/;");
         res.end();
     }
-    void settings_config(crow::request& req, crow::response& res){
+    void main_settings_config(crow::request& req, crow::response& res){
         model::screen_size screen;
         std::vector<model::tank> tanks;
         auto pumps=azs_db->get_pump(&screen,tanks);
@@ -165,7 +164,7 @@ public:
         res.write(render.body_);
         res.end();
     }
-    void settings_main(crow::request& req, crow::response& res)
+    void main_settings(crow::request& req, crow::response& res)
     {
         crow::mustache::context ctx = { { "admin", true } };
         res.set_header("Content-Type", "text/html");
@@ -187,7 +186,7 @@ public:
     {
         BaseController(url, req, res);
     }
-    void pump(crow::request& req, crow::response& res)
+    void main_pump(crow::request& req, crow::response& res)
     {
         res.set_header("Content-Type", "text/html");
         auto page = crow::mustache::load("serv.html");
@@ -214,27 +213,27 @@ public:
         res.end();
     }
   
-    void out(crow::request& req, crow::response& res)
+    void api_out(crow::request& req, crow::response& res)
     {
         res.redirect("/");
         res.add_header("Set-Cookie", "refresh_token=;path=/;");
         res.end();
     }
-    void outshift(crow::request& req, crow::response& res)
+    void api_outshift(crow::request& req, crow::response& res)
     {
         azs_db->smena_close();
         res.redirect("/");
         res.add_header("Set-Cookie", "refresh_token=;path=/;");
         res.end();
     }
-    void settings_config(crow::request& req, crow::response& res)
+    void main_settings_config(crow::request& req, crow::response& res)
     {
 
         res.redirect("/");
         res.add_header("Set-Cookie", "refresh_token=;path=/;");
         res.end();
     }
-    void settings_main(crow::request& req, crow::response& res)
+    void main_settings(crow::request& req, crow::response& res)
     {
 
         res.set_header("Content-Type", "text/html");
@@ -244,7 +243,7 @@ public:
         res.end();
     }
     
-   void pump_save(crow::request& req, crow::response& res){
+   void api_pump_save(crow::request& req, crow::response& res){
         res.redirect("/main");
         res.end();
     }
