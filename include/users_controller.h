@@ -8,6 +8,7 @@
 #define URL_API_PUMP_SAVE "/api/pump/save"
 #define URL_API_OUT "/api/out"
 #define URL_API_OUTSHIFT "/api/outshift"
+
 class Client {
 protected:
     std::map<std::string, std::function<void(crow::request&, crow::response&)>> url_to_func;
@@ -132,6 +133,16 @@ public:
         res.add_header("Set-Cookie", "refresh_token=;path=/;");
         res.end();
     }
+    
+    void main_settings(crow::request& req, crow::response& res)
+    {
+        crow::mustache::context ctx = { { "admin", true } };
+        res.set_header("Content-Type", "text/html");
+        auto page = crow::mustache::load("settings_azs.html");
+        auto render = page.render(ctx);
+        res.write(render.body_);
+        res.end();
+    }
     void main_settings_config(crow::request& req, crow::response& res){
         model::screen_size screen;
         std::vector<model::tank> tanks;
@@ -160,15 +171,6 @@ public:
         }
         res.set_header("Content-Type", "text/html");
         auto page = crow::mustache::load("configuration.html");
-        auto render = page.render(ctx);
-        res.write(render.body_);
-        res.end();
-    }
-    void main_settings(crow::request& req, crow::response& res)
-    {
-        crow::mustache::context ctx = { { "admin", true } };
-        res.set_header("Content-Type", "text/html");
-        auto page = crow::mustache::load("settings_azs.html");
         auto render = page.render(ctx);
         res.write(render.body_);
         res.end();
@@ -226,13 +228,6 @@ public:
         res.add_header("Set-Cookie", "refresh_token=;path=/;");
         res.end();
     }
-    void main_settings_config(crow::request& req, crow::response& res)
-    {
-
-        res.redirect("/");
-        res.add_header("Set-Cookie", "refresh_token=;path=/;");
-        res.end();
-    }
     void main_settings(crow::request& req, crow::response& res)
     {
 
@@ -242,6 +237,14 @@ public:
         res.write(render.body_);
         res.end();
     }
+    void main_settings_config(crow::request& req, crow::response& res)
+    {
+
+        res.redirect("/");
+        res.add_header("Set-Cookie", "refresh_token=;path=/;");
+        res.end();
+    }
+    
     
    void api_pump_save(crow::request& req, crow::response& res){
         res.redirect("/main");

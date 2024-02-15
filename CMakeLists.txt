@@ -7,7 +7,7 @@ set(MAIN_SOURCES src/controller.cpp
     src/local_data.cpp
     src/azs.cpp
     src/web_tehnology.cpp
-    src/users.cpp
+    src/users_controller.cpp
     library/sqlite/sqlite3.c
     )
 
