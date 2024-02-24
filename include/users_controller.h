@@ -8,7 +8,11 @@
 #define URL_API_PUMP_SAVE "/api/pump/save"
 #define URL_API_OUT "/api/out"
 #define URL_API_OUTSHIFT "/api/outshift"
-
+#define URL_API_SETTINGS_GET "/api/settings/get"
+#define URL_API_SETTINGS_TANKS_GET "/api/settings/tanks/get"
+#define URL_API_SETTINGS_TOVARS_GET "/api/settings/tovars/get"
+#define URL_API_SETTINGS_TRKS_GET "/api/settings/trks/get"
+#define URL_API_SETTINGS_KASA_GET "/api/settings/kasa/get"
 class Client {
 protected:
     std::map<std::string, std::function<void(crow::request&, crow::response&)>> url_to_func;
@@ -22,6 +26,11 @@ protected:
         url_to_func[URL_API_PUMP_SAVE]=std::bind(&Client::api_pump_save, this, std::placeholders::_1, std::placeholders::_2);
         url_to_func[URL_API_OUT]=std::bind(&Client::api_out, this, std::placeholders::_1, std::placeholders::_2);
         url_to_func[URL_API_OUTSHIFT]=std::bind(&Client::api_outshift, this, std::placeholders::_1, std::placeholders::_2);
+        url_to_func[URL_API_SETTINGS_GET]=std::bind(&Client::api_settings_get, this, std::placeholders::_1, std::placeholders::_2);
+        url_to_func[URL_API_SETTINGS_TANKS_GET]=std::bind(&Client::api_settings_tanks_get, this, std::placeholders::_1, std::placeholders::_2);
+        url_to_func[URL_API_SETTINGS_TOVARS_GET]=std::bind(&Client::api_settings_tovars_get, this, std::placeholders::_1, std::placeholders::_2);
+        url_to_func[URL_API_SETTINGS_TRKS_GET]=std::bind(&Client::api_settings_trks_get, this, std::placeholders::_1, std::placeholders::_2);
+        url_to_func[URL_API_SETTINGS_KASA_GET]=std::bind(&Client::api_settings_kasa_get, this, std::placeholders::_1, std::placeholders::_2);
     }
     virtual void main_pump(crow::request& req, crow::response& res) = 0;
     virtual void main_settings(crow::request& req, crow::response& res) = 0;
@@ -29,7 +38,11 @@ protected:
     virtual void api_pump_save(crow::request& req, crow::response& res) = 0;
     virtual void api_out(crow::request& req, crow::response& res) = 0;
     virtual void api_outshift(crow::request& req, crow::response& res) = 0;
-
+    virtual void api_settings_get(crow::request& req, crow::response& res) = 0;
+    virtual void api_settings_tanks_get(crow::request& req, crow::response& res) = 0;
+    virtual void api_settings_tovars_get(crow::request& req, crow::response& res) = 0;
+    virtual void api_settings_trks_get(crow::request& req, crow::response& res) = 0;
+    virtual void api_settings_kasa_get(crow::request& req, crow::response& res) = 0;
     void BaseController(std::string url, crow::request& req, crow::response& res)
     {
         
@@ -133,7 +146,26 @@ public:
         res.add_header("Set-Cookie", "refresh_token=;path=/;");
         res.end();
     }
-    
+    void api_settings_get(crow::request& req, crow::response& res){
+        res.set_header("Content-Type", "application/json");
+        res.end();
+    }
+    void api_settings_tanks_get(crow::request& req, crow::response& res){
+        res.set_header("Content-Type", "application/json");
+        res.end();
+    }
+    void api_settings_tovars_get(crow::request& req, crow::response& res){
+        res.set_header("Content-Type", "application/json");
+        res.end();
+    }
+    void api_settings_trks_get(crow::request& req, crow::response& res){
+        res.set_header("Content-Type", "application/json");
+        res.end();
+    }
+    void api_settings_kasa_get(crow::request& req, crow::response& res){
+        res.set_header("Content-Type", "application/json");
+        res.end();
+    }
     void main_settings(crow::request& req, crow::response& res)
     {
         crow::mustache::context ctx = { { "admin", true } };
@@ -224,6 +256,31 @@ public:
     void api_outshift(crow::request& req, crow::response& res)
     {
         azs_db->smena_close();
+        res.redirect("/");
+        res.add_header("Set-Cookie", "refresh_token=;path=/;");
+        res.end();
+    }
+    void api_settings_get(crow::request& req, crow::response& res){
+        res.redirect("/");
+        res.add_header("Set-Cookie", "refresh_token=;path=/;");
+        res.end();
+    }
+    void api_settings_tanks_get(crow::request& req, crow::response& res){
+        res.redirect("/");
+        res.add_header("Set-Cookie", "refresh_token=;path=/;");
+        res.end();
+    }
+    void api_settings_tovars_get(crow::request& req, crow::response& res){
+        res.redirect("/");
+        res.add_header("Set-Cookie", "refresh_token=;path=/;");
+        res.end();
+    }
+    void api_settings_trks_get(crow::request& req, crow::response& res){
+        res.redirect("/");
+        res.add_header("Set-Cookie", "refresh_token=;path=/;");
+        res.end();
+    }
+    void api_settings_kasa_get(crow::request& req, crow::response& res){
         res.redirect("/");
         res.add_header("Set-Cookie", "refresh_token=;path=/;");
         res.end();
