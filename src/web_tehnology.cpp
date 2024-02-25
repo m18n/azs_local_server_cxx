@@ -1,7 +1,7 @@
 #include"web_tehnology.h"
-model::azs_database* azs_db;
+model::Azs_Database* azs_db;
 local_data* ld;
-void init_web(model::azs_database* azs_database, local_data* local){
+void init_web(model::Azs_Database* azs_database, local_data* local){
     azs_db = azs_database;
     ld = local;
 }

@@ -7,7 +7,7 @@ private:
     crow::App<AuthVerefy,DatabaseVerefy> app;
     local_data ld;
     mysql_conn_info mysql_info;
-    model::azs_database azs_db;
+    model::Azs_Database azs_db;
 public:
     
     azs()

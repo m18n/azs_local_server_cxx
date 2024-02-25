@@ -78,11 +78,11 @@ void DatabaseVerefy::after_handle(crow::request& req, crow::response& res, conte
 crow::mustache::rendered_template auth_main()
 {
 
-    std::vector<model::user_name> res = azs_db->get_user_name();
+    std::vector<model::User_Name> res = azs_db->get_Users_Name();
     int32_t userid = 0;
     bool smena = azs_db->smena_bool(&userid);
     crow::mustache::context ctx = { { "users", "" } };
-    model::user_name temp;
+    model::User_Name temp;
     if (smena) {
         ctx["smena"] = smena;
         for (int i = 0; i < res.size(); i++) {

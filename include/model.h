@@ -15,43 +15,73 @@
 
 // #include <windows.h>
 namespace model {
+template<typename T>
+class VectorWrapper {
+public:
+    VectorWrapper() = default;
 
-struct user_name {
+    // Забороняємо копіювання для уникнення витоків пам'яті
+    VectorWrapper(const VectorWrapper&) = delete;
+    VectorWrapper& operator=(const VectorWrapper&) = delete;
+
+    // Дозволяємо переміщення
+    VectorWrapper(VectorWrapper&&) noexcept = default;
+    VectorWrapper& operator=(VectorWrapper&&) noexcept = default;
+
+    ~VectorWrapper() {
+        for(int i=0;i<arr.size();i++){
+            delete arr[i];
+        }
+        arr.clear();
+    }
+    std::vector<T*> arr;
+    
+};
+struct User_Name {
     int32_t id = 0;
     std::string name;
 };
-struct tovar {
-    int32_t id_tovar = 0;
-    float price = 0.0;
-    std::string name;
-};
-struct color {
+struct Color {
     int32_t r = 0;
     int32_t g = 0;
     int32_t b = 0;
 };
-
-struct tank {
-    int32_t id_tank = 0;
-    color rgb;
-    tovar tovar_;
+struct Tovar {
+    int32_t id_tovar = -1;
+    float price = -1;
+    std::string name;
+    std::string name_p;
+    std::string name_p_f;
+    std::string name_p_v;
+    Color color;
 };
-bool compareByid(const tank &a, const tank &b);
 
-struct pist {
-    int32_t id_pist = 0;
-    tank tank_;
+
+struct Tank {
+    int32_t id_tank = -1;
+    int32_t id_tovar=-1;
+    int32_t volume=-1;
+    int32_t remain=-1;
+    Tovar* tovar_=NULL;
+};
+bool compareByid(const Tank &a, const Tank &b);
+
+struct Pist {
+    int32_t id_pist = -1;
+    int32_t id_tank=-1;
+    Tank* tank_=NULL;
     void show()
     {
-        std::cout << "PIST: " << id_pist << " TANK_ID: " << tank_.id_tank << " TOVAR_ID: " << tank_.tovar_.id_tovar << " TOVAR_PRICE: " << tank_.tovar_.price << " TOVAR_NAME: " << tank_.tovar_.name << "\n";
+        if(tank_!=NULL&&tank_->tovar_!=NULL)
+            std::cout << "PIST: " << id_pist << " TANK_ID: " << tank_->id_tank << " TOVAR_ID: " << tank_->tovar_->id_tovar << " TOVAR_PRICE: " << tank_->tovar_->price << " TOVAR_NAME: " << tank_->tovar_->name << "\n";
     }
 };
-struct pump {
+struct Trk {
     int id_trk;
     int x_pos = 0;
     int y_pos = 0;
     float scale = 100;
-    std::vector<pist> pists;
+    std::vector<Pist> pists;
     void show()
     {
         std::cout << "TRK_ID: " << id_trk << " X_POS: " << x_pos << " Y_POS: " << y_pos << " SCALE: " << scale << "\n";
@@ -60,11 +90,11 @@ struct pump {
         }
     }
 };
-struct screen_size{
+struct Screen_Size{
     int width=0;
     int height=0;
 };
-class azs_database {
+class Azs_Database {
 private:
     sql::Driver* driver;
     sql::Connection* con = NULL;
@@ -82,7 +112,7 @@ private:
     
 
 public:
-    azs_database()
+    Azs_Database()
     {
         driver = get_driver_instance();
         // con = driver->connect("tcp://127.0.0.1:3306", "root", "root");
@@ -136,25 +166,25 @@ public:
     {
         if (while_conn == false) {
             last_input_info = info;
-            std::thread th(&azs_database::connect, this, info);
+            std::thread th(&Azs_Database::connect, this, info);
             th.detach();
             while_conn = true;
         }
     }
     bool auth_check(int32_t userid, std::string password, bool& admin);
-    std::vector<user_name> get_user_name();
-    std::vector<pump> get_pump(screen_size* screen);
-    std::vector<pump> get_pump(screen_size* screen,std::vector<model::tank>& tanks);
-    std::vector<tovar> get_tovars();
+    std::vector<User_Name> get_Users_Name();
+    //std::vector<Trk> get_Trks(Screen_Size* screen);
+    std::vector<Trk> get_Trks(Screen_Size* screen,model::VectorWrapper<model::Tovar>* tovars,model::VectorWrapper<model::Tank>* tanks);
+    std::vector<Tovar> get_Tovars();
     
-    void save_pump(std::vector<pump> pumps,int screen_width,int screen_height);
+    void save_Trks(std::vector<Trk> trks,int screen_width,int screen_height);
     bool smena_bool();
     bool smena_bool(int32_t* userid);
     bool smena_bool(int32_t* last_id, int32_t* last_nn);
     void smena_change_operator(int32_t id_operator, int32_t id_smena);
     void smena_add_operator(int32_t id_operator, int32_t nn);
     void smena_close();
-    ~azs_database()
+    ~Azs_Database()
     {
         if (con != NULL && con->isValid())
             delete con;

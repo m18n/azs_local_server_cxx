@@ -79,22 +79,26 @@ public:
         res.set_header("Content-Type", "text/html");
         auto page = crow::mustache::load("serv.html");
         crow::mustache::context ctx = { { "admin", true }, { "pump", "" } };
-        model::screen_size s_size;
-        std::vector<model::pump> p = azs_db->get_pump(&s_size);
+        model::Screen_Size s_size;
+        model::VectorWrapper<model::Tank> tanks;
+        model::VectorWrapper<model::Tovar> tovars;
+        std::vector<model::Trk> trks = azs_db->get_Trks(&s_size,&tovars,&tanks);
         std::string price;
-        for (int i = 0; i < p.size(); i++) {
+        for (int i = 0; i < trks.size(); i++) {
             // p[i].show();
-            float scale = p[i].scale;//(float)(3 * p[i].scale)
+            float scale = trks[i].scale;//(float)(3 * p[i].scale)
             std::string s = std::to_string(scale);
             ctx["screen_width"]=s_size.width;
-            ctx["pump"][i] = { { "id", p[i].id_trk }, { "x_pos", (float)p[i].x_pos/s_size.width*100.0 }, { "y_pos", (float)p[i].y_pos/s_size.width*100.0 }, { "scale", s }, { "pist", "" } };
-            for (int j = 0; j < p[i].pists.size(); j++) {
-                price = std::to_string(p[i].pists[j].tank_.tovar_.price);
+            ctx["pump"][i] = { { "id", trks[i].id_trk }, { "x_pos", (float)trks[i].x_pos/s_size.width*100.0 }, { "y_pos", (float)trks[i].y_pos/s_size.width*100.0 }, { "scale", s }, { "pist", "" } };
+            for (int j = 0; j < trks[i].pists.size(); j++) {
+                
+                price = std::to_string(trks[i].pists[j].tank_->tovar_->price);
                 int pos = price.find(".");
                 price.resize(pos + 3);
-                ctx["pump"][i]["pist"][j] = { { "id_pist", p[i].pists[j].id_pist }, { "name", p[i].pists[j].tank_.tovar_.name }, { "price", price }, { "r", p[i].pists[j].tank_.rgb.r }, { "g", p[i].pists[j].tank_.rgb.g }, { "b", p[i].pists[j].tank_.rgb.b } };
+                ctx["pump"][i]["pist"][j] = { { "id_pist", trks[i].pists[j].id_pist }, { "name", trks[i].pists[j].tank_->tovar_->name }, { "price", price }, { "r", trks[i].pists[j].tank_->tovar_->color.r }, { "g", trks[i].pists[j].tank_->tovar_->color.g }, { "b", trks[i].pists[j].tank_->tovar_->color.b } };
             }
         }
+        
         std::cout << "P: " << ctx.dump() << "\n";
         auto render = page.render(ctx);
         res.write(render.body_);
@@ -106,12 +110,12 @@ public:
         crow::json::wvalue json = crow::json::load(req.body);
         int screen_width=std::stoi(json["screen_scale"]["width"].dump(true));
         int screen_heigth=std::stoi(json["screen_scale"]["height"].dump(true));
-        std::vector<model::pump> pumps;
-        pumps.resize(json["objects"].size());
+        std::vector<model::Trk> trks;
+        trks.resize(json["objects"].size());
         std::cout << "json: " << json.dump() << "\n";
         std::cout<<"OBJECT SIZE: "<<json["objects"].size();
         for(int i=0;i<json["objects"].size();i++){
-            pumps[i].id_trk=std::stoi(json["objects"][i]["id"].dump(true));
+            trks[i].id_trk=std::stoi(json["objects"][i]["id"].dump(true));
             std::string xstr=json["objects"][i]["x"].dump(true);
             std::string ystr=json["objects"][i]["y"].dump(true);
             if(xstr=="")
@@ -120,12 +124,12 @@ public:
                 ystr="0";
             float x_f=std::stof(xstr);
             float y_f=std::stof(ystr);
-            pumps[i].x_pos=int(screen_width/(100/x_f));
-            pumps[i].y_pos=int(screen_width/(100/y_f));
-            pumps[i].scale=std::stof(json["objects"][i]["scale"].dump(true));
-            pumps[i].show();
+            trks[i].x_pos=int(screen_width/(100/x_f));
+            trks[i].y_pos=int(screen_width/(100/y_f));
+            trks[i].scale=std::stof(json["objects"][i]["scale"].dump(true));
+            trks[i].show();
         }
-        azs_db->save_pump(std::move(pumps),screen_width,screen_heigth);
+        azs_db->save_Trks(std::move(trks),screen_width,screen_heigth);
         if(!azs_db->isConnect()){
             ret["status"]="not";
         }
@@ -177,30 +181,31 @@ public:
         res.end();
     }
     void main_settings_config(crow::request& req, crow::response& res){
-        model::screen_size screen;
-        std::vector<model::tank> tanks;
-        auto pumps=azs_db->get_pump(&screen,tanks);
-        pumps[0].show();
+        model::Screen_Size screen;
+         model::VectorWrapper<model::Tank> tanks;
+        model::VectorWrapper<model::Tovar> tovars;
+        auto trks=azs_db->get_Trks(&screen,&tovars,&tanks);
+        trks[0].show();
         crow::mustache::context ctx = {};
         
         
-        for(int i=0;i<pumps.size();i++){
-            ctx["pumps"][i]={{"id_trk",pumps[i].id_trk}};
+        for(int i=0;i<trks.size();i++){
+            ctx["pumps"][i]={{"id_trk",trks[i].id_trk}};
 
-            for(int j=0;j<pumps[i].pists.size();j++){
+            for(int j=0;j<trks[i].pists.size();j++){
 
                 
-                std::string color=std::to_string(pumps[i].pists[j].tank_.rgb.r)+","+std::to_string(pumps[i].pists[j].tank_.rgb.g)+","+std::to_string(pumps[i].pists[j].tank_.rgb.b);
-                ctx["pumps"][i]["pists"][j]={{"id_pist",pumps[i].pists[j].id_pist},{"id_tank",pumps[i].pists[j].tank_.id_tank},{"color",color},
-                {"id_tovar",pumps[i].pists[j].tank_.tovar_.id_tovar},{"name",pumps[i].pists[j].tank_.tovar_.name},
-                {"price",pumps[i].pists[j].tank_.tovar_.price}};
+                std::string color=std::to_string(trks[i].pists[j].tank_->tovar_->color.r)+","+std::to_string(trks[i].pists[j].tank_->tovar_->color.g)+","+std::to_string(trks[i].pists[j].tank_->tovar_->color.b);
+                ctx["pumps"][i]["pists"][j]={{"id_pist",trks[i].pists[j].id_pist},{"id_tank",trks[i].pists[j].tank_->id_tank},{"color",color},
+                {"id_tovar",trks[i].pists[j].tank_->tovar_->id_tovar},{"name",trks[i].pists[j].tank_->tovar_->name},
+                {"price",trks[i].pists[j].tank_->tovar_->price}};
             }
            
             
         }
-        for(int i=0;i<tanks.size();i++){
-            std::string color=std::to_string(tanks[i].rgb.r)+","+std::to_string(tanks[i].rgb.g)+","+std::to_string(tanks[i].rgb.b);
-            ctx["tanks"][i]={{"id_tank",tanks[i].id_tank},{"color",color},{"id_tovar",tanks[i].tovar_.id_tovar},{"name",tanks[i].tovar_.name},{"price",tanks[i].tovar_.price}};
+        for(int i=0;i<tanks.arr.size();i++){
+            std::string color=std::to_string(tanks.arr[i]->tovar_->color.r)+","+std::to_string(tanks.arr[i]->tovar_->color.g)+","+std::to_string(tanks.arr[i]->tovar_->color.b);
+            ctx["tanks"][i]={{"id_tank",tanks.arr[i]->id_tank},{"color",color},{"id_tovar",tanks.arr[i]->tovar_->id_tovar},{"name",tanks.arr[i]->tovar_->name},{"price",tanks.arr[i]->tovar_->price}};
         }
         res.set_header("Content-Type", "text/html");
         auto page = crow::mustache::load("configuration.html");
@@ -226,20 +231,22 @@ public:
         res.set_header("Content-Type", "text/html");
         auto page = crow::mustache::load("serv.html");
         crow::mustache::context ctx = { { "pump", "" } };
-        model::screen_size s_size;
-        std::vector<model::pump> p = azs_db->get_pump(&s_size);
+        model::Screen_Size s_size;
+        model::VectorWrapper<model::Tank> tanks;
+        model::VectorWrapper<model::Tovar> tovars;
+        std::vector<model::Trk> trks = azs_db->get_Trks(&s_size,&tovars,&tanks);
         std::string price;
-        for (int i = 0; i < p.size(); i++) {
+        for (int i = 0; i < trks.size(); i++) {
             // p[i].show();
-            float scale = p[i].scale;//(float)(3 * p[i].scale)
+            float scale = trks[i].scale;//(float)(3 * p[i].scale)
             std::string s = std::to_string(scale);
             ctx["screen_width"]=s_size.width;
-            ctx["pump"][i] = { { "id", p[i].id_trk }, { "x_pos", (float)p[i].x_pos/s_size.width*100.0 }, { "y_pos", (float)p[i].y_pos/s_size.width*100.0 }, { "scale", s }, { "pist", "" } };
-            for (int j = 0; j < p[i].pists.size(); j++) {
-                price = std::to_string(p[i].pists[j].tank_.tovar_.price);
+            ctx["pump"][i] = { { "id", trks[i].id_trk }, { "x_pos", (float)trks[i].x_pos/s_size.width*100.0 }, { "y_pos", (float)trks[i].y_pos/s_size.width*100.0 }, { "scale", s }, { "pist", "" } };
+            for (int j = 0; j < trks[i].pists.size(); j++) {
+                price = std::to_string(trks[i].pists[j].tank_->tovar_->price);
                 int pos = price.find(".");
                 price.resize(pos + 3);
-                ctx["pump"][i]["pist"][j] = { { "id_pist", p[i].pists[j].id_pist }, { "name", p[i].pists[j].tank_.tovar_.name }, { "price", price }, { "r", p[i].pists[j].tank_.rgb.r }, { "g", p[i].pists[j].tank_.rgb.g }, { "b", p[i].pists[j].tank_.rgb.b } };
+                ctx["pump"][i]["pist"][j] = { { "id_pist", trks[i].pists[j].id_pist }, { "name", trks[i].pists[j].tank_->tovar_->name }, { "price", price }, { "r", trks[i].pists[j].tank_->tovar_->color.r }, { "g", trks[i].pists[j].tank_->tovar_->color.g }, { "b", trks[i].pists[j].tank_->tovar_->color.b } };
             }
         }
         std::cout << "P: " << ctx.dump() << "\n";
