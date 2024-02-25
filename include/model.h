@@ -145,6 +145,8 @@ public:
     std::vector<user_name> get_user_name();
     std::vector<pump> get_pump(screen_size* screen);
     std::vector<pump> get_pump(screen_size* screen,std::vector<model::tank>& tanks);
+    std::vector<tovar> get_tovars();
+    
     void save_pump(std::vector<pump> pumps,int screen_width,int screen_height);
     bool smena_bool();
     bool smena_bool(int32_t* userid);

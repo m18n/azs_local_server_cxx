@@ -238,6 +238,10 @@ std::vector<model::pump> model::azs_database::get_pump(screen_size* screen)
 
     return pumps;
 }
+std::vector<model::tovar> get_tovars(){
+    std::vector<model::tovar> tovars;
+    return tovars;
+}
 bool  model::compareByid(const  model::tank &a, const  model::tank &b) {
     return a.id_tank < b.id_tank;
 }

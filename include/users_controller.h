@@ -148,6 +148,7 @@ public:
     }
     void api_settings_get(crow::request& req, crow::response& res){
         res.set_header("Content-Type", "application/json");
+        
         res.end();
     }
     void api_settings_tanks_get(crow::request& req, crow::response& res){
