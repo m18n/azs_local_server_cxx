@@ -174,9 +174,10 @@ public:
     bool auth_check(int32_t userid, std::string password, bool& admin);
     std::vector<User_Name> get_Users_Name();
     //std::vector<Trk> get_Trks(Screen_Size* screen);
-    std::vector<Trk> get_Trks(Screen_Size* screen,model::VectorWrapper<model::Tovar>* tovars,model::VectorWrapper<model::Tank>* tanks);
+    std::vector<Trk> get_Trks_with_all(Screen_Size* screen,model::VectorWrapper<model::Tovar>* tovars,model::VectorWrapper<model::Tank>* tanks);
     std::vector<Tovar> get_Tovars();
-    
+    std::vector<Tank> get_Tanks();
+    std::vector<Trk> get_Trks();
     void save_Trks(std::vector<Trk> trks,int screen_width,int screen_height);
     bool smena_bool();
     bool smena_bool(int32_t* userid);

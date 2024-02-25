@@ -245,7 +245,101 @@ std::vector<model::Tovar> get_Tovars(){
 bool  model::compareByid(const  model::Tank &a, const  model::Tank &b) {
     return a.id_tank < b.id_tank;
 }
-std::vector<model::Trk> model::Azs_Database::get_Trks(Screen_Size* screen,model::VectorWrapper<model::Tovar>* tovars,model::VectorWrapper<model::Tank>* tanks)
+std::vector<model::Tovar> model::Azs_Database::get_Tovars(){
+    std::vector<model::Tovar> tovars;
+    try {
+        stmt = con->createStatement();
+        std::string sql ="SELECT * FROM tovar ORDER BY NN;";
+        sql::ResultSet* res = stmt->executeQuery(sql);
+        int index=0;
+        
+        while (res->next()) {
+            Tovar tov;
+            tov.id_tovar=res->getInt("id_tovar");
+            tov.name=res->getString("name");
+            tov.name_p=res->getString("name_p");
+            tov.name_p_f=res->getString("name_p_f");
+            tov.name_p_v=res->getString("name_p_v");
+            int32_t color=res->getInt("color");
+            unsigned int red = (color >> 16) & 0xFF;
+            unsigned int green = (color >> 8) & 0xFF;
+            unsigned int blue = color & 0xFF;
+            tov.color.r=red;
+            tov.color.g=green;
+            tov.color.b=blue;
+            tovars.push_back(tov);
+        }
+        delete res;
+        delete stmt; 
+    } catch (const sql::SQLException& error) {
+        std::cout << "ERROR MYSQL: " << error.what() << "\n";
+        isconn = false;
+    }
+    return tovars;
+}
+std::vector<model::Tank> model::Azs_Database::get_Tanks(){
+    std::vector<model::Tank> tanks;
+    try {
+        stmt = con->createStatement();
+        std::string sql ="SELECT * FROM tank ORDER BY NN;";
+        sql::ResultSet* res = stmt->executeQuery(sql);
+        int index=0;
+        
+        while (res->next()) {
+            Tank tank;
+            tank.id_tank=res->getInt("id_tank");
+            tank.id_tovar=res->getInt("id_tovar");
+            tank.remain=res->getInt("remain");
+            tank.volume=res->getInt("volume");
+            tanks.push_back(tank);
+        }
+        delete res;
+        delete stmt; 
+    } catch (const sql::SQLException& error) {
+        std::cout << "ERROR MYSQL: " << error.what() << "\n";
+        isconn = false;
+    }
+    return tanks;
+}
+std::vector<model::Trk> model::Azs_Database::get_Trks(){
+    std::vector<model::Trk> trks;
+    try {
+         stmt = con->createStatement();
+        std::string sql = "SELECT com_trk.id_trk, com_trk.x_pos, com_trk.y_pos, com_trk.scale, trk.id_trk, trk.id_pist, trk.id_tank FROM com_trk INNER JOIN trk ON com_trk.id_trk = trk.id_trk WHERE com_trk.id_azs='" + azs_id + "' ORDER BY com_trk.id_trk;";
+        sql::ResultSet* res = stmt->executeQuery(sql);
+        sql::ResultSetMetaData* meta = res->getMetaData();
+
+        Trk trk;
+        Pist pist;
+        int last_idtkr = -1;
+        while (res->next()) {
+            pist.id_pist = res->getInt("id_pist");
+            pist.id_tank=res->getInt("id_tank");
+            
+            if (res->getInt("id_trk") == last_idtkr) {
+                trks[trks.size() - 1].pists.push_back(pist);
+                continue;
+            }
+
+            trk.pists.push_back(pist);
+            trk.id_trk = res->getInt("id_trk");
+            trk.x_pos = res->getInt("x_pos");
+            trk.y_pos = res->getInt("y_pos");
+            trk.scale = res->getDouble("scale");
+
+            last_idtkr = trk.id_trk;
+            trks.push_back(trk);
+            trk.pists.resize(0);
+        }
+        delete res;
+        delete stmt; 
+    } catch (const sql::SQLException& error) {
+        std::cout << "ERROR MYSQL: " << error.what() << "\n";
+        isconn = false;
+    }
+    return trks;
+}
+std::vector<model::Trk> model::Azs_Database::get_Trks_with_all(Screen_Size* screen,model::VectorWrapper<model::Tovar>* tovars,model::VectorWrapper<model::Tank>* tanks)
 {
     tovars->arr.resize(0);
     tanks->arr.resize(0);
@@ -368,7 +462,7 @@ std::vector<model::Trk> model::Azs_Database::get_Trks(Screen_Size* screen,model:
         }
         delete res;
         delete stmt; 
-        sql = "SELECT * FROM trk WHERE id_azs='" + azs_id + "';";
+   
 
     } catch (const sql::SQLException& error) {
         std::cout << "ERROR MYSQL: " << error.what() << "\n";

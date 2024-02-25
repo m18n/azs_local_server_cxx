@@ -82,7 +82,7 @@ public:
         model::Screen_Size s_size;
         model::VectorWrapper<model::Tank> tanks;
         model::VectorWrapper<model::Tovar> tovars;
-        std::vector<model::Trk> trks = azs_db->get_Trks(&s_size,&tovars,&tanks);
+        std::vector<model::Trk> trks = azs_db->get_Trks_with_all(&s_size,&tovars,&tanks);
         std::string price;
         for (int i = 0; i < trks.size(); i++) {
             // p[i].show();
@@ -152,19 +152,60 @@ public:
     }
     void api_settings_get(crow::request& req, crow::response& res){
         res.set_header("Content-Type", "application/json");
-        
+        model::Screen_Size s_size;
+        model::VectorWrapper<model::Tank> tanks;
+        model::VectorWrapper<model::Tovar> tovars;
+        std::vector<model::Trk> trks = azs_db->get_Trks_with_all(&s_size,&tovars,&tanks);
+        crow::mustache::context ctx = {};
+        for(int i=0;i<tovars.arr.size();i++){
+            
+            ctx["tovars"][i]={{"id_tovar",tovars.arr[i]->id_tovar},{"name",tovars.arr[i]->name},{"name_p",tovars.arr[i]->name_p}
+            ,{"name_p_f",tovars.arr[i]->name_p_f},{"name_p_v",tovars.arr[i]->name_p_v},{"price",tovars.arr[i]->price},{"color",{{"r",tovars.arr[i]->color.r},{"g",tovars.arr[i]->color.g},{"b",tovars.arr[i]->color.b}}}};
+        }
+        for(int i=0;i<tanks.arr.size();i++){
+            ctx["tanks"][i]={{"id_tank",tanks.arr[i]->id_tank},{"id_tovar",tanks.arr[i]->id_tovar},{"volume",tanks.arr[i]->volume},{"remain",tanks.arr[i]->remain}};
+        }
+        for(int i=0;i<trks.size();i++){
+            ctx["trks"][i]={{"id_trk",trks[i].id_trk}};
+            for(int j=0;j<trks[i].pists.size();j++){
+                ctx["trks"][i]["pists"][j]={{"id_pist",trks[i].pists[j].id_pist},{"id_tank",trks[i].pists[j].id_tank}};
+            }
+        }
+        res.body=ctx.dump();
         res.end();
     }
     void api_settings_tanks_get(crow::request& req, crow::response& res){
         res.set_header("Content-Type", "application/json");
+        auto tanks=azs_db->get_Tanks();
+        crow::mustache::context ctx = {};
+        for(int i=0;i<tanks.size();i++){
+            ctx["tanks"][i]={{"id_tank",tanks[i].id_tank},{"id_tovar",tanks[i].id_tovar},{"volume",tanks[i].volume},{"remain",tanks[i].remain}};
+        }
+        res.body=ctx.dump();
         res.end();
     }
     void api_settings_tovars_get(crow::request& req, crow::response& res){
         res.set_header("Content-Type", "application/json");
+        auto tovars=azs_db->get_Tovars();
+        crow::mustache::context ctx = {};
+        for(int i=0;i<tovars.size();i++){
+             ctx["tovars"][i]={{"id_tovar",tovars[i].id_tovar},{"name",tovars[i].name},{"name_p",tovars[i].name_p}
+            ,{"name_p_f",tovars[i].name_p_f},{"name_p_v",tovars[i].name_p_v},{"price",tovars[i].price},{"color",{{"r",tovars[i].color.r},{"g",tovars[i].color.g},{"b",tovars[i].color.b}}}};
+        }
+        res.body=ctx.dump();
         res.end();
     }
     void api_settings_trks_get(crow::request& req, crow::response& res){
         res.set_header("Content-Type", "application/json");
+        auto trks=azs_db->get_Trks();
+        crow::mustache::context ctx = {};
+        for(int i=0;i<trks.size();i++){
+            ctx["trks"][i]={{"id_trk",trks[i].id_trk}};
+            for(int j=0;j<trks[i].pists.size();j++){
+                ctx["trks"][i]["pists"][j]={{"id_pist",trks[i].pists[j].id_pist},{"id_tank",trks[i].pists[j].id_tank}};
+            }
+        }
+        res.body=ctx.dump();
         res.end();
     }
     void api_settings_kasa_get(crow::request& req, crow::response& res){
@@ -184,7 +225,7 @@ public:
         model::Screen_Size screen;
          model::VectorWrapper<model::Tank> tanks;
         model::VectorWrapper<model::Tovar> tovars;
-        auto trks=azs_db->get_Trks(&screen,&tovars,&tanks);
+        auto trks=azs_db->get_Trks_with_all(&screen,&tovars,&tanks);
         trks[0].show();
         crow::mustache::context ctx = {};
         
@@ -234,7 +275,7 @@ public:
         model::Screen_Size s_size;
         model::VectorWrapper<model::Tank> tanks;
         model::VectorWrapper<model::Tovar> tovars;
-        std::vector<model::Trk> trks = azs_db->get_Trks(&s_size,&tovars,&tanks);
+        std::vector<model::Trk> trks = azs_db->get_Trks_with_all(&s_size,&tovars,&tanks);
         std::string price;
         for (int i = 0; i < trks.size(); i++) {
             // p[i].show();
