@@ -374,6 +374,7 @@ std::vector<model::Trk> model::Azs_Database::get_Trks_with_all(Screen_Size* scre
             tov->name_p=res->getString("name_p");
             tov->name_p_f=res->getString("name_p_f");
             tov->name_p_v=res->getString("name_p_v");
+            tov->price=res->getDouble("price");
             int32_t color=res->getInt("color");
             unsigned int red = (color >> 16) & 0xFF;
             unsigned int green = (color >> 8) & 0xFF;
