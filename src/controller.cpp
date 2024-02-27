@@ -34,7 +34,7 @@ void AuthVerefy::before_handle(crow::request& req, crow::response& res, context&
         res.set_header("Content-Type", "text/html");
         // mysql_conn_info last=azs_db->get_last_info();
         // crow::json::wvalue ctx={{"host",last.ip},{"user",last.name},{"password",last.password},{"database",last.database},{"port",last.port}};
-        auto page = crow::mustache::load("erorr_db.html");
+        auto page = crow::mustache::load("public/old/erorr_db.html");
         auto render = page.render();
         res.write(render.body_);
         res.end();
@@ -63,7 +63,7 @@ void DatabaseVerefy::before_handle(crow::request& req, crow::response& res, cont
         res.set_header("Content-Type", "text/html");
         // mysql_conn_info last=azs_db->get_last_info();
         // crow::json::wvalue ctx={{"host",last.ip},{"user",last.name},{"password",last.password},{"database",last.database},{"port",last.port}};
-        auto page = crow::mustache::load("erorr_db.html");
+        auto page = crow::mustache::load("public/old/erorr_db.html");
         auto render = page.render();
         res.write(render.body_);
         res.end();
@@ -99,7 +99,7 @@ crow::mustache::rendered_template auth_main()
     }
 
     std::cout << ctx.dump() << "\n";
-    crow::mustache::rendered_template t = crow::mustache::load("login.html").render(ctx);
+    crow::mustache::rendered_template t = crow::mustache::load("public/old/login.html").render(ctx);
     return t;
 }
 
@@ -136,7 +136,7 @@ void settingsdb_error( crow::request& req, crow::response& res)
         res.set_header("Content-Type", "text/html");
         mysql_conn_info last = azs_db->get_last_input_info();
         crow::json::wvalue ctx = { { "host", last.ip }, { "user", last.name }, { "password", last.password }, { "database", last.database }, { "port", last.port }};
-        auto page = crow::mustache::load("settings_db_error.html");
+        auto page = crow::mustache::load("public/old/settings_db_error.html");
         auto render = page.render(ctx);
         res.write(render.body_);
         res.end();

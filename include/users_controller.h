@@ -77,7 +77,7 @@ public:
     void main_pump(crow::request& req, crow::response& res)
     {
         res.set_header("Content-Type", "text/html");
-        auto page = crow::mustache::load("serv.html");
+        auto page = crow::mustache::load("public/old/serv.html");
         crow::mustache::context ctx = { { "admin", true }, { "pump", "" } };
         model::Screen_Size s_size;
         model::VectorWrapper<model::Tank> tanks;
@@ -216,7 +216,7 @@ public:
     {
         crow::mustache::context ctx = { { "admin", true } };
         res.set_header("Content-Type", "text/html");
-        auto page = crow::mustache::load("settings_azs.html");
+        auto page = crow::mustache::load("public/old/settings_azs.html");
         auto render = page.render(ctx);
         res.write(render.body_);
         res.end();
@@ -249,7 +249,7 @@ public:
             ctx["tanks"][i]={{"id_tank",tanks.arr[i]->id_tank},{"color",color},{"id_tovar",tanks.arr[i]->tovar_->id_tovar},{"name",tanks.arr[i]->tovar_->name},{"price",tanks.arr[i]->tovar_->price}};
         }
         res.set_header("Content-Type", "text/html");
-        auto page = crow::mustache::load("configuration.html");
+        auto page = crow::mustache::load("public/old/configuration.html");
         auto render = page.render(ctx);
         res.write(render.body_);
         res.end();
@@ -270,7 +270,7 @@ public:
     void main_pump(crow::request& req, crow::response& res)
     {
         res.set_header("Content-Type", "text/html");
-        auto page = crow::mustache::load("serv.html");
+        auto page = crow::mustache::load("public/old/serv.html");
         crow::mustache::context ctx = { { "pump", "" } };
         model::Screen_Size s_size;
         model::VectorWrapper<model::Tank> tanks;
@@ -338,7 +338,7 @@ public:
     {
 
         res.set_header("Content-Type", "text/html");
-        auto page = crow::mustache::load("settings_azs.html");
+        auto page = crow::mustache::load("public/old/settings_azs.html");
         auto render = page.render();
         res.write(render.body_);
         res.end();
