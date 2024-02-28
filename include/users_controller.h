@@ -2,10 +2,11 @@
 #include "string"
 #include "string.h"
 #include "web_tehnology.h"
-#define URL_MAIN "/main"
-#define URL_MAIN_SETTINGS "/main/settings"
+#define URL_MAIN "/old/main"
+#define URL_MAIN_SETTINGS "/old/main/settings"
+#define URL_OLD_MAIN_SETTINGS_CONFIG "/old/main/settings/configuration"
 #define URL_MAIN_SETTINGS_CONFIG "/main/settings/configuration"
-#define URL_API_PUMP_SAVE "/api/pump/save"
+#define URL_API_TRK_SAVE "/api/trk/save"
 #define URL_API_OUT "/api/out"
 #define URL_API_OUTSHIFT "/api/outshift"
 #define URL_API_SETTINGS_GET "/api/settings/get"
@@ -22,8 +23,9 @@ protected:
     virtual void init(){
         url_to_func[URL_MAIN]=std::bind(&Client::main_pump, this, std::placeholders::_1, std::placeholders::_2);
         url_to_func[URL_MAIN_SETTINGS]=std::bind(&Client::main_settings, this, std::placeholders::_1, std::placeholders::_2);
+        url_to_func[URL_OLD_MAIN_SETTINGS_CONFIG]=std::bind(&Client::old_main_settings_config, this, std::placeholders::_1, std::placeholders::_2);
         url_to_func[URL_MAIN_SETTINGS_CONFIG]=std::bind(&Client::main_settings_config, this, std::placeholders::_1, std::placeholders::_2);
-        url_to_func[URL_API_PUMP_SAVE]=std::bind(&Client::api_pump_save, this, std::placeholders::_1, std::placeholders::_2);
+        url_to_func[URL_API_TRK_SAVE]=std::bind(&Client::api_trk_save, this, std::placeholders::_1, std::placeholders::_2);
         url_to_func[URL_API_OUT]=std::bind(&Client::api_out, this, std::placeholders::_1, std::placeholders::_2);
         url_to_func[URL_API_OUTSHIFT]=std::bind(&Client::api_outshift, this, std::placeholders::_1, std::placeholders::_2);
         url_to_func[URL_API_SETTINGS_GET]=std::bind(&Client::api_settings_get, this, std::placeholders::_1, std::placeholders::_2);
@@ -35,7 +37,8 @@ protected:
     virtual void main_pump(crow::request& req, crow::response& res) = 0;
     virtual void main_settings(crow::request& req, crow::response& res) = 0;
     virtual void main_settings_config(crow::request& req, crow::response& res) = 0;
-    virtual void api_pump_save(crow::request& req, crow::response& res) = 0;
+    virtual void old_main_settings_config(crow::request& req, crow::response& res) = 0;
+    virtual void api_trk_save(crow::request& req, crow::response& res) = 0;
     virtual void api_out(crow::request& req, crow::response& res) = 0;
     virtual void api_outshift(crow::request& req, crow::response& res) = 0;
     virtual void api_settings_get(crow::request& req, crow::response& res) = 0;
@@ -104,7 +107,7 @@ public:
         res.write(render.body_);
         res.end();
     }
-    void api_pump_save(crow::request& req, crow::response& res){
+    void api_trk_save(crow::request& req, crow::response& res){
         res.set_header("Content-Type", "application/json");
         crow::json::wvalue ret({ { "status", "yes" } });
         crow::json::wvalue json = crow::json::load(req.body);
@@ -221,7 +224,7 @@ public:
         res.write(render.body_);
         res.end();
     }
-    void main_settings_config(crow::request& req, crow::response& res){
+    void old_main_settings_config(crow::request& req, crow::response& res){
         model::Screen_Size screen;
          model::VectorWrapper<model::Tank> tanks;
         model::VectorWrapper<model::Tovar> tovars;
@@ -251,6 +254,13 @@ public:
         res.set_header("Content-Type", "text/html");
         auto page = crow::mustache::load("public/old/configuration.html");
         auto render = page.render(ctx);
+        res.write(render.body_);
+        res.end();
+    }
+    void main_settings_config(crow::request& req, crow::response& res){
+        res.set_header("Content-Type", "text/html");
+        auto page = crow::mustache::load("index.html");
+        auto render = page.render();
         res.write(render.body_);
         res.end();
     }
@@ -343,6 +353,13 @@ public:
         res.write(render.body_);
         res.end();
     }
+    void old_main_settings_config(crow::request& req, crow::response& res)
+    {
+
+        res.redirect("/");
+        res.add_header("Set-Cookie", "refresh_token=;path=/;");
+        res.end();
+    }
     void main_settings_config(crow::request& req, crow::response& res)
     {
 
@@ -351,9 +368,8 @@ public:
         res.end();
     }
     
-    
-   void api_pump_save(crow::request& req, crow::response& res){
-        res.redirect("/main");
+   void api_trk_save(crow::request& req, crow::response& res){
+        res.redirect(URL_MAIN);
         res.end();
     }
     
