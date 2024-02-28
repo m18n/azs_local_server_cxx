@@ -40,17 +40,22 @@ void AuthVerefy::before_handle(crow::request& req, crow::response& res, context&
         res.end();
         return;
     }
-    int result=check_coockie(req,res);
-    if(result==1){
+    #ifdef DEBUG_BUILD
         admin.Controller(req.url, req, res);
-    }else if(result==0){
-        user.Controller(req.url, req, res);
-    }else{
-        res.redirect("/");
-        res.add_header("Set-Cookie", "refresh_token=;path=/;");
-        res.end();
-        return;
-    }
+    #elif defined(RELEASE_BUILD)
+        int result=check_coockie(req,res);
+        if(result==1){
+            admin.Controller(req.url, req, res);
+        }else if(result==0){
+            user.Controller(req.url, req, res);
+        }else{
+            res.redirect("/");
+            res.add_header("Set-Cookie", "refresh_token=;path=/;");
+            res.end();
+            return;
+        }
+    #endif
+    
 }
 
 void AuthVerefy::after_handle(crow::request& req, crow::response& res, context& /*ctx*/)

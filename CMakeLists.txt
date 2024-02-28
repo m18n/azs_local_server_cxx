@@ -28,7 +28,9 @@ IF (WIN32)
     set(SOURCES ${MAIN_SOURCES})
     
 ELSE()
-    file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/azs_site DESTINATION ${CMAKE_BINARY_DIR}/bin)
+    file(REMOVE_RECURSE ${CMAKE_BINARY_DIR}/bin/azs_site)
+    file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/bin/azs_site)
+    file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/azs_site/dist/ DESTINATION ${CMAKE_BINARY_DIR}/bin/azs_site)
     file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/library/linux/mysqlconn/lib64/private/libssl.so.3 DESTINATION ${CMAKE_BINARY_DIR}/bin)
     file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/library/linux/mysqlconn/lib64/private/libcrypto.so.3 DESTINATION ${CMAKE_BINARY_DIR}/bin)
     file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/library/linux/mysqlconn/lib64/libmysqlcppconn.so.9 DESTINATION ${CMAKE_BINARY_DIR}/bin)
@@ -48,7 +50,11 @@ ELSE()
     # Вказуємо RPATH для знаходження бібліотеки в тій самій папці
     set(CMAKE_INSTALL_RPATH "$ORIGIN")
 ENDIF()
-
+if(CMAKE_BUILD_TYPE MATCHES Debug)
+    add_definitions(-DDEBUG_BUILD)
+elseif(CMAKE_BUILD_TYPE MATCHES Release)
+    add_definitions(-DRELEASE_BUILD)
+endif()
 
 include_directories(library/jwt)
 include_directories(include)

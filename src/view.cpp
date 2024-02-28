@@ -2,7 +2,7 @@
 void init_view_login(crow::App<AuthVerefy,DatabaseVerefy> &app) {
   CROW_ROUTE(app, "/public/<path>")
   ([](const crow::request &, crow::response &res, std::string path) {
-    return static_files(res, "/public/old/"+path);
+    return static_files(res, "public/"+path);
   });
   CROW_ROUTE(app, "/").CROW_MIDDLEWARES(app, DatabaseVerefy)
   ([]() { return auth_main(); });
