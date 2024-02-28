@@ -2,20 +2,25 @@
 void init_view_login(crow::App<AuthVerefy,DatabaseVerefy> &app) {
   CROW_ROUTE(app, "/public/<path>")
   ([](const crow::request &, crow::response &res, std::string path) {
+    res.add_header("Access-Control-Allow-Origin", "*");
     return static_files(res, "public/"+path);
   });
   CROW_ROUTE(app, "/").CROW_MIDDLEWARES(app, DatabaseVerefy)
   ([]() { return auth_main(); });
   CROW_ROUTE(app, "/auth").methods("POST"_method)([]( crow::request &req, crow::response &res) {
+    res.add_header("Access-Control-Allow-Origin", "*");
     auth_post(req,res);
   });
    CROW_ROUTE(app, "/settings/dberror")([]( crow::request &req, crow::response &res) {
+    res.add_header("Access-Control-Allow-Origin", "*");
     settingsdb_error(req,res);
   });
   CROW_ROUTE(app, "/settings/dberror/send").methods("POST"_method)([]( crow::request &req, crow::response &res) {
+    res.add_header("Access-Control-Allow-Origin", "*");
     settingsdb_error_send(req,res);
   });
   CROW_ROUTE(app, "/settings/dberror/check")([]( crow::request &req, crow::response &res) {
+    res.add_header("Access-Control-Allow-Origin", "*");
     settingsdb_error_check(req,res);
   });
   CROW_ROUTE(app, "/api").CROW_MIDDLEWARES(app, DatabaseVerefy)([]( ) {
