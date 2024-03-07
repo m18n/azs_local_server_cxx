@@ -1,4 +1,5 @@
 #pragma once
+#include "crow.h"
 #include "core.h"
 #include "local_data.h"
 #include "mysql_connection.h"
@@ -55,7 +56,7 @@ struct Tovar {
     std::string name_p_v;
     Color color;
 };
-
+Tovar json_to_tovar(crow::json::wvalue json);
 
 struct Tank {
     int32_t id_tank = -1;
@@ -64,6 +65,7 @@ struct Tank {
     int32_t remain=-1;
     Tovar* tovar_=NULL;
 };
+Tank json_to_tank(crow::json::wvalue json);
 bool compareByid(const Tank &a, const Tank &b);
 
 struct Pist {
@@ -90,6 +92,8 @@ struct Trk {
         }
     }
 };
+Trk json_to_trk(crow::json::wvalue json);
+
 struct Screen_Size{
     int width=0;
     int height=0;
@@ -179,6 +183,7 @@ public:
     std::vector<Tank> get_Tanks();
     std::vector<Trk> get_Trks();
     void save_Trks(std::vector<Trk> trks,int screen_width,int screen_height);
+    void set_Tovar(Tovar tovar);
     bool smena_bool();
     bool smena_bool(int32_t* userid);
     bool smena_bool(int32_t* last_id, int32_t* last_nn);

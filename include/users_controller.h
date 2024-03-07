@@ -10,6 +10,7 @@
 #define URL_API_OUT "/api/out"
 #define URL_API_OUTSHIFT "/api/outshift"
 #define URL_API_SETTINGS_GET "/api/settings/get"
+#define URL_API_SETTINGS_SET "/api/settings/set"
 #define URL_API_SETTINGS_TANKS_GET "/api/settings/tanks/get"
 #define URL_API_SETTINGS_TOVARS_GET "/api/settings/tovars/get"
 #define URL_API_SETTINGS_TRKS_GET "/api/settings/trks/get"
@@ -29,6 +30,7 @@ protected:
         url_to_func[URL_API_OUT]=std::bind(&Client::api_out, this, std::placeholders::_1, std::placeholders::_2);
         url_to_func[URL_API_OUTSHIFT]=std::bind(&Client::api_outshift, this, std::placeholders::_1, std::placeholders::_2);
         url_to_func[URL_API_SETTINGS_GET]=std::bind(&Client::api_settings_get, this, std::placeholders::_1, std::placeholders::_2);
+        url_to_func[URL_API_SETTINGS_SET]=std::bind(&Client::api_settings_set, this, std::placeholders::_1, std::placeholders::_2);
         url_to_func[URL_API_SETTINGS_TANKS_GET]=std::bind(&Client::api_settings_tanks_get, this, std::placeholders::_1, std::placeholders::_2);
         url_to_func[URL_API_SETTINGS_TOVARS_GET]=std::bind(&Client::api_settings_tovars_get, this, std::placeholders::_1, std::placeholders::_2);
         url_to_func[URL_API_SETTINGS_TRKS_GET]=std::bind(&Client::api_settings_trks_get, this, std::placeholders::_1, std::placeholders::_2);
@@ -42,6 +44,7 @@ protected:
     virtual void api_out(crow::request& req, crow::response& res) = 0;
     virtual void api_outshift(crow::request& req, crow::response& res) = 0;
     virtual void api_settings_get(crow::request& req, crow::response& res) = 0;
+    virtual void api_settings_set(crow::request& req, crow::response& res) = 0;
     virtual void api_settings_tanks_get(crow::request& req, crow::response& res) = 0;
     virtual void api_settings_tovars_get(crow::request& req, crow::response& res) = 0;
     virtual void api_settings_trks_get(crow::request& req, crow::response& res) = 0;
@@ -172,6 +175,46 @@ public:
             ctx["trks"][i]={{"id_trk",trks[i].id_trk}};
             for(int j=0;j<trks[i].pists.size();j++){
                 ctx["trks"][i]["pists"][j]={{"id_pist",trks[i].pists[j].id_pist},{"id_tank",trks[i].pists[j].id_tank}};
+            }
+        }
+        res.body=ctx.dump();
+        res.end();
+    }
+    void api_settings_set(crow::request& req, crow::response& res){
+        res.set_header("Content-Type", "application/json");
+        crow::mustache::context ctx = {};
+        ctx["status"]="success";
+        crow::json::wvalue json = crow::json::load(req.body);
+        std::cout<<"TOVAR: "<<json["tovars"].size()<<"\n";
+        std::cout<<"TRK: "<<json["trks"].size()<<"\n";
+        std::cout<<"NULL: "<<json["tee"].size()<<"\n";
+        std::cout<<"JSON: "<<json.dump()<<"\n";
+        
+        if(json["tovars"].t()==crow::json::type::List){
+            for(int i=0;i<json["tovars"].size();i++){
+                model::Tovar tov=model::json_to_tovar(json["tovars"][i]);
+                if(tov.id_tovar==-1){
+                  ctx["status"]="error";
+                }
+                
+            }
+        }
+        if(json["tanks"].t()==crow::json::type::List){
+            for(int i=0;i<json["tanks"].size();i++){
+                model::Tank tank=model::json_to_tank(json["tanks"][i]);
+                if(tank.id_tank==-1){
+                  ctx["status"]="error";
+                }
+                
+            }
+        }
+        if(json["trks"].t()==crow::json::type::List){
+            for(int i=0;i<json["trks"].size();i++){
+                model::Trk trk=model::json_to_trk(json["trks"][i]);
+                if(trk.id_trk==-1){
+                  ctx["status"]="error";
+                }
+                
             }
         }
         res.body=ctx.dump();
@@ -320,6 +363,11 @@ public:
         res.end();
     }
     void api_settings_get(crow::request& req, crow::response& res){
+        res.redirect("/");
+        res.add_header("Set-Cookie", "refresh_token=;path=/;");
+        res.end();
+    }
+    void api_settings_set(crow::request& req, crow::response& res){
         res.redirect("/");
         res.add_header("Set-Cookie", "refresh_token=;path=/;");
         res.end();

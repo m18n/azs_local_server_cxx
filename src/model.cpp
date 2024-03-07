@@ -1,5 +1,58 @@
 #include "model.h"
-
+model::Tovar model::json_to_tovar(crow::json::wvalue json){
+    Tovar tov;
+   
+    if(json["id_tovar"].t()==crow::json::type::Number&&json["price"].t()==crow::json::type::Number
+    &&json["name"].t()==crow::json::type::String&&json["name_p"].t()==crow::json::type::String
+    &&json["name_p_f"].t()==crow::json::type::String&&json["name_p_v"].t()==crow::json::type::String){
+        if(json["color"].t()==crow::json::type::Object&&json["color"]["r"].t()==crow::json::type::Number
+        &&json["color"]["g"].t()==crow::json::type::Number&&json["color"]["b"].t()==crow::json::type::Number){
+            tov.id_tovar=std::stoi(json["id_tovar"].dump());
+            tov.name=json["name"].dump();
+            tov.name_p=json["name_p"].dump();
+            tov.name_p_f=json["name_p_f"].dump();
+            tov.name_p_v=json["name_p_v"].dump();
+            tov.price=std::stof(json["price"].dump());
+            tov.color.r=std::stoi(json["color"]["r"].dump());
+            tov.color.g=std::stoi(json["color"]["g"].dump());
+            tov.color.b=std::stoi(json["color"]["b"].dump());
+        }
+    }
+    return tov;
+}
+model::Tank model::json_to_tank(crow::json::wvalue json){
+    Tank tank;
+    if(json["id_tank"].t()==crow::json::type::Number&&json["id_tovar"].t()==crow::json::type::Number
+    &&json["volume"].t()==crow::json::type::Number&&json["remain"].t()==crow::json::type::Number){
+        tank.id_tank=std::stoi(json["id_tank"].dump());
+        tank.id_tovar=std::stoi(json["id_tovar"].dump());
+        tank.remain=std::stoi(json["remain"].dump());
+        tank.volume=std::stoi(json["volume"].dump());
+    }
+    return tank;
+}
+model::Trk model::json_to_trk(crow::json::wvalue json){
+    Trk trk;
+    if(json["id_trk"].t()==crow::json::type::Number&&json["x_pos"].t()==crow::json::type::Number
+    &&json["y_pos"].t()==crow::json::type::Number&&json["scale"].t()==crow::json::type::Number&&json["pists"].t()==crow::json::type::List){
+        for(int i=0;i<json["pists"].size();i++){
+            if(json["pists"][i]["id_pist"].t()==crow::json::type::Number&&json["pists"][i]["id_tank"].t()==crow::json::type::Number){
+                Pist pist;
+                pist.id_pist=std::stoi(json["pists"][i]["id_pist"].dump());
+                pist.id_tank=std::stoi(json["pists"][i]["id_tank"].dump());
+                trk.pists.push_back(pist);
+            }else{
+                Trk empty;
+                return empty;
+            }
+        }
+        trk.id_trk=std::stoi(json["id_trk"].dump());
+        trk.x_pos=std::stoi(json["x_pos"].dump());
+        trk.y_pos=std::stoi(json["y_pos"].dump());
+        trk.scale=std::stof(json["scale"].dump());
+    }
+    return trk;
+}
 std::vector<model::User_Name> model::Azs_Database::get_Users_Name()
 {
 
@@ -46,6 +99,20 @@ void model::Azs_Database::save_Trks(std::vector<model::Trk> trks,int screen_widt
             isconn = false;
         }
     }
+}
+void model::Azs_Database::set_Tovar(Tovar tovar){
+    try {
+            stmt = con->createStatement();
+            std::string sql = "UPDATE tovars SET price="+std::to_string(tovar.price)+", name=\""+tovar.name+
+            "\", name_p=\""+tovar.name_p+"\", name_p_f=\""+tovar.name_p_f+
+            "\", name_p_v=\""+tovar.name_p_v+"\" WHERE id_tovar=\""+std::to_string(tovar.id_tovar)+"\";";
+            int t = stmt->executeUpdate(sql);
+
+            delete stmt;
+        } catch (const sql::SQLException& error) {
+            std::cout << "ERROR MYSQL: " << error.what() << "\n";
+            isconn = false;
+        }
 }
 bool model::Azs_Database::smena_bool(int32_t* last_id, int32_t* last_nn)
 {
