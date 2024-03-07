@@ -101,6 +101,8 @@
         "xutility": "cpp",
         "*.rh": "cpp",
         "*.ipp": "cpp",
-        "valarray": "cpp"
+        "valarray": "cpp",
+        "ranges": "cpp",
+        "span": "cpp"
     }
 }

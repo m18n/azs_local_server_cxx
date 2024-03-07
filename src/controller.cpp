@@ -34,7 +34,7 @@ void AuthVerefy::before_handle(crow::request& req, crow::response& res, context&
         azs_db->connect_async(azs_db->get_last_connect_info());
         res.set_header("Content-Type", "text/html");
         // mysql_conn_info last=azs_db->get_last_info();
-        // crow::json::wvalue ctx={{"host",last.ip},{"user",last.name},{"password",last.password},{"database",last.database},{"port",last.port}};
+        // nlohmann::json ctx={{"host",last.ip},{"user",last.name},{"password",last.password},{"database",last.database},{"port",last.port}};
         auto page = crow::mustache::load("public/old/erorr_db.html");
         auto render = page.render();
         res.write(render.body_);
@@ -69,7 +69,7 @@ void DatabaseVerefy::before_handle(crow::request& req, crow::response& res, cont
         azs_db->connect_async(azs_db->get_last_connect_info());
         res.set_header("Content-Type", "text/html");
         // mysql_conn_info last=azs_db->get_last_info();
-        // crow::json::wvalue ctx={{"host",last.ip},{"user",last.name},{"password",last.password},{"database",last.database},{"port",last.port}};
+        // nlohmann::json ctx={{"host",last.ip},{"user",last.name},{"password",last.password},{"database",last.database},{"port",last.port}};
         auto page = crow::mustache::load("public/old/erorr_db.html");
         auto render = page.render();
         res.write(render.body_);
@@ -112,15 +112,11 @@ crow::mustache::rendered_template auth_main()
 
 void auth_post( crow::request& req, crow::response& res)
 {
-    crow::json::wvalue ret({ { "status", "not" } });
-    auto x = crow::json::load(req.body);
-    if (!x) {
-        res.body = ret.dump();
-        res.end();
-        return;
-    }
-    int32_t userid = (int32_t)x[0]["value"];
-    std::string password = (std::string)x[1]["value"];
+    nlohmann::json ret({ { "status", "not" } });
+    nlohmann::json x = nlohmann::json::parse(req.body);
+    std::string str=x[0]["value"];
+    int32_t userid = std::stoi(str);
+    std::string password = x[1]["value"];
     std::cout << "User: " << userid << " PASSWORD: " << password << "\n";
     bool admin = false;
     if (azs_db->auth_check(userid, password, admin)) {
@@ -142,9 +138,10 @@ void settingsdb_error( crow::request& req, crow::response& res)
     if(azs_db->isConnect()==false||check_coockie(req,res)==1){
         res.set_header("Content-Type", "text/html");
         mysql_conn_info last = azs_db->get_last_input_info();
-        crow::json::wvalue ctx = { { "host", last.ip }, { "user", last.name }, { "password", last.password }, { "database", last.database }, { "port", last.port }};
+        nlohmann::json ctx = { { "host", last.ip }, { "user", last.name }, { "password", last.password }, { "database", last.database }, { "port", last.port }};
         auto page = crow::mustache::load("public/old/settings_db_error.html");
-        auto render = page.render(ctx);
+        
+        auto render = page.render(crow::json::load(ctx.dump()));
         res.write(render.body_);
         res.end();
     }else{
@@ -156,8 +153,8 @@ void settingsdb_error( crow::request& req, crow::response& res)
 void settingsdb_error_send(crow::request& req, crow::response& res)
 {
     if(azs_db->isConnect()==false||check_coockie(req,res)==1){
-        crow::json::wvalue ret({ { "status", "not" } });
-        crow::json::wvalue x = crow::json::load(req.body);
+        nlohmann::json ret({ { "status", "not" } });
+        nlohmann::json x = nlohmann::json::parse(req.body);
         std::string t = x.dump();
         if (x.dump() == "null" || x.dump() == "[]" || x.dump() == "\"\"") {
             res.body = ret.dump();
@@ -166,11 +163,11 @@ void settingsdb_error_send(crow::request& req, crow::response& res)
         }
         mysql_conn_info info;
 
-        info.ip = x[0]["value"].dump(true);
-        info.name = x[1]["value"].dump(true);
-        info.password = x[2]["value"].dump(true);
-        info.database = x[3]["value"].dump(true);
-        info.port = x[4]["value"].dump(true);
+        info.ip = x[0]["value"];
+        info.name = x[1]["value"];
+        info.password = x[2]["value"];
+        info.database = x[3]["value"];
+        info.port = x[4]["value"];
         info.show();
         ret["status"] = "ok";
         
@@ -188,7 +185,7 @@ void settingsdb_error_send(crow::request& req, crow::response& res)
 }
 void settingsdb_error_check( crow::request& req, crow::response& res){
     if(azs_db->isConnect()==false||check_coockie(req,res)==1){
-        crow::json::wvalue ret({ { "status", "not" } });
+        nlohmann::json ret({ { "status", "not" } });
         
         if(azs_db->while_connect()==true){
             ret["status"]="process";

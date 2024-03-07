@@ -53,6 +53,9 @@ ELSE()
     # Вказуємо RPATH для знаходження бібліотеки в тій самій папці
     set(CMAKE_INSTALL_RPATH "$ORIGIN")
 ENDIF()
+
+add_subdirectory(library/json-develop)
+include_directories(library/json-develop/include)
 if(CMAKE_BUILD_TYPE MATCHES Debug)
     add_definitions(-DDEBUG_BUILD)
 elseif(CMAKE_BUILD_TYPE MATCHES Release)
@@ -73,3 +76,4 @@ ELSE()
 target_link_libraries(${PROJECT_NAME} Crow libssl.so.3 libcrypto.so.3 libmysqlcppconn.so )
 
 ENDIF()
+target_link_libraries(${PROJECT_NAME} nlohmann_json::nlohmann_json)

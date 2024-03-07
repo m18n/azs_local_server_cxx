@@ -1,58 +1,58 @@
 #include "model.h"
-model::Tovar model::json_to_tovar(crow::json::wvalue json)
+model::Tovar model::json_to_tovar(nlohmann::json json)
 {
     Tovar tov;
-
-    if (json["id_tovar"].t() == crow::json::type::Number && json["price"].t() == crow::json::type::Number
-        && json["name"].t() == crow::json::type::String && json["name_p"].t() == crow::json::type::String
-        && json["name_p_f"].t() == crow::json::type::String && json["name_p_v"].t() == crow::json::type::String) {
-        if (json["color"].t() == crow::json::type::Object && json["color"]["r"].t() == crow::json::type::Number
-            && json["color"]["g"].t() == crow::json::type::Number && json["color"]["b"].t() == crow::json::type::Number) {
-            tov.id_tovar = std::stoi(json["id_tovar"].dump());
-            tov.name = json["name"].dump(true);
-            tov.name_p = json["name_p"].dump(true);
-            tov.name_p_f = json["name_p_f"].dump(true);
-            tov.name_p_v = json["name_p_v"].dump(true);
-            tov.price = std::stof(json["price"].dump());
-            tov.color.r = std::stoi(json["color"]["r"].dump());
-            tov.color.g = std::stoi(json["color"]["g"].dump());
-            tov.color.b = std::stoi(json["color"]["b"].dump());
+    
+    if (json["id_tovar"].type() == nlohmann::json::value_t::number_integer && json["price"].type() == nlohmann::json::value_t::number_float
+        && json["name"].type() == nlohmann::json::value_t::string && json["name_p"].type() == nlohmann::json::value_t::string
+        && json["name_p_f"].type() == nlohmann::json::value_t::string && json["name_p_v"].type() == nlohmann::json::value_t::string) {
+        if (json["color"].type() == nlohmann::json::value_t::object && json["color"]["r"].type() == nlohmann::json::value_t::number_integer
+            && json["color"]["g"].type() == nlohmann::json::value_t::number_integer && json["color"]["b"].type() == nlohmann::json::value_t::number_integer) {
+            tov.id_tovar = json["id_tovar"];
+            tov.name = json["name"];
+            tov.name_p = json["name_p"];
+            tov.name_p_f = json["name_p_f"];
+            tov.name_p_v = json["name_p_v"];
+            tov.price = json["price"];
+            tov.color.r = json["color"]["r"];
+            tov.color.g = json["color"]["g"];
+            tov.color.b = json["color"]["b"];
         }
     }
     return tov;
 }
-model::Tank model::json_to_tank(crow::json::wvalue json)
+model::Tank model::json_to_tank(nlohmann::json json)
 {
     Tank tank;
-    if (json["id_tank"].t() == crow::json::type::Number && json["id_tovar"].t() == crow::json::type::Number
-        && json["volume"].t() == crow::json::type::Number && json["remain"].t() == crow::json::type::Number) {
-        tank.id_tank = std::stoi(json["id_tank"].dump());
-        tank.id_tovar = std::stoi(json["id_tovar"].dump());
-        tank.remain = std::stoi(json["remain"].dump());
-        tank.volume = std::stoi(json["volume"].dump());
+    if (json["id_tank"].type() == nlohmann::json::value_t::number_integer && json["id_tovar"].type() == nlohmann::json::value_t::number_integer
+        && json["volume"].type() == nlohmann::json::value_t::number_integer && json["remain"].type() == nlohmann::json::value_t::number_integer) {
+        tank.id_tank = json["id_tank"];
+        tank.id_tovar = json["id_tovar"];
+        tank.remain = json["remain"];
+        tank.volume = json["volume"];
     }
     return tank;
 }
-model::Trk model::json_to_trk(crow::json::wvalue json)
+model::Trk model::json_to_trk(nlohmann::json json)
 {
     Trk trk;
-    if (json["id_trk"].t() == crow::json::type::Number && json["x_pos"].t() == crow::json::type::Number
-        && json["y_pos"].t() == crow::json::type::Number && json["scale"].t() == crow::json::type::Number && json["pists"].t() == crow::json::type::List) {
+    if (json["id_trk"].type() == nlohmann::json::value_t::number_integer && json["x_pos"].type() == nlohmann::json::value_t::number_integer
+        && json["y_pos"].type() == nlohmann::json::value_t::number_integer && json["scale"].type() == nlohmann::json::value_t::number_float && json["pists"].type() == nlohmann::json::value_t::array) {
         for (int i = 0; i < json["pists"].size(); i++) {
-            if (json["pists"][i]["id_pist"].t() == crow::json::type::Number && json["pists"][i]["id_tank"].t() == crow::json::type::Number) {
+            if (json["pists"][i]["id_pist"].type() == nlohmann::json::value_t::number_integer && json["pists"][i]["id_tank"].type() == nlohmann::json::value_t::number_integer) {
                 Pist pist;
-                pist.id_pist = std::stoi(json["pists"][i]["id_pist"].dump());
-                pist.id_tank = std::stoi(json["pists"][i]["id_tank"].dump());
+                pist.id_pist = json["pists"][i]["id_pist"];
+                pist.id_tank = json["pists"][i]["id_tank"];
                 trk.pists.push_back(pist);
             } else {
                 Trk empty;
                 return empty;
             }
         }
-        trk.id_trk = std::stoi(json["id_trk"].dump());
-        trk.x_pos = std::stoi(json["x_pos"].dump());
-        trk.y_pos = std::stoi(json["y_pos"].dump());
-        trk.scale = std::stof(json["scale"].dump());
+        trk.id_trk = json["id_trk"];
+        trk.x_pos = json["x_pos"];
+        trk.y_pos = json["y_pos"];
+        trk.scale = json["scale"];
     }
     return trk;
 }

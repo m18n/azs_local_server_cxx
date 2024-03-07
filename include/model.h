@@ -13,7 +13,7 @@
 #include <thread>
 #include <vector>
 #include <string.h>
-
+#include <nlohmann/json.hpp>
 // #include <windows.h>
 namespace model {
 template<typename T>
@@ -56,7 +56,7 @@ struct Tovar {
     std::string name_p_v;
     Color color;
 };
-Tovar json_to_tovar(crow::json::wvalue json);
+Tovar json_to_tovar(nlohmann::json json);
 
 struct Tank {
     int32_t id_tank = -1;
@@ -65,7 +65,7 @@ struct Tank {
     int32_t remain=-1;
     Tovar* tovar_=NULL;
 };
-Tank json_to_tank(crow::json::wvalue json);
+Tank json_to_tank(nlohmann::json json);
 bool compareByid(const Tank &a, const Tank &b);
 
 struct Pist {
@@ -92,7 +92,7 @@ struct Trk {
         }
     }
 };
-Trk json_to_trk(crow::json::wvalue json);
+Trk json_to_trk(nlohmann::json json);
 
 struct Screen_Size{
     int width=0;
