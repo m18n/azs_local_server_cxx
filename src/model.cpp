@@ -1,55 +1,58 @@
 #include "model.h"
-model::Tovar model::json_to_tovar(crow::json::wvalue json){
+model::Tovar model::json_to_tovar(crow::json::wvalue json)
+{
     Tovar tov;
-   
-    if(json["id_tovar"].t()==crow::json::type::Number&&json["price"].t()==crow::json::type::Number
-    &&json["name"].t()==crow::json::type::String&&json["name_p"].t()==crow::json::type::String
-    &&json["name_p_f"].t()==crow::json::type::String&&json["name_p_v"].t()==crow::json::type::String){
-        if(json["color"].t()==crow::json::type::Object&&json["color"]["r"].t()==crow::json::type::Number
-        &&json["color"]["g"].t()==crow::json::type::Number&&json["color"]["b"].t()==crow::json::type::Number){
-            tov.id_tovar=std::stoi(json["id_tovar"].dump());
-            tov.name=json["name"].dump();
-            tov.name_p=json["name_p"].dump();
-            tov.name_p_f=json["name_p_f"].dump();
-            tov.name_p_v=json["name_p_v"].dump();
-            tov.price=std::stof(json["price"].dump());
-            tov.color.r=std::stoi(json["color"]["r"].dump());
-            tov.color.g=std::stoi(json["color"]["g"].dump());
-            tov.color.b=std::stoi(json["color"]["b"].dump());
+
+    if (json["id_tovar"].t() == crow::json::type::Number && json["price"].t() == crow::json::type::Number
+        && json["name"].t() == crow::json::type::String && json["name_p"].t() == crow::json::type::String
+        && json["name_p_f"].t() == crow::json::type::String && json["name_p_v"].t() == crow::json::type::String) {
+        if (json["color"].t() == crow::json::type::Object && json["color"]["r"].t() == crow::json::type::Number
+            && json["color"]["g"].t() == crow::json::type::Number && json["color"]["b"].t() == crow::json::type::Number) {
+            tov.id_tovar = std::stoi(json["id_tovar"].dump());
+            tov.name = json["name"].dump(true);
+            tov.name_p = json["name_p"].dump(true);
+            tov.name_p_f = json["name_p_f"].dump(true);
+            tov.name_p_v = json["name_p_v"].dump(true);
+            tov.price = std::stof(json["price"].dump());
+            tov.color.r = std::stoi(json["color"]["r"].dump());
+            tov.color.g = std::stoi(json["color"]["g"].dump());
+            tov.color.b = std::stoi(json["color"]["b"].dump());
         }
     }
     return tov;
 }
-model::Tank model::json_to_tank(crow::json::wvalue json){
+model::Tank model::json_to_tank(crow::json::wvalue json)
+{
     Tank tank;
-    if(json["id_tank"].t()==crow::json::type::Number&&json["id_tovar"].t()==crow::json::type::Number
-    &&json["volume"].t()==crow::json::type::Number&&json["remain"].t()==crow::json::type::Number){
-        tank.id_tank=std::stoi(json["id_tank"].dump());
-        tank.id_tovar=std::stoi(json["id_tovar"].dump());
-        tank.remain=std::stoi(json["remain"].dump());
-        tank.volume=std::stoi(json["volume"].dump());
+    if (json["id_tank"].t() == crow::json::type::Number && json["id_tovar"].t() == crow::json::type::Number
+        && json["volume"].t() == crow::json::type::Number && json["remain"].t() == crow::json::type::Number) {
+        tank.id_tank = std::stoi(json["id_tank"].dump());
+        tank.id_tovar = std::stoi(json["id_tovar"].dump());
+        tank.remain = std::stoi(json["remain"].dump());
+        tank.volume = std::stoi(json["volume"].dump());
     }
     return tank;
 }
-model::Trk model::json_to_trk(crow::json::wvalue json){
+model::Trk model::json_to_trk(crow::json::wvalue json)
+{
     Trk trk;
-    if(json["id_trk"].t()==crow::json::type::Number&&json["x_pos"].t()==crow::json::type::Number
-    &&json["y_pos"].t()==crow::json::type::Number&&json["scale"].t()==crow::json::type::Number&&json["pists"].t()==crow::json::type::List){
-        for(int i=0;i<json["pists"].size();i++){
-            if(json["pists"][i]["id_pist"].t()==crow::json::type::Number&&json["pists"][i]["id_tank"].t()==crow::json::type::Number){
+    if (json["id_trk"].t() == crow::json::type::Number && json["x_pos"].t() == crow::json::type::Number
+        && json["y_pos"].t() == crow::json::type::Number && json["scale"].t() == crow::json::type::Number && json["pists"].t() == crow::json::type::List) {
+        for (int i = 0; i < json["pists"].size(); i++) {
+            if (json["pists"][i]["id_pist"].t() == crow::json::type::Number && json["pists"][i]["id_tank"].t() == crow::json::type::Number) {
                 Pist pist;
-                pist.id_pist=std::stoi(json["pists"][i]["id_pist"].dump());
-                pist.id_tank=std::stoi(json["pists"][i]["id_tank"].dump());
+                pist.id_pist = std::stoi(json["pists"][i]["id_pist"].dump());
+                pist.id_tank = std::stoi(json["pists"][i]["id_tank"].dump());
                 trk.pists.push_back(pist);
-            }else{
+            } else {
                 Trk empty;
                 return empty;
             }
         }
-        trk.id_trk=std::stoi(json["id_trk"].dump());
-        trk.x_pos=std::stoi(json["x_pos"].dump());
-        trk.y_pos=std::stoi(json["y_pos"].dump());
-        trk.scale=std::stof(json["scale"].dump());
+        trk.id_trk = std::stoi(json["id_trk"].dump());
+        trk.x_pos = std::stoi(json["x_pos"].dump());
+        trk.y_pos = std::stoi(json["y_pos"].dump());
+        trk.scale = std::stof(json["scale"].dump());
     }
     return trk;
 }
@@ -76,21 +79,22 @@ std::vector<model::User_Name> model::Azs_Database::get_Users_Name()
     return users;
 }
 
-void model::Azs_Database::save_Trks(std::vector<model::Trk> trks,int screen_width,int screen_height){
-     try {
-            stmt = con->createStatement();
-            std::string sql = "UPDATE loc_const SET value=\""+std::to_string(screen_width)+","+std::to_string(screen_height)+"\" WHERE descr_var=\"cnst_ScreenSize\";";
-            int t = stmt->executeUpdate(sql);
+void model::Azs_Database::save_Trks(std::vector<model::Trk> trks, int screen_width, int screen_height)
+{
+    try {
+        stmt = con->createStatement();
+        std::string sql = "UPDATE loc_const SET value=\"" + std::to_string(screen_width) + "," + std::to_string(screen_height) + "\" WHERE descr_var=\"cnst_ScreenSize\";";
+        int t = stmt->executeUpdate(sql);
 
-            delete stmt;
-        } catch (const sql::SQLException& error) {
-            std::cout << "ERROR MYSQL: " << error.what() << "\n";
-            isconn = false;
-        }
-    for(int i=0;i<trks.size();i++){
+        delete stmt;
+    } catch (const sql::SQLException& error) {
+        std::cout << "ERROR MYSQL: " << error.what() << "\n";
+        isconn = false;
+    }
+    for (int i = 0; i < trks.size(); i++) {
         try {
             stmt = con->createStatement();
-            std::string sql = "UPDATE com_trk SET scale="+ std::to_string(trks[i].scale)+", x_pos=" + std::to_string(trks[i].x_pos) + ", y_pos=" + std::to_string(trks[i].y_pos) + " WHERE id_trk=" + std::to_string(trks[i].id_trk) + ";";
+            std::string sql = "UPDATE com_trk SET scale=" + std::to_string(trks[i].scale) + ", x_pos=" + std::to_string(trks[i].x_pos) + ", y_pos=" + std::to_string(trks[i].y_pos) + " WHERE id_trk=" + std::to_string(trks[i].id_trk) + ";";
             int t = stmt->executeUpdate(sql);
 
             delete stmt;
@@ -100,19 +104,56 @@ void model::Azs_Database::save_Trks(std::vector<model::Trk> trks,int screen_widt
         }
     }
 }
-void model::Azs_Database::set_Tovar(Tovar tovar){
+void model::Azs_Database::set_Tovar(Tovar& tovar)
+{
     try {
-            stmt = con->createStatement();
-            std::string sql = "UPDATE tovars SET price="+std::to_string(tovar.price)+", name=\""+tovar.name+
-            "\", name_p=\""+tovar.name_p+"\", name_p_f=\""+tovar.name_p_f+
-            "\", name_p_v=\""+tovar.name_p_v+"\" WHERE id_tovar=\""+std::to_string(tovar.id_tovar)+"\";";
-            int t = stmt->executeUpdate(sql);
+        stmt = con->createStatement();
+        std::string sql = "UPDATE tovar SET id_tovar="+std::to_string(tovar.id_tovar)+", price=" + std::to_string(tovar.price) + ", name=\"" + tovar.name + "\", name_p=\"" + tovar.name_p + "\", name_p_f=\"" + tovar.name_p_f + "\", name_p_v=\"" + tovar.name_p_v + "\" WHERE id_tovar=" + std::to_string(tovar.id_tovar) + ";";
+        int t = stmt->executeUpdate(sql);
 
+        delete stmt;
+    } catch (const sql::SQLException& error) {
+        std::cout << "ERROR MYSQL: " << error.what() << "\n";
+        isconn = false;
+    }
+}
+void model::Azs_Database::set_Trk(Trk& trk)
+{
+    try {
+        stmt = con->createStatement();
+        std::string sql = "UPDATE com_trk SET id_trk=" + std::to_string(trk.id_trk) + ", x_pos=" + std::to_string(trk.x_pos) + ", y_pos=" + std::to_string(trk.y_pos) + ", scale=" + std::to_string(trk.scale) + " WHERE id_trk=" + std::to_string(trk.id_trk) + ";";
+        int t = stmt->executeUpdate(sql);
+
+        delete stmt;
+    } catch (const sql::SQLException& error) {
+        std::cout << "ERROR MYSQL: " << error.what() << "\n";
+        isconn = false;
+    }
+    for(int i=0;i<trk.pists.size();i++){
+        try {
+            stmt = con->createStatement();
+            std::string sql = "UPDATE trk SET id_trk=" + std::to_string(trk.id_trk) + ", id_pist=" + std::to_string(trk.pists[i].id_pist) + ", id_tank=" + std::to_string(trk.pists[i].id_tank) +" WHERE id_trk=" + std::to_string(trk.id_trk) + " AND id_pist=" + std::to_string(trk.pists[i].id_pist) + ";";
+            int t = stmt->executeUpdate(sql);
+            
             delete stmt;
         } catch (const sql::SQLException& error) {
             std::cout << "ERROR MYSQL: " << error.what() << "\n";
             isconn = false;
         }
+    }
+}
+void model::Azs_Database::set_Tank(Tank& tank)
+{
+    try {
+        stmt = con->createStatement();
+        std::string sql = "UPDATE tank SET id_tank=" + std::to_string(tank.id_tank) + ", id_tovar=" + std::to_string(tank.id_tovar) + ", volume=" + std::to_string(tank.volume) + ", remain=" + std::to_string(tank.remain) + " WHERE id_tank=" + std::to_string(tank.id_tank) + ";";
+        int t = stmt->executeUpdate(sql);
+
+        delete stmt;
+    } catch (const sql::SQLException& error) {
+        std::cout << "ERROR MYSQL: " << error.what() << "\n";
+        isconn = false;
+    }
 }
 bool model::Azs_Database::smena_bool(int32_t* last_id, int32_t* last_nn)
 {
@@ -201,14 +242,15 @@ void model::Azs_Database::smena_change_operator(int32_t id_operator, int32_t id_
         isconn = false;
     }
 }
-void model::Azs_Database::smena_close(){
+void model::Azs_Database::smena_close()
+{
     try {
-        int32_t last_id=-1;
-        int32_t nn=-1;
-        bool b=smena_bool(&last_id,&nn);
+        int32_t last_id = -1;
+        int32_t nn = -1;
+        bool b = smena_bool(&last_id, &nn);
         std::string time_now = timetostr(std::chrono::system_clock::now());
         stmt = con->createStatement();
-        std::string sql = "UPDATE smena SET status=0, sm_end=\""+time_now+"\"  WHERE NSmen=" + std::to_string(last_id) + ";";
+        std::string sql = "UPDATE smena SET status=0, sm_end=\"" + time_now + "\"  WHERE NSmen=" + std::to_string(last_id) + ";";
         int t = stmt->executeUpdate(sql);
         delete stmt;
     } catch (const sql::SQLException& error) {
@@ -247,7 +289,7 @@ void model::Azs_Database::smena_add_operator(int32_t id_operator, int32_t nn)
 //             screen->height=std::stoi(sizes);
 //         }
 //         delete res;
-//         delete stmt; 
+//         delete stmt;
 //     } catch (const sql::SQLException& error) {
 //         std::cout << "ERROR MYSQL: " << error.what() << "\n";
 //         isconn = false;
@@ -295,7 +337,7 @@ void model::Azs_Database::smena_add_operator(int32_t id_operator, int32_t nn)
 //             p_stat.pists.resize(0);
 //         }
 //         delete res;
-//         delete stmt; 
+//         delete stmt;
 //         sql = "SELECT * FROM trk WHERE id_azs='" + azs_id + "';";
 
 //     } catch (const sql::SQLException& error) {
@@ -305,73 +347,78 @@ void model::Azs_Database::smena_add_operator(int32_t id_operator, int32_t nn)
 
 //     return Trks;
 // }
-std::vector<model::Tovar> get_Tovars(){
+std::vector<model::Tovar> get_Tovars()
+{
     std::vector<model::Tovar> tovars;
     return tovars;
 }
-bool  model::compareByid(const  model::Tank &a, const  model::Tank &b) {
+bool model::compareByid(const model::Tank& a, const model::Tank& b)
+{
     return a.id_tank < b.id_tank;
 }
-std::vector<model::Tovar> model::Azs_Database::get_Tovars(){
+std::vector<model::Tovar> model::Azs_Database::get_Tovars()
+{
     std::vector<model::Tovar> tovars;
     try {
         stmt = con->createStatement();
-        std::string sql ="SELECT * FROM tovar ORDER BY NN;";
+        std::string sql = "SELECT * FROM tovar ORDER BY NN;";
         sql::ResultSet* res = stmt->executeQuery(sql);
-        int index=0;
-        
+        int index = 0;
+
         while (res->next()) {
             Tovar tov;
-            tov.id_tovar=res->getInt("id_tovar");
-            tov.name=res->getString("name");
-            tov.name_p=res->getString("name_p");
-            tov.name_p_f=res->getString("name_p_f");
-            tov.name_p_v=res->getString("name_p_v");
-            int32_t color=res->getInt("color");
+            tov.id_tovar = res->getInt("id_tovar");
+            tov.name = res->getString("name");
+            tov.name_p = res->getString("name_p");
+            tov.name_p_f = res->getString("name_p_f");
+            tov.name_p_v = res->getString("name_p_v");
+            int32_t color = res->getInt("color");
             unsigned int red = (color >> 16) & 0xFF;
             unsigned int green = (color >> 8) & 0xFF;
             unsigned int blue = color & 0xFF;
-            tov.color.r=red;
-            tov.color.g=green;
-            tov.color.b=blue;
+            tov.color.r = red;
+            tov.color.g = green;
+            tov.color.b = blue;
             tovars.push_back(tov);
         }
         delete res;
-        delete stmt; 
+        delete stmt;
     } catch (const sql::SQLException& error) {
         std::cout << "ERROR MYSQL: " << error.what() << "\n";
         isconn = false;
     }
     return tovars;
 }
-std::vector<model::Tank> model::Azs_Database::get_Tanks(){
+std::vector<model::Tank> model::Azs_Database::get_Tanks()
+{
     std::vector<model::Tank> tanks;
     try {
         stmt = con->createStatement();
-        std::string sql ="SELECT * FROM tank ORDER BY NN;";
+        std::string sql = "SELECT * FROM tank ORDER BY NN;";
         sql::ResultSet* res = stmt->executeQuery(sql);
-        int index=0;
-        
+        int index = 0;
+
         while (res->next()) {
             Tank tank;
-            tank.id_tank=res->getInt("id_tank");
-            tank.id_tovar=res->getInt("id_tovar");
-            tank.remain=res->getInt("remain");
-            tank.volume=res->getInt("volume");
+            tank.id_tank = res->getInt("id_tank");
+            tank.id_tovar = res->getInt("id_tovar");
+            tank.remain = res->getInt("remain");
+            tank.volume = res->getInt("volume");
             tanks.push_back(tank);
         }
         delete res;
-        delete stmt; 
+        delete stmt;
     } catch (const sql::SQLException& error) {
         std::cout << "ERROR MYSQL: " << error.what() << "\n";
         isconn = false;
     }
     return tanks;
 }
-std::vector<model::Trk> model::Azs_Database::get_Trks(){
+std::vector<model::Trk> model::Azs_Database::get_Trks()
+{
     std::vector<model::Trk> trks;
     try {
-         stmt = con->createStatement();
+        stmt = con->createStatement();
         std::string sql = "SELECT com_trk.id_trk, com_trk.x_pos, com_trk.y_pos, com_trk.scale, trk.id_trk, trk.id_pist, trk.id_tank FROM com_trk INNER JOIN trk ON com_trk.id_trk = trk.id_trk WHERE com_trk.id_azs='" + azs_id + "' ORDER BY com_trk.id_trk;";
         sql::ResultSet* res = stmt->executeQuery(sql);
         sql::ResultSetMetaData* meta = res->getMetaData();
@@ -381,8 +428,8 @@ std::vector<model::Trk> model::Azs_Database::get_Trks(){
         int last_idtkr = -1;
         while (res->next()) {
             pist.id_pist = res->getInt("id_pist");
-            pist.id_tank=res->getInt("id_tank");
-            
+            pist.id_tank = res->getInt("id_tank");
+
             if (res->getInt("id_trk") == last_idtkr) {
                 trks[trks.size() - 1].pists.push_back(pist);
                 continue;
@@ -399,91 +446,91 @@ std::vector<model::Trk> model::Azs_Database::get_Trks(){
             trk.pists.resize(0);
         }
         delete res;
-        delete stmt; 
+        delete stmt;
     } catch (const sql::SQLException& error) {
         std::cout << "ERROR MYSQL: " << error.what() << "\n";
         isconn = false;
     }
     return trks;
 }
-std::vector<model::Trk> model::Azs_Database::get_Trks_with_all(Screen_Size* screen,model::VectorWrapper<model::Tovar>* tovars,model::VectorWrapper<model::Tank>* tanks)
+std::vector<model::Trk> model::Azs_Database::get_Trks_with_all(Screen_Size* screen, model::VectorWrapper<model::Tovar>* tovars, model::VectorWrapper<model::Tank>* tanks)
 {
     tovars->arr.resize(0);
     tanks->arr.resize(0);
     std::vector<model::Trk> trks;
     try {
         stmt = con->createStatement();
-        std::string sql ="SELECT * FROM loc_const WHERE descr_var=\"cnst_ScreenSize\";";
+        std::string sql = "SELECT * FROM loc_const WHERE descr_var=\"cnst_ScreenSize\";";
         sql::ResultSet* res = stmt->executeQuery(sql);
         while (res->next()) {
-            std::string size=res->getString("value");
-            char* sizes=strtok(&size[0],",");
-            screen->width=std::stoi(sizes);
-            sizes=strtok(NULL, " ");
-            screen->height=std::stoi(sizes);
+            std::string size = res->getString("value");
+            char* sizes = strtok(&size[0], ",");
+            screen->width = std::stoi(sizes);
+            sizes = strtok(NULL, " ");
+            screen->height = std::stoi(sizes);
         }
         delete res;
-        delete stmt; 
+        delete stmt;
     } catch (const sql::SQLException& error) {
         std::cout << "ERROR MYSQL: " << error.what() << "\n";
         isconn = false;
     }
     try {
         stmt = con->createStatement();
-        std::string sql ="SELECT * FROM tovar ORDER BY NN;";
+        std::string sql = "SELECT * FROM tovar ORDER BY NN;";
         sql::ResultSet* res = stmt->executeQuery(sql);
-        int index=0;
-        
+        int index = 0;
+
         while (res->next()) {
-            Tovar* tov=new Tovar;
-            tov->id_tovar=res->getInt("id_tovar");
-            tov->name=res->getString("name");
-            tov->name_p=res->getString("name_p");
-            tov->name_p_f=res->getString("name_p_f");
-            tov->name_p_v=res->getString("name_p_v");
-            tov->price=res->getDouble("price");
-            int32_t color=res->getInt("color");
+            Tovar* tov = new Tovar;
+            tov->id_tovar = res->getInt("id_tovar");
+            tov->name = res->getString("name");
+            tov->name_p = res->getString("name_p");
+            tov->name_p_f = res->getString("name_p_f");
+            tov->name_p_v = res->getString("name_p_v");
+            tov->price = res->getDouble("price");
+            int32_t color = res->getInt("color");
             unsigned int red = (color >> 16) & 0xFF;
             unsigned int green = (color >> 8) & 0xFF;
             unsigned int blue = color & 0xFF;
-            tov->color.r=red;
-            tov->color.g=green;
-            tov->color.b=blue;
+            tov->color.r = red;
+            tov->color.g = green;
+            tov->color.b = blue;
             tovars->arr.push_back(tov);
         }
         delete res;
-        delete stmt; 
+        delete stmt;
     } catch (const sql::SQLException& error) {
         std::cout << "ERROR MYSQL: " << error.what() << "\n";
         isconn = false;
     }
     try {
         stmt = con->createStatement();
-        std::string sql ="SELECT * FROM tank ORDER BY NN;";
+        std::string sql = "SELECT * FROM tank ORDER BY NN;";
         sql::ResultSet* res = stmt->executeQuery(sql);
-        int index=0;
-        
+        int index = 0;
+
         while (res->next()) {
-            Tank* tank=new Tank;
-            tank->id_tank=res->getInt("id_tank");
-            tank->id_tovar=res->getInt("id_tovar");
-            tank->remain=res->getInt("remain");
-            tank->volume=res->getInt("volume");
-            for(int i=0;i<tovars->arr.size();i++){
-                if(tank->id_tovar==tovars->arr[i]->id_tovar){
-                    tank->tovar_=tovars->arr[i];
+            Tank* tank = new Tank;
+            tank->id_tank = res->getInt("id_tank");
+            tank->id_tovar = res->getInt("id_tovar");
+            tank->remain = res->getInt("remain");
+            tank->volume = res->getInt("volume");
+            for (int i = 0; i < tovars->arr.size(); i++) {
+                if (tank->id_tovar == tovars->arr[i]->id_tovar) {
+                    tank->tovar_ = tovars->arr[i];
                     break;
                 }
             }
             tanks->arr.push_back(tank);
         }
         delete res;
-        delete stmt; 
+        delete stmt;
     } catch (const sql::SQLException& error) {
         std::cout << "ERROR MYSQL: " << error.what() << "\n";
         isconn = false;
     }
-    
+
     try {
         stmt = con->createStatement();
         std::string sql = "SELECT com_trk.id_trk, com_trk.x_pos, com_trk.y_pos, com_trk.scale, trk.id_trk, trk.id_pist, trk.id_tank FROM com_trk INNER JOIN trk ON com_trk.id_trk = trk.id_trk WHERE com_trk.id_azs='" + azs_id + "' ORDER BY com_trk.id_trk;";
@@ -501,18 +548,18 @@ std::vector<model::Trk> model::Azs_Database::get_Trks_with_all(Screen_Size* scre
 
             // std::cout << "\n";
             pist.id_pist = res->getInt("id_pist");
-            pist.id_tank=res->getInt("id_tank");
-            for(int i=0;i<tanks->arr.size();i++){
-                if(pist.id_tank==tanks->arr[i]->id_tank){
-                    pist.tank_=tanks->arr[i];
+            pist.id_tank = res->getInt("id_tank");
+            for (int i = 0; i < tanks->arr.size(); i++) {
+                if (pist.id_tank == tanks->arr[i]->id_tank) {
+                    pist.tank_ = tanks->arr[i];
                     break;
                 }
             }
-            //pist_stat.tank_.id_tank = ;
-            // pist_stat.tank_.tovar_.id_tovar = res->getInt("id_tovar");
-            // pist_stat.tank_.tovar_.name = res->getString("name");
-            // pist_stat.tank_.tovar_.price =res->getDouble("price");
-            
+            // pist_stat.tank_.id_tank = ;
+            //  pist_stat.tank_.tovar_.id_tovar = res->getInt("id_tovar");
+            //  pist_stat.tank_.tovar_.name = res->getString("name");
+            //  pist_stat.tank_.tovar_.price =res->getDouble("price");
+
             if (res->getInt("id_trk") == last_idtkr) {
                 trks[trks.size() - 1].pists.push_back(pist);
                 continue;
@@ -529,15 +576,14 @@ std::vector<model::Trk> model::Azs_Database::get_Trks_with_all(Screen_Size* scre
             trk.pists.resize(0);
         }
         delete res;
-        delete stmt; 
-   
+        delete stmt;
 
     } catch (const sql::SQLException& error) {
         std::cout << "ERROR MYSQL: " << error.what() << "\n";
         isconn = false;
     }
-    
-    //std::sort(tanks.begin(), tanks.end(), compareByid);
+
+    // std::sort(tanks.begin(), tanks.end(), compareByid);
     return trks;
 }
 void model::Azs_Database::get_azs_id()

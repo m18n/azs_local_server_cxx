@@ -176,6 +176,9 @@ public:
             for(int j=0;j<trks[i].pists.size();j++){
                 ctx["trks"][i]["pists"][j]={{"id_pist",trks[i].pists[j].id_pist},{"id_tank",trks[i].pists[j].id_tank}};
             }
+            ctx["trks"][i]["x_pos"]=trks[i].x_pos;
+            ctx["trks"][i]["y_pos"]=trks[i].y_pos;
+            ctx["trks"][i]["scale"]=trks[i].scale;
         }
         res.body=ctx.dump();
         res.end();
@@ -185,37 +188,62 @@ public:
         crow::mustache::context ctx = {};
         ctx["status"]="success";
         crow::json::wvalue json = crow::json::load(req.body);
-        std::cout<<"TOVAR: "<<json["tovars"].size()<<"\n";
-        std::cout<<"TRK: "<<json["trks"].size()<<"\n";
-        std::cout<<"NULL: "<<json["tee"].size()<<"\n";
-        std::cout<<"JSON: "<<json.dump()<<"\n";
         
+        std::cout<<"JSON: "<<json.dump()<<"\n";
+        std::vector<model::Tovar>tovars;
+        std::vector<model::Tank>tanks;
+        std::vector<model::Trk>trks;
         if(json["tovars"].t()==crow::json::type::List){
             for(int i=0;i<json["tovars"].size();i++){
-                model::Tovar tov=model::json_to_tovar(json["tovars"][i]);
-                if(tov.id_tovar==-1){
+                tovars.resize(json["tovars"].size());
+                tovars[i]=model::json_to_tovar(json["tovars"][i]);
+                if(tovars[i].id_tovar==-1){
+                    std::cout<<"\nERROR PARSE\n";
                   ctx["status"]="error";
+                  res.body=ctx.dump();
+                  res.end();
+                  return;
                 }
                 
             }
         }
         if(json["tanks"].t()==crow::json::type::List){
             for(int i=0;i<json["tanks"].size();i++){
-                model::Tank tank=model::json_to_tank(json["tanks"][i]);
-                if(tank.id_tank==-1){
+                tanks.resize(json["tanks"].size());
+                tanks[i]=model::json_to_tank(json["tanks"][i]);
+            
+                if(tanks[i].id_tank==-1){
+                    std::cout<<"\nERROR PARSE\n";
                   ctx["status"]="error";
+                  res.body=ctx.dump();
+                  res.end();
+                  return;
                 }
-                
+               
             }
         }
         if(json["trks"].t()==crow::json::type::List){
             for(int i=0;i<json["trks"].size();i++){
-                model::Trk trk=model::json_to_trk(json["trks"][i]);
-                if(trk.id_trk==-1){
+                trks.resize(json["trks"].size());
+                trks[i]=model::json_to_trk(json["trks"][i]);
+                if(trks[i].id_trk==-1){
+                    std::cout<<"\nERROR PARSE\n";
                   ctx["status"]="error";
+                  res.body=ctx.dump();
+                  res.end();
+                  return;
                 }
-                
+            
             }
+        }
+        for(int i=0;i<tovars.size();i++){
+            azs_db->set_Tovar(tovars[i]);
+        }
+        for(int i=0;i<tanks.size();i++){
+            azs_db->set_Tank(tanks[i]);
+        }
+        for(int i=0;i<trks.size();i++){
+            azs_db->set_Trk(trks[i]);
         }
         res.body=ctx.dump();
         res.end();

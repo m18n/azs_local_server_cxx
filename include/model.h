@@ -79,7 +79,7 @@ struct Pist {
     }
 };
 struct Trk {
-    int id_trk;
+    int id_trk=-1;
     int x_pos = 0;
     int y_pos = 0;
     float scale = 100;
@@ -183,7 +183,9 @@ public:
     std::vector<Tank> get_Tanks();
     std::vector<Trk> get_Trks();
     void save_Trks(std::vector<Trk> trks,int screen_width,int screen_height);
-    void set_Tovar(Tovar tovar);
+    void set_Tovar(Tovar& tovar);
+    void set_Trk(Trk& trk);
+    void set_Tank(Tank& tank);
     bool smena_bool();
     bool smena_bool(int32_t* userid);
     bool smena_bool(int32_t* last_id, int32_t* last_nn);
