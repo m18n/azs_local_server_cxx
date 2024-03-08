@@ -14,6 +14,9 @@
 #include <vector>
 #include <string.h>
 #include <nlohmann/json.hpp>
+#include <iomanip> // Для std::setprecision і std::fixed
+#include <sstream> // Для std::stringstream
+#include <string>  // Для std::string
 // #include <windows.h>
 namespace model {
 template<typename T>
@@ -98,6 +101,9 @@ struct Screen_Size{
     int width=0;
     int height=0;
 };
+
+
+std::string floatToString(float number,int step);
 class Azs_Database {
 private:
     sql::Driver* driver;

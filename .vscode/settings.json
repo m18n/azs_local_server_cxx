@@ -103,6 +103,7 @@
         "*.ipp": "cpp",
         "valarray": "cpp",
         "ranges": "cpp",
-        "span": "cpp"
+        "span": "cpp",
+        "cfenv": "cpp"
     }
 }

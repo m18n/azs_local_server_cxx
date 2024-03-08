@@ -22,7 +22,7 @@ protected:
 protected:
    
     virtual void init(){
-        url_to_func[URL_MAIN]=std::bind(&Client::main_pump, this, std::placeholders::_1, std::placeholders::_2);
+        url_to_func[URL_MAIN]=std::bind(&Client::main_trk, this, std::placeholders::_1, std::placeholders::_2);
         url_to_func[URL_MAIN_SETTINGS]=std::bind(&Client::main_settings, this, std::placeholders::_1, std::placeholders::_2);
         url_to_func[URL_OLD_MAIN_SETTINGS_CONFIG]=std::bind(&Client::old_main_settings_config, this, std::placeholders::_1, std::placeholders::_2);
         url_to_func[URL_MAIN_SETTINGS_CONFIG]=std::bind(&Client::main_settings_config, this, std::placeholders::_1, std::placeholders::_2);
@@ -36,7 +36,7 @@ protected:
         url_to_func[URL_API_SETTINGS_TRKS_GET]=std::bind(&Client::api_settings_trks_get, this, std::placeholders::_1, std::placeholders::_2);
         url_to_func[URL_API_SETTINGS_KASA_GET]=std::bind(&Client::api_settings_kasa_get, this, std::placeholders::_1, std::placeholders::_2);
     }
-    virtual void main_pump(crow::request& req, crow::response& res) = 0;
+    virtual void main_trk(crow::request& req, crow::response& res) = 0;
     virtual void main_settings(crow::request& req, crow::response& res) = 0;
     virtual void main_settings_config(crow::request& req, crow::response& res) = 0;
     virtual void old_main_settings_config(crow::request& req, crow::response& res) = 0;
@@ -80,7 +80,7 @@ public:
     {
         BaseController(url, req, res);
     }
-    void main_pump(crow::request& req, crow::response& res)
+    void main_trk(crow::request& req, crow::response& res)
     {
         res.set_header("Content-Type", "text/html");
         auto page = crow::mustache::load("public/old/serv.html");
@@ -90,19 +90,21 @@ public:
         model::VectorWrapper<model::Tovar> tovars;
         std::vector<model::Trk> trks = azs_db->get_Trks_with_all(&s_size,&tovars,&tanks);
         std::string price;
+        ctx["pump"]=nlohmann::json::array();
         for (int i = 0; i < trks.size(); i++) {
             // p[i].show();
             float scale = trks[i].scale;//(float)(3 * p[i].scale)
             std::string s = std::to_string(scale);
             ctx["screen_width"]=s_size.width;
-            ctx["pump"]=nlohmann::json::array();
+            
             ctx["pump"][i] = { { "id", trks[i].id_trk }, { "x_pos", (float)trks[i].x_pos/s_size.width*100.0 }, { "y_pos", (float)trks[i].y_pos/s_size.width*100.0 }, { "scale", s }, { "pist", "" } };
+            ctx["pump"][i]["pist"]=nlohmann::json::array();
             for (int j = 0; j < trks[i].pists.size(); j++) {
                 
                 price = std::to_string(trks[i].pists[j].tank_->tovar_->price);
                 int pos = price.find(".");
                 price.resize(pos + 3);
-                ctx["pump"][i]["pist"]=nlohmann::json::array();
+                
                 ctx["pump"][i]["pist"][j] = { { "id_pist", trks[i].pists[j].id_pist }, { "name", trks[i].pists[j].tank_->tovar_->name }, { "price", price }, { "r", trks[i].pists[j].tank_->tovar_->color.r }, { "g", trks[i].pists[j].tank_->tovar_->color.g }, { "b", trks[i].pists[j].tank_->tovar_->color.b } };
             }
         }
@@ -307,10 +309,10 @@ public:
         trks[0].show();
         nlohmann::json ctx = {};
         
-        
+        ctx["pumps"]=nlohmann::json::array();
         for(int i=0;i<trks.size();i++){
             ctx["pumps"][i]={{"id_trk",trks[i].id_trk}};
-
+            ctx["pumps"][i]["pists"]=nlohmann::json::array();
             for(int j=0;j<trks[i].pists.size();j++){
 
                 
@@ -322,13 +324,14 @@ public:
            
             
         }
+        ctx["tanks"]=nlohmann::json::array();
         for(int i=0;i<tanks.arr.size();i++){
             std::string color=std::to_string(tanks.arr[i]->tovar_->color.r)+","+std::to_string(tanks.arr[i]->tovar_->color.g)+","+std::to_string(tanks.arr[i]->tovar_->color.b);
             ctx["tanks"][i]={{"id_tank",tanks.arr[i]->id_tank},{"color",color},{"id_tovar",tanks.arr[i]->tovar_->id_tovar},{"name",tanks.arr[i]->tovar_->name},{"price",tanks.arr[i]->tovar_->price}};
         }
         res.set_header("Content-Type", "text/html");
         auto page = crow::mustache::load("public/old/configuration.html");
-        crow::json::wvalue w=crow::json::load(ctx);
+        crow::json::wvalue w=crow::json::load(ctx.dump());
         auto render = page.render(w);
         res.write(render.body_);
         res.end();
@@ -353,7 +356,7 @@ public:
     {
         BaseController(url, req, res);
     }
-    void main_pump(crow::request& req, crow::response& res)
+    void main_trk(crow::request& req, crow::response& res)
     {
         res.set_header("Content-Type", "text/html");
         auto page = crow::mustache::load("public/old/serv.html");
@@ -363,12 +366,14 @@ public:
         model::VectorWrapper<model::Tovar> tovars;
         std::vector<model::Trk> trks = azs_db->get_Trks_with_all(&s_size,&tovars,&tanks);
         std::string price;
+        ctx["pump"]=nlohmann::json::array();
         for (int i = 0; i < trks.size(); i++) {
             // p[i].show();
             float scale = trks[i].scale;//(float)(3 * p[i].scale)
             std::string s = std::to_string(scale);
             ctx["screen_width"]=s_size.width;
             ctx["pump"][i] = { { "id", trks[i].id_trk }, { "x_pos", (float)trks[i].x_pos/s_size.width*100.0 }, { "y_pos", (float)trks[i].y_pos/s_size.width*100.0 }, { "scale", s }, { "pist", "" } };
+            ctx["pump"][i]["pist"]=nlohmann::json::array();
             for (int j = 0; j < trks[i].pists.size(); j++) {
                 price = std::to_string(trks[i].pists[j].tank_->tovar_->price);
                 int pos = price.find(".");
