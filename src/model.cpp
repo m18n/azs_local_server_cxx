@@ -1,4 +1,7 @@
 #include "model.h"
+uint32_t model::get_rgb(int r, int g, int b) {
+    return ((r & 0xFF) << 16) | ((g & 0xFF) << 8) | (b & 0xFF);
+}
 model::Tovar model::json_to_tovar(nlohmann::json json) {
   Tovar tov;
   try {
@@ -118,12 +121,13 @@ void model::Azs_Database::set_Tovar(Tovar &tovar) {
     stmt = con->createStatement();
     std::string price=floatToString(tovar.price,2);
     std::cout<<"PRICE: "<<price<<"\n";
+    auto color=get_rgb(tovar.color.r,tovar.color.g,tovar.color.b);
     std::string sql =
         "UPDATE tovar SET id_tovar=" + std::to_string(tovar.id_tovar) +
         ", price=" + price + ", name=\"" + tovar.name +
         "\", name_p=\"" + tovar.name_p + "\", name_p_f=\"" + tovar.name_p_f +
-        "\", name_p_v=\"" + tovar.name_p_v +
-        "\" WHERE id_tovar=" + std::to_string(tovar.id_tovar) + ";";
+        "\", name_p_v=\"" + tovar.name_p_v + "\", color="+std::to_string(color)+
+        " WHERE id_tovar=" + std::to_string(tovar.id_tovar) + ";";
     int t = stmt->executeUpdate(sql);
 
     delete stmt;
@@ -409,6 +413,9 @@ std::vector<model::Tovar> model::Azs_Database::get_Tovars() {
       tov.name_p_f = res->getString("name_p_f");
       tov.name_p_v = res->getString("name_p_v");
       int32_t color = res->getInt("color");
+      // unsigned int red = GetRValue(color);
+      // unsigned int green = GetGValue(color);
+      // unsigned int blue = GetBValue(color);
       unsigned int red = (color >> 16) & 0xFF;
       unsigned int green = (color >> 8) & 0xFF;
       unsigned int blue = color & 0xFF;

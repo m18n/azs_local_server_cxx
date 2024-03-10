@@ -17,7 +17,11 @@
 #include <iomanip> // Для std::setprecision і std::fixed
 #include <sstream> // Для std::stringstream
 #include <string>  // Для std::string
+#include <cstdint> // для uint32_t
 // #include <windows.h>
+#define GetRValue(rgb)      (LOBYTE(rgb))
+#define GetGValue(rgb)      (LOBYTE(((WORD)(rgb)) >> 8))
+#define GetBValue(rgb)      (LOBYTE((rgb)>>16))
 namespace model {
 template<typename T>
 class VectorWrapper {
@@ -59,6 +63,9 @@ struct Tovar {
     std::string name_p_v;
     Color color;
 };
+
+
+uint32_t get_rgb(int r, int g, int b);
 Tovar json_to_tovar(nlohmann::json json);
 
 struct Tank {

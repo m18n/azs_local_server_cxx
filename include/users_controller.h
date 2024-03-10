@@ -360,29 +360,34 @@ public:
     {
         res.set_header("Content-Type", "text/html");
         auto page = crow::mustache::load("public/old/serv.html");
-        nlohmann::json ctx = { { "pump", "" } };
+        nlohmann::json ctx;
         model::Screen_Size s_size;
         model::VectorWrapper<model::Tank> tanks;
         model::VectorWrapper<model::Tovar> tovars;
         std::vector<model::Trk> trks = azs_db->get_Trks_with_all(&s_size,&tovars,&tanks);
         std::string price;
         ctx["pump"]=nlohmann::json::array();
+         
         for (int i = 0; i < trks.size(); i++) {
             // p[i].show();
             float scale = trks[i].scale;//(float)(3 * p[i].scale)
             std::string s = std::to_string(scale);
+         
             ctx["screen_width"]=s_size.width;
-            ctx["pump"][i] = { { "id", trks[i].id_trk }, { "x_pos", (float)trks[i].x_pos/s_size.width*100.0 }, { "y_pos", (float)trks[i].y_pos/s_size.width*100.0 }, { "scale", s }, { "pist", "" } };
+            ctx["pump"][i] = { { "id", trks[i].id_trk }, { "x_pos", (float)trks[i].x_pos/s_size.width*100.0 }, { "y_pos", (float)trks[i].y_pos/s_size.width*100.0 }, { "scale", s } };
             ctx["pump"][i]["pist"]=nlohmann::json::array();
+             
             for (int j = 0; j < trks[i].pists.size(); j++) {
                 price = std::to_string(trks[i].pists[j].tank_->tovar_->price);
                 int pos = price.find(".");
                 price.resize(pos + 3);
+                 
                 ctx["pump"][i]["pist"][j] = { { "id_pist", trks[i].pists[j].id_pist }, { "name", trks[i].pists[j].tank_->tovar_->name }, { "price", price }, { "r", trks[i].pists[j].tank_->tovar_->color.r }, { "g", trks[i].pists[j].tank_->tovar_->color.g }, { "b", trks[i].pists[j].tank_->tovar_->color.b } };
+            
             }
         }
-        std::cout << "P: " << ctx.dump() << "\n";
-        crow::json::wvalue w=crow::json::load(ctx);
+        
+        crow::json::wvalue w=crow::json::load(ctx.dump());
         auto render = page.render(w);
         res.write(render.body_);
         res.end();
