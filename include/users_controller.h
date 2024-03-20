@@ -11,6 +11,7 @@
 #define URL_API_OUTSHIFT "/api/outshift"
 #define URL_API_SETTINGS_GET "/api/settings/get"
 #define URL_API_SETTINGS_SET "/api/settings/set"
+#define URL_API_SETTINGS_DELETE "/api/settings/delete"
 #define URL_API_SETTINGS_TANKS_GET "/api/settings/tanks/get"
 #define URL_API_SETTINGS_TOVARS_GET "/api/settings/tovars/get"
 #define URL_API_SETTINGS_TRKS_GET "/api/settings/trks/get"
@@ -31,6 +32,7 @@ protected:
         url_to_func[URL_API_OUTSHIFT]=std::bind(&Client::api_outshift, this, std::placeholders::_1, std::placeholders::_2);
         url_to_func[URL_API_SETTINGS_GET]=std::bind(&Client::api_settings_get, this, std::placeholders::_1, std::placeholders::_2);
         url_to_func[URL_API_SETTINGS_SET]=std::bind(&Client::api_settings_set, this, std::placeholders::_1, std::placeholders::_2);
+        url_to_func[URL_API_SETTINGS_DELETE]=std::bind(&Client::api_settings_delete, this, std::placeholders::_1, std::placeholders::_2);
         url_to_func[URL_API_SETTINGS_TANKS_GET]=std::bind(&Client::api_settings_tanks_get, this, std::placeholders::_1, std::placeholders::_2);
         url_to_func[URL_API_SETTINGS_TOVARS_GET]=std::bind(&Client::api_settings_tovars_get, this, std::placeholders::_1, std::placeholders::_2);
         url_to_func[URL_API_SETTINGS_TRKS_GET]=std::bind(&Client::api_settings_trks_get, this, std::placeholders::_1, std::placeholders::_2);
@@ -45,6 +47,7 @@ protected:
     virtual void api_outshift(crow::request& req, crow::response& res) = 0;
     virtual void api_settings_get(crow::request& req, crow::response& res) = 0;
     virtual void api_settings_set(crow::request& req, crow::response& res) = 0;
+    virtual void api_settings_delete(crow::request& req, crow::response& res) = 0;
     virtual void api_settings_tanks_get(crow::request& req, crow::response& res) = 0;
     virtual void api_settings_tovars_get(crow::request& req, crow::response& res) = 0;
     virtual void api_settings_trks_get(crow::request& req, crow::response& res) = 0;
@@ -188,6 +191,70 @@ public:
         res.body=ctx.dump();
         res.end();
     }
+    void api_settings_delete(crow::request& req, crow::response& res){
+        res.set_header("Content-Type", "application/json");
+        nlohmann::json ctx = {};
+        ctx["status"]="success";
+        
+        nlohmann::json json = nlohmann::json::parse(req.body);
+        std::cout<<"DELETE JSON: "<<json.dump()<<"\n";
+        std::vector<model::Tovar>tovars;
+        std::vector<model::Tank>tanks;
+        std::vector<model::Trk>trks;
+        try {
+            if(json["tovars"].type()==nlohmann::json::value_t::array){
+                tovars.resize(json["tovars"].size());
+                for(int i=0;i<json["tovars"].size();i++){
+                    
+                    tovars[i].id_tovar=json["tovars"][i]["id_tovar"];
+                
+                    
+                }
+            }
+            if(json["tanks"].type()==nlohmann::json::value_t::array){
+                tanks.resize(json["tanks"].size());
+                for(int i=0;i<json["tanks"].size();i++){
+                    
+                    tanks[i].id_tank=json["tanks"][i]["id_tank"];
+                }
+            }
+            if(json["trks"].type()==nlohmann::json::value_t::array){
+                 
+                 trks.resize(json["trks"].size());
+                for(int i=0;i<json["trks"].size();i++){
+                    
+                    trks[i].id_trk=json["trks"][i]["id_trk"];
+                    if(json["trks"][i]["pists"].type()==nlohmann::json::value_t::array){
+                       
+                        int size_pists=json["trks"][i]["pists"].size();
+                        trks[i].pists.resize(size_pists);
+                        for(int j=0;j<size_pists;j++){
+                            trks[i].pists[j].id_pist=json["trks"][i]["pists"][j]["id_pist"];
+                        }
+                    }
+                
+                }
+            }
+
+        } catch (const std::exception &e) {
+            ctx["status"]="error";
+            res.body=ctx.dump();
+            res.end();
+            return;
+        }
+        for(int i=0;i<tovars.size();i++){
+            azs_db->delete_Tovar(tovars[i]);
+        }
+        for(int i=0;i<tanks.size();i++){
+            azs_db->delete_Tank(tanks[i]);
+        }
+        for(int i=0;i<trks.size();i++){
+            azs_db->delete_Trk(trks[i],true);
+        }
+        ctx["status"]="success";
+        res.body=ctx.dump();
+        res.end();
+    }
     void api_settings_set(crow::request& req, crow::response& res){
         res.set_header("Content-Type", "application/json");
         nlohmann::json ctx = {};
@@ -200,8 +267,9 @@ public:
         std::vector<model::Tank>tanks;
         std::vector<model::Trk>trks;
         if(json["tovars"].type()==nlohmann::json::value_t::array){
+            tovars.resize(json["tovars"].size());
             for(int i=0;i<json["tovars"].size();i++){
-                tovars.resize(json["tovars"].size());
+                
                 tovars[i]=model::json_to_tovar(json["tovars"][i]);
                 if(tovars[i].id_tovar==-1){
                     std::cout<<"\nERROR PARSE\n";
@@ -214,8 +282,9 @@ public:
             }
         }
         if(json["tanks"].type()==nlohmann::json::value_t::array){
+             tanks.resize(json["tanks"].size());
             for(int i=0;i<json["tanks"].size();i++){
-                tanks.resize(json["tanks"].size());
+               
                 tanks[i]=model::json_to_tank(json["tanks"][i]);
             
                 if(tanks[i].id_tank==-1){
@@ -229,8 +298,9 @@ public:
             }
         }
         if(json["trks"].type()==nlohmann::json::value_t::array){
+             trks.resize(json["trks"].size());
             for(int i=0;i<json["trks"].size();i++){
-                trks.resize(json["trks"].size());
+               
                 trks[i]=model::json_to_trk(json["trks"][i]);
                 if(trks[i].id_trk==-1){
                     std::cout<<"\nERROR PARSE\n";
@@ -275,6 +345,7 @@ public:
         res.body=ctx.dump();
         res.end();
     }
+    
     void api_settings_trks_get(crow::request& req, crow::response& res){
         res.set_header("Content-Type", "application/json");
         auto trks=azs_db->get_Trks();
@@ -412,6 +483,11 @@ public:
         res.end();
     }
     void api_settings_set(crow::request& req, crow::response& res){
+        res.redirect("/");
+        res.add_header("Set-Cookie", "refresh_token=;path=/;");
+        res.end();
+    }
+     void api_settings_delete(crow::request& req, crow::response& res){
         res.redirect("/");
         res.add_header("Set-Cookie", "refresh_token=;path=/;");
         res.end();

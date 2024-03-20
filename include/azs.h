@@ -4,7 +4,7 @@
 
 class azs {
 private:
-    crow::App<AuthVerefy,DatabaseVerefy> app;
+    crow::App<AuthVerefy,DatabaseVerefy,crow::CORSHandler> app;
     local_data ld;
     mysql_conn_info mysql_info;
     model::Azs_Database azs_db;
@@ -12,6 +12,7 @@ public:
     
     azs()
     {
+       
         //init crow
         init_view_login(app);
         init_web(&azs_db,&ld);

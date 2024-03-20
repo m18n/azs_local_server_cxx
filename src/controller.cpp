@@ -29,7 +29,7 @@ int check_coockie(crow::request& req, crow::response& res){
 }
 void AuthVerefy::before_handle(crow::request& req, crow::response& res, context& ctx)
 {
-    res.add_header("Access-Control-Allow-Origin", "*");
+    //res.add_header("Access-Control-Allow-Origin", "*");
     if (azs_db->isConnect() == false) {
         azs_db->connect_async(azs_db->get_last_connect_info());
         res.set_header("Content-Type", "text/html");
@@ -64,7 +64,7 @@ void AuthVerefy::after_handle(crow::request& req, crow::response& res, context& 
 }
 void DatabaseVerefy::before_handle(crow::request& req, crow::response& res, context& ctx)
 {
-    res.add_header("Access-Control-Allow-Origin", "*");
+    //res.add_header("Access-Control-Allow-Origin", "*");
     if (azs_db->isConnect() == false) {
         azs_db->connect_async(azs_db->get_last_connect_info());
         res.set_header("Content-Type", "text/html");

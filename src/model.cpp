@@ -1,6 +1,6 @@
 #include "model.h"
 uint32_t model::get_rgb(int r, int g, int b) {
-    return ((r & 0xFF) << 16) | ((g & 0xFF) << 8) | (b & 0xFF);
+  return ((r & 0xFF) << 16) | ((g & 0xFF) << 8) | (b & 0xFF);
 }
 model::Tovar model::json_to_tovar(nlohmann::json json) {
   Tovar tov;
@@ -11,7 +11,7 @@ model::Tovar model::json_to_tovar(nlohmann::json json) {
     tov.name_p_f = json["name_p_f"];
     tov.name_p_v = json["name_p_v"];
     tov.price = json["price"];
-    
+
     tov.color.r = json["color"]["r"];
     tov.color.g = json["color"]["g"];
     tov.color.b = json["color"]["b"];
@@ -21,6 +21,19 @@ model::Tovar model::json_to_tovar(nlohmann::json json) {
   }
   return tov;
 }
+bool model::Azs_Database::executeSql(std::string sql){
+        try {
+            stmt = con->createStatement();
+            int t = stmt->executeUpdate(sql);
+
+            delete stmt;
+            return true;
+        } catch (const sql::SQLException &error) {
+            std::cout << "ERROR MYSQL: " << error.what() << "\n";
+            isconn = false;
+            return false;
+        }
+    }
 model::Tank model::json_to_tank(nlohmann::json json) {
   Tank tank;
   try {
@@ -54,10 +67,10 @@ model::Trk model::json_to_trk(nlohmann::json json) {
   }
   return trk;
 }
-std::string model::floatToString(float number,int step) {
-    std::stringstream stream;
-    stream << std::fixed << std::setprecision(step) << number;
-    return stream.str();
+std::string model::floatToString(float number, int step) {
+  std::stringstream stream;
+  stream << std::fixed << std::setprecision(step) << number;
+  return stream.str();
 }
 std::vector<model::User_Name> model::Azs_Database::get_Users_Name() {
 
@@ -119,14 +132,14 @@ void model::Azs_Database::save_Trks(std::vector<model::Trk> trks,
 void model::Azs_Database::set_Tovar(Tovar &tovar) {
   try {
     stmt = con->createStatement();
-    std::string price=floatToString(tovar.price,2);
-    std::cout<<"PRICE: "<<price<<"\n";
-    auto color=get_rgb(tovar.color.r,tovar.color.g,tovar.color.b);
+    std::string price = floatToString(tovar.price, 2);
+    std::cout << "PRICE: " << price << "\n";
+    auto color = get_rgb(tovar.color.r, tovar.color.g, tovar.color.b);
     std::string sql =
         "UPDATE tovar SET id_tovar=" + std::to_string(tovar.id_tovar) +
-        ", price=" + price + ", name=\"" + tovar.name +
-        "\", name_p=\"" + tovar.name_p + "\", name_p_f=\"" + tovar.name_p_f +
-        "\", name_p_v=\"" + tovar.name_p_v + "\", color="+std::to_string(color)+
+        ", price=" + price + ", name=\"" + tovar.name + "\", name_p=\"" +
+        tovar.name_p + "\", name_p_f=\"" + tovar.name_p_f + "\", name_p_v=\"" +
+        tovar.name_p_v + "\", color=" + std::to_string(color) +
         " WHERE id_tovar=" + std::to_string(tovar.id_tovar) + ";";
     int t = stmt->executeUpdate(sql);
 
@@ -148,26 +161,44 @@ void model::Azs_Database::set_Trk(Trk &trk) {
     int t = stmt->executeUpdate(sql);
 
     delete stmt;
-  } catch (const sql::SQLException &error) {
-    std::cout << "ERROR MYSQL: " << error.what() << "\n";
-    isconn = false;
-  }
-  for (int i = 0; i < trk.pists.size(); i++) {
-    try {
+    int max_id_pist = 0;
+    stmt = con->createStatement();
+    sql = "SELECT MAX(id_pist) AS max_id_pist FROM trk WHERE id_trk=" +
+          std::to_string(trk.id_trk) + ";";
+    sql::ResultSet *res = stmt->executeQuery(sql);
+    if (res->next()) { // Тут змінено на if, тому що ми очікуємо лише один рядок
+                       // результату.
+      max_id_pist = res->getInt("max_id_pist");
+    }
+    delete res;
+    delete stmt;
+    int n=0;
+    for (int i = 0; i < trk.pists.size(); i++) {
+      
+
+      if (trk.pists[i].id_pist == 0) {
+        n++;
+        sql = "INSERT INTO trk (id_trk,id_pist,id_tank) VALUES (" +
+              std::to_string(trk.id_trk) + ", " +
+              std::to_string(max_id_pist+n) + ", " +
+              std::to_string(trk.pists[i].id_tank) + ");";
+      } else {
+        sql = "UPDATE trk SET id_trk=" + std::to_string(trk.id_trk) +
+              ", id_pist=" + std::to_string(trk.pists[i].id_pist) +
+              ", id_tank=" + std::to_string(trk.pists[i].id_tank) +
+              " WHERE id_trk=" + std::to_string(trk.id_trk) +
+              " AND id_pist=" + std::to_string(trk.pists[i].id_pist) + ";";
+      }
+
       stmt = con->createStatement();
-      std::string sql = "UPDATE trk SET id_trk=" + std::to_string(trk.id_trk) +
-                        ", id_pist=" + std::to_string(trk.pists[i].id_pist) +
-                        ", id_tank=" + std::to_string(trk.pists[i].id_tank) +
-                        " WHERE id_trk=" + std::to_string(trk.id_trk) +
-                        " AND id_pist=" + std::to_string(trk.pists[i].id_pist) +
-                        ";";
+
       int t = stmt->executeUpdate(sql);
 
       delete stmt;
-    } catch (const sql::SQLException &error) {
-      std::cout << "ERROR MYSQL: " << error.what() << "\n";
-      isconn = false;
     }
+  } catch (const sql::SQLException &error) {
+    std::cout << "ERROR MYSQL: " << error.what() << "\n";
+    isconn = false;
   }
 }
 void model::Azs_Database::set_Tank(Tank &tank) {
@@ -186,6 +217,26 @@ void model::Azs_Database::set_Tank(Tank &tank) {
     std::cout << "ERROR MYSQL: " << error.what() << "\n";
     isconn = false;
   }
+}
+void model::Azs_Database::delete_Tovar(Tovar &tovar){
+  executeSql("DELETE FROM tovar WHERE id_tovar=" + std::to_string(tovar.id_tovar) + ";");
+}
+void model::Azs_Database::delete_Trk(Trk &trk,bool smart_delete){
+  if(smart_delete==false){
+       executeSql("DELETE FROM com_trk WHERE id_trk=" + std::to_string(trk.id_trk) + ";");
+       executeSql("DELETE FROM trk WHERE id_trk=" + std::to_string(trk.id_trk) + ";");
+    }else{
+      if(trk.pists.size()==0){
+        executeSql("DELETE FROM com_trk WHERE id_trk=" + std::to_string(trk.id_trk) + ";");
+      }else{
+        for(int i=0;i<trk.pists.size();i++){
+          executeSql("DELETE FROM trk WHERE id_trk=" + std::to_string(trk.id_trk) + " AND id_pist="+std::to_string(trk.pists[i].id_pist)+";");
+        }
+      }
+    }
+}
+void model::Azs_Database::delete_Tank(Tank &tank){
+  executeSql("DELETE FROM tank WHERE id_tank=" + std::to_string(tank.id_tank) + ";");
 }
 bool model::Azs_Database::smena_bool(int32_t *last_id, int32_t *last_nn) {
   bool status = false;

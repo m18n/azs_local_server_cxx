@@ -188,6 +188,7 @@ public:
             while_conn = true;
         }
     }
+    bool executeSql(std::string sql);
     bool auth_check(int32_t userid, std::string password, bool& admin);
     std::vector<User_Name> get_Users_Name();
     //std::vector<Trk> get_Trks(Screen_Size* screen);
@@ -199,6 +200,9 @@ public:
     void set_Tovar(Tovar& tovar);
     void set_Trk(Trk& trk);
     void set_Tank(Tank& tank);
+    void delete_Tovar(Tovar& tovar);
+    void delete_Trk(Trk& trk,bool smart_delete);
+    void delete_Tank(Tank& tank);
     bool smena_bool();
     bool smena_bool(int32_t* userid);
     bool smena_bool(int32_t* last_id, int32_t* last_nn);
