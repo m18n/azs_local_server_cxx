@@ -39,6 +39,7 @@ std::string create_token(crow::json::wvalue json)
         std::string value = json[keys[i]].dump(true);
         token.set_payload_claim(keys[i], jwt::claim(value));
     }
+    
     std::string token_string = token.sign(jwt::algorithm::hs256 { ld->get_secret_jwt() });
     return token_string;
 }

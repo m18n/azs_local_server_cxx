@@ -1,4 +1,5 @@
 #pragma once
+#include "crow.h"
 #include "core.h"
 #include "local_data.h"
 #include "mysql_connection.h"
@@ -12,8 +13,15 @@
 #include <thread>
 #include <vector>
 #include <string.h>
-
+#include <nlohmann/json.hpp>
+#include <iomanip> // Для std::setprecision і std::fixed
+#include <sstream> // Для std::stringstream
+#include <string>  // Для std::string
+#include <cstdint> // для uint32_t
 // #include <windows.h>
+#define GetRValue(rgb)      (LOBYTE(rgb))
+#define GetGValue(rgb)      (LOBYTE(((WORD)(rgb)) >> 8))
+#define GetBValue(rgb)      (LOBYTE((rgb)>>16))
 namespace model {
 template<typename T>
 class VectorWrapper {
@@ -57,6 +65,9 @@ struct Tovar {
 };
 
 
+uint32_t get_rgb(int r, int g, int b);
+Tovar json_to_tovar(nlohmann::json json);
+
 struct Tank {
     int32_t id_tank = -1;
     int32_t id_tovar=-1;
@@ -64,6 +75,7 @@ struct Tank {
     int32_t remain=-1;
     Tovar* tovar_=NULL;
 };
+Tank json_to_tank(nlohmann::json json);
 bool compareByid(const Tank &a, const Tank &b);
 
 struct Pist {
@@ -77,7 +89,7 @@ struct Pist {
     }
 };
 struct Trk {
-    int id_trk;
+    int id_trk=-1;
     int x_pos = 0;
     int y_pos = 0;
     float scale = 100;
@@ -90,10 +102,15 @@ struct Trk {
         }
     }
 };
+Trk json_to_trk(nlohmann::json json);
+
 struct Screen_Size{
     int width=0;
     int height=0;
 };
+
+
+std::string floatToString(float number,int step);
 class Azs_Database {
 private:
     sql::Driver* driver;
@@ -171,6 +188,7 @@ public:
             while_conn = true;
         }
     }
+    bool executeSql(std::string sql);
     bool auth_check(int32_t userid, std::string password, bool& admin);
     std::vector<User_Name> get_Users_Name();
     //std::vector<Trk> get_Trks(Screen_Size* screen);
@@ -179,6 +197,12 @@ public:
     std::vector<Tank> get_Tanks();
     std::vector<Trk> get_Trks();
     void save_Trks(std::vector<Trk> trks,int screen_width,int screen_height);
+    void set_Tovar(Tovar& tovar);
+    void set_Trk(Trk& trk);
+    void set_Tank(Tank& tank);
+    void delete_Tovar(Tovar& tovar);
+    void delete_Trk(Trk& trk,bool smart_delete);
+    void delete_Tank(Tank& tank);
     bool smena_bool();
     bool smena_bool(int32_t* userid);
     bool smena_bool(int32_t* last_id, int32_t* last_nn);
